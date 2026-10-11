@@ -1,12 +1,33 @@
 # Repository Guidelines
 
+## Confirm Scope Before Starting
+
+The current user-authorized scope is project design, documentation, and a
+progress checklist. Application implementation has not been authorized yet.
+Before starting new work, the Tech Lead must ask about material ambiguities,
+summarize the requirements and acceptance conditions, and wait for the user's
+explicit confirmation. Engineers route questions through the Tech Lead and
+work within the confirmed ticket scope. Existing confirmation applies within
+that scope; a scope change requires a new confirmation.
+
+Read `docs/team/requirements.md`, `docs/team/board.md`, and the assigned ticket
+before acting. For money, chores, or retention, read `docs/project/domain.md`;
+for client/server integration, read `docs/project/api-contract.md`.
+`docs/project/decisions.md` distinguishes confirmed requirements from proposals.
+The Tech Lead alone updates ticket status and `checklist.md` after acceptance
+and integration, recording actual evidence.
+
 ## Project Structure & Module Organization
 
-`ourhoomu` is currently a minimal repository. Its tracked project files are:
+`ourhoomu` is currently a documentation-stage monorepo. Its project files include:
 
 - `README.md`: the project name; expand it with setup and usage instructions as development begins.
 - `LICENSE`: the Apache 2.0 license.
 - `AGENTS.md`: this contributor guide.
+- `ourhoomu-api/README.md`: backend scope; application code is not scaffolded.
+- `ourhoomu-front/README.md`: iOS frontend scope; application code is not scaffolded.
+- `docs/`: requirements, architecture, contracts, and team tickets.
+- `checklist.md`: progress maintained by the Tech Lead.
 
 No application source, tests, or assets are present yet. When introducing them, choose clear locations such as `src/`, `tests/`, and `assets/`, and document the actual layout in `README.md`.
 

@@ -10,6 +10,8 @@
 
 คำสั่งล่าสุด “ออกแบบ database ตาม requirement” อนุญาต database design ตาม [SW-0019](tickets/SW-0019.md) ครอบคลุม SlipOK และ LINE OA ที่เพิ่มแล้ว ไม่ใช่การอนุมัติรัน migration บน production หรืออนุมัติ pending product decisions
 
+คำสั่งเลือก stack ล่าสุดยืนยัน PostgreSQL + Drizzle ORM สำหรับ schema/query, Elysia API บน Cloudflare Workers Free และ React Native + Expo โดยใช้ Bun tooling ทั้ง front/back ตาม [SW-0020](tickets/SW-0020.md) ไม่ใช่การอนุมัติ scaffold/migration/deploy แอป
+
 ## ข้อกำหนดที่ผู้ใช้ยืนยัน
 
 | ID | พฤติกรรมที่ต้องได้ |
@@ -30,6 +32,7 @@
 | R14 | เปรียบเทียบ API ตรวจสลิปแล้ว ผู้ใช้เลือก SlipOK เมื่อ 2026-10-12 ยังไม่อนุมัติซื้อ; ต้องผ่าน recipient/retention gate ก่อนส่งสลิปจริง |
 | R15 | ใช้ Neon database โปรเจกต์ lucky-bar-14515304 branch production ใน working directory; ติดตั้ง CLI/skills/MCP และ deploy config preview.buckets.slip access=private |
 | R16 | ส่ง LINE OA push message เมื่อยืนยันการจ่ายเงิน ผู้ใช้ให้ Channel ID/secret/access token (long-lived) ภายหลัง; ผู้รับข้อความและ binding flow รอยืนยันตาม [LINE OA design](../project/line-oa.md) |
+| R17 | PostgreSQL บน Neon; Drizzle ORM นิยาม schema และ query; Elysia API บน Cloudflare Workers Free; frontend React Native + Expo; Bun stable ล่าสุดที่ตรวจความเข้ากันได้สำหรับ dependencies/scripts ทั้ง front/back โดย production API ใช้ Workers runtime และ iOS ใช้ Hermes |
 
 ตัวอย่าง R6–R8 ที่ผู้ใช้ยืนยัน: ค่าใช้จ่าย 200 บาท หารสองคน 50%/50% โดย A เป็นผู้รับเงิน/คนออกเงิน A รับผิดชอบ 100 บาทอัตโนมัติ B ต้องจ่ายคืน 100 บาท B จ่าย 40 แล้ว 60 ได้
 
@@ -53,7 +56,7 @@
 
 ## ข้อเสนอที่ยังไม่ใช่คำยืนยันผู้ใช้
 
-Stack, ภาษา UI ไทย, timezone Asia/Bangkok, สิทธิ์ owner/member, invite แบบใช้ครั้งเดียว, การปัดเศษ, การหมุนเวรตามลำดับ และความหมายทางเทคนิคของอายุข้อมูลอยู่ใน [decisions](../project/decisions.md) และ [domain](../project/domain.md)
+Stack ยืนยันตาม R17 แล้ว ส่วนภาษา UI ไทย, timezone Asia/Bangkok, สิทธิ์ owner/member, invite แบบใช้ครั้งเดียว, การปัดเศษ, การหมุนเวรตามลำดับ และความหมายทางเทคนิคของอายุข้อมูลอยู่ใน [decisions](../project/decisions.md) และ [domain](../project/domain.md)
 
 ## นอก MVP ที่เสนอ
 

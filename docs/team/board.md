@@ -24,10 +24,11 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0017](tickets/SW-0017.md) | ออกแบบ LINE OA แจ้งยืนยันการจ่าย | tech-lead | คำสั่งเพิ่มช่องทาง; ผู้รับยัง pending | done เฉพาะเอกสาร |
 | [SW-0018](tickets/SW-0018.md) | LINE OA webhook/binding/outbox/push | backend-engineer | SW-0005, SW-0006, SW-0007, SW-0017 | draft |
 | [SW-0019](tickets/SW-0019.md) | Database ERD/data dictionary/constraints/transactions | data-engineer + Tech Lead review | คำสั่งออกแบบ database; ไม่ใช่ migration | done เฉพาะแบบ |
+| [SW-0020](tickets/SW-0020.md) | ยืนยัน Elysia/Drizzle/Cloudflare Free และ Expo/React Native/Bun tooling | tech-lead | คำสั่งเลือก stack ล่าสุด | in_progress เฉพาะเอกสาร |
 
 ## Dependency / dispatch gates
 
-- ทุก application implementation ticket รอ full design approval และ Neon API/identity contract; SW-0015 ได้รับอนุมัติ setup/deploy โดยเฉพาะ มี ticket ไม่ได้แปลว่า agent ถูกเปิด
+- ทุก application implementation ticket รอ full design approval และ Neon identity/driver/actor contract; stack ยืนยันตาม SW-0020 แล้ว; SW-0015 ได้รับอนุมัติ setup/deploy โดยเฉพาะ มี ticket ไม่ได้แปลว่า agent ถูกเปิด
 - SW-0003 → SW-0004 → SW-0005; หลัง auth/schema ถูกตรวจรับแล้ว SW-0006, SW-0008 และ SW-0009 ทำขนานใน worktrees แยกได้
 - SW-0019 ออกแบบ 29 ตารางแล้ว; SW-0004 ใช้ final [database contract](../project/database.md) และยังรอ design/policy/runtime approval ก่อน migrations/tests ไม่ใช้ original worker W24h proposal แทน final replay-floor design
 - SW-0007 เลือก SlipOK แล้ว รอ credentials/งบ/recipient matching/retention evidence เมื่อเชื่อมของจริง; ส่วน mock ไม่ใช้ปิด provider acceptance
@@ -38,12 +39,12 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 ## Checkpoint สำหรับ resume
 
-- Objective: database design ตาม requirement ล่าสุด รวม SlipOK/LINE OA โดยไม่แก้ production schema
-- Integration target: main/local; SW-0019 baseline e26f657; user checkout อยู่ local
-- Current ticket: SW-0019 author c6800a9 ส่งแบบแล้ว, Tech Lead แก้ final contract F1–F4/C1 และตรวจรวม; Run run_223db0fa65d8 / Task task_3f8e18ed88aa / Dispatch ctx_1b7612887dd9 settled/released; exact integrated tip/cleanup receipts อยู่ root .git/ourhoomu-snapshots/sw-0019/
+- Objective: SW-0020 ปรับเอกสาร stack ตามคำสั่งล่าสุด Bun + React Native/Expo, Elysia/Cloudflare Workers Free, Drizzle/PostgreSQL; ไม่แก้ production schema
+- Integration target: main/local; SW-0020 baseline 7d9c825; user checkout อยู่ local
+- Current ticket: SW-0020 เอกสาร stack ใน Orca isolated worktree `sw-0020-stack`; Tech Lead ทำเอง ไม่มี worker/Dispatch; SW-0019 หลักฐานเดิมอยู่ root .git/ourhoomu-snapshots/sw-0019/
 - Graft: ACTIVE; isolated/root map 1 neon.ts file/0 symbols/1 edge หลัง setup (preflight เดิม NO_INDEXED_FILES)
-- Next action: ให้ผู้ใช้ตรวจ final database/replay-floor/late-evidence policy, รับผู้รับ LINE แล้วตรึง binding/message/retention, API hosting/Google-Apple integration และ full design ก่อน application implementation
-- Product decisions pending: full design, API hosting/Neon Auth integration, SlipOK credentials/งบ/recipient matching และ retention proof ของ provider/backup/branches
+- Next action: ให้ผู้ใช้ตรวจ final database/replay-floor/late-evidence policy, รับผู้รับ LINE แล้วตรึง binding/message/retention, Google-Apple integration/Neon driver/actor context และ full design ก่อน application implementation
+- Product decisions pending: full design, Neon Auth/driver integration, SlipOK credentials/งบ/recipient matching และ retention proof ของ provider/backup/branches
 - SW-0016: ผู้ใช้เลือก SlipOK แล้ว; เอกสาร/requirements/SW-0007/checklist ตรงกัน ยังไม่เชื่อม API จริงหรือซื้อแพ็กเกจ
 - Prior review: [SW-0002](tickets/SW-0002.md), [review](reports/SW-0002-design-review.md), [resolution](reports/SW-0002-resolution.md) คงเป็นประวัติของ revision เดิม ไม่ใช่ review ของ Neon revision นี้
 - Final lifecycle receipt/inventory: root .git/ourhoomu-snapshots/sw-0015/ และ Orca root comment; ไม่ลบ credentials/skills/user checkout ไปพร้อม isolated worktree

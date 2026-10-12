@@ -112,7 +112,7 @@ API บังคับ scope ก่อนคืน feed; กิจกรรม�
 
 ## Database design สำหรับ data-engineer
 
-ใช้ [database design SW-0019](database.md) เป็นแหล่งจริงล่าสุดสำหรับตาราง/columns/types/PK/FK/CHECK/indexes/transactions และ ERD แทน logical table shorthand เดิม ซึ่งเคยมี profiles→auth.users ที่ไม่ตรง Neon แบบใหม่ใช้ app-owned users/issuer-subject identities โดยไม่สมมติ managed auth schema; provider/session/runtime ยัง pending
+ใช้ [database design SW-0019](database.md) เป็นแหล่งจริงล่าสุดสำหรับตาราง/columns/types/PK/FK/CHECK/indexes/transactions และ ERD แทน logical table shorthand เดิม ซึ่งเคยมี profiles→auth.users ที่ไม่ตรง Neon แบบใหม่ใช้ app-owned users/issuer-subject identities โดยไม่สมมติ managed auth schema; provider/session/driver ยัง pending; API stack เลือก Elysia/Cloudflare Workers แล้วตาม SW-0020
 
 Schema implementation อยู่ SW-0004 และยัง draft การส่งแบบไม่ได้สร้างตารางหรือผ่าน migration/RLS/concurrency tests แล้ว
 

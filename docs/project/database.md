@@ -8,7 +8,7 @@
 
 ## 1. ขอบเขต ความสัมพันธ์ และ data flow
 
-ใช้ app-owned `users` และ `auth_identities(issuer,subject)` ไม่ FK เข้า `auth.users` หรือเดา managed Neon Auth schema การตรวจ Google/Apple, API hosting/runtime, session/refresh/revocation และ linking policy ยัง pending; identity mapping ไม่ได้เป็นหลักฐานว่า login ใช้ได้แล้ว
+ใช้ app-owned `users` และ `auth_identities(issuer,subject)` ไม่ FK เข้า `auth.users` หรือเดา managed Neon Auth schema การตรวจ Google/Apple, session/refresh/revocation และ linking policy ยัง pending; identity mapping ไม่ได้เป็นหลักฐานว่า login ใช้ได้แล้ว
 
 ```mermaid
 erDiagram
@@ -237,6 +237,10 @@ Complete/reopen lock occurrence, require actor=assignee+active+unexpired+expecte
 
 Feed ใช้ `(created_at,id)` keyset อ่านเฉพาะบ้านที่ยัง active member; query กรอง expiry parent+event ก่อน pagination ไม่ใช้ provider private join Dashboard แยก pending/confirmed/overdue; cursor ไม่ได้ grant permission และลบ event แล้ว cursor ยังใช้เรียงได้
 
+ใช้ Drizzle ORM เป็น schema/query layer ตาม [SW-0020](../team/tickets/SW-0020.md) และ Drizzle Kit สร้าง SQL migrations; custom SQL สำหรับ RLS/grants/functions ยังต้อง review และทดสอบตาม invariants เดิม ORM ไม่แทน database constraints หรือ permission checks
+
+เลือก Neon driver หลังตรวจ transaction contract บน Workers จริง: [Drizzle Neon docs](https://orm.drizzle.team/docs/connect-neon) แยก HTTP สำหรับ single/non-interactive transactions และ WebSocket สำหรับ interactive transactions; ห้ามเปลี่ยน reserve/finalize/locking เป็นหลายคำสั่งที่ไม่ atomic เพียงเพื่อใช้ HTTP driver ต้องพิสูจน์ actor context/transaction role ใน SW-0004
+
 ## 4. Authorization, RLS และ pooled runtime
 
 users/identities/challenges เป็น own-user หรือ trusted auth-runtime scope เท่านั้น ไม่ให้สมาชิกบ้านอ่าน identity subjects; actor ต้อง users.state=active
@@ -290,7 +294,7 @@ Current state archive ต้องมี archive time/expiry ที่ไม่�
 | Requirement | Model / acceptance ที่แบบรองรับ |
 |---|---|
 | R1 iOS/TestFlight | backend UUID/UTC/THB DTO; ไม่มี iOS implementation หรือ TestFlight artifact จาก schema |
-| R2 monorepo/free start | DB เดียว/API transaction+job, ไม่มี partition/queue service; quota/hosting ยัง pending |
+| R2 monorepo/free start | DB เดียว/API transaction+job, ไม่มี partition/queue service; Cloudflare Workers Free เลือกแล้ว; account quotas/job capacity ยังต้องตรวจ |
 | R3 Google/Apple/THB | users/issuer-subject identities/challenges; currency CHECK; session runtime/linking pending |
 | R4 หลายบ้าน/เชิญ | memberships unique(house,user), atomic invite+join, last-owner lock |
 | R5 creator/recipient ต่างกัน | แยก member IDs; masked selector + account ownership/version snapshot |
@@ -334,4 +338,4 @@ Current state archive ต้องมี archive time/expiry ที่ไม่�
 
 ตรวจเมื่อ 2026-10-12: [PostgreSQL18 constraints](https://www.postgresql.org/docs/18/ddl-constraints.html) รองรับ composite FK/unique และอธิบายข้อจำกัด CHECK ข้ามแถว; [RLS](https://www.postgresql.org/docs/18/ddl-rowsecurity.html) สำหรับ role/policy boundaries; [locking](https://www.postgresql.org/docs/18/explicit-locking.html) สำหรับ transaction row locks; [Neon pooling](https://neon.com/docs/connect/connection-pooling) / [official source](https://github.com/neondatabase/website/blob/main/content/docs/connect/connection-pooling.md) สำหรับ pooled-vs-direct; [LINE retry](https://developers.line.biz/en/docs/messaging-api/retrying-api-request/) สำหรับ retry key24h/accepted semantics
 
-ยังต้องตัดสินใจก่อนลงมือจริง: full design approval, auth/runtime/Google-Apple linking, replay floor/TTL/clock policyและlate-transfer UX, cash creator self-confirm, LINE recipient/binding/message/external copies, SlipOK sufficient multi-recipient proof/reference precision/credentials/งบ และ retention storage/provider/backups/branches OwnerคือTech Leadประสานผู้ใช้และspecialists; ความไม่พร้อมเหล่านี้ไม่ขวางการส่งแบบแต่ขวาง featureที่เกี่ยวข้อง ไม่มีข้อจำกัดใดในเอกสารนี้ถูกอ้างว่า deploy/enforce/test runtimeแล้ว
+ยังต้องตัดสินใจก่อนลงมือจริง: full design approval, auth/driver/Google-Apple linking, replay floor/TTL/clock policyและlate-transfer UX, cash creator self-confirm, LINE recipient/binding/message/external copies, SlipOK sufficient multi-recipient proof/reference precision/credentials/งบ และ retention storage/provider/backups/branches OwnerคือTech Leadประสานผู้ใช้และspecialists; ความไม่พร้อมเหล่านี้ไม่ขวางการส่งแบบแต่ขวาง featureที่เกี่ยวข้อง ไม่มีข้อจำกัดใดในเอกสารนี้ถูกอ้างว่า deploy/enforce/test runtimeแล้ว

@@ -8,16 +8,19 @@
 |---|---|---|
 | iOS UI | Expo, React Native, TypeScript, Expo Router | navigation, form, native sign-in UI, ถ่าย/เลือกรูป |
 | Client state | TanStack Query, React Hook Form, Zod, SecureStore | server cache, validation, เก็บ session อย่างปลอดภัย |
-| API | TypeScript backend; runtime/hosting รอตรึงตาม ADR-0002 | auth/session gateway, permissions, validation, slip adapter ยังไม่ deploy |
-| Database | Neon PostgreSQL; SQL migrations, grants/RLS และ transactions รอ implementation | เงินและ state changes ที่ต้อง atomic |
+| API | Elysia / TypeScript บน Cloudflare Workers Free; Bun tooling | auth/session gateway, permissions, validation, slip adapter ยังไม่ deploy |
+| Database | Neon PostgreSQL + Drizzle ORM schema/query; Drizzle Kit + SQL migrations รอ implementation | เงินและ state changes ที่ต้อง atomic |
 | Files | Neon Object Storage bucket slip: private | infrastructure ตรวจแล้ว; app permissions ยังไม่พัฒนา |
 | Authentication | Google/Apple ผ่าน API; ต้องตรวจ integration กับ Neon Auth ที่เปิดอยู่แล้ว | ยังไม่มี app session/native login proof |
-| Background maintenance | Scheduler/retention/outbox worker รอเลือกกับ API hosting | purge แม้ไม่มีใครเปิดแอป; LINE OA ยืนยันการจ่ายตาม R16; ไม่มี APNs/Expo Push |
+| Development tooling | Bun stable ล่าสุดที่เข้ากันทั้ง front/back; Node.js LTS สำหรับ Expo prerequisites | pin versions/lockfiles ใน SW-0003; mobile ใช้ Hermes, API ใช้ Workers runtime |
+| Distribution | Expo development build, EAS Build, TestFlight | ทดสอบ native integrations และแจก beta |
+| Background maintenance | Scheduler/retention/outbox worker ยังต้องออกแบบบน Cloudflare Workers | purge แม้ไม่มีใครเปิดแอป; LINE OA ยืนยันการจ่ายตาม R16; ไม่มี APNs/Expo Push |
 
 เพิ่ม [LINE OA payment notifications](line-oa.md): transaction ยืนยันเงินบันทึก outbox พร้อม domain event; worker ส่ง Messaging API หลัง commit ด้วย server credentials เท่านั้น LINE failure ไม่ย้อนเครดิต ปลายทางและ binding ยังรอผู้ใช้ยืนยัน ไม่ใช่ integration ที่ deploy แล้ว
 
 แบบ PostgreSQL ล่าสุด: [database design](database.md) แสดง 29 ตารางพร้อม ERD, data dictionary, composite tenant FKs, money/chores/LINE transactions และ purge/restore; เป็น proposed contract สำหรับ SW-0004 ยังไม่มี domain tables ที่ deploy แล้ว
-| Distribution | Expo development build, EAS Build, TestFlight | ทดสอบ native integrations และแจก beta |
+
+Stack ยืนยันตาม [SW-0020](../team/tickets/SW-0020.md) ส่วน domain/identity/policy design ที่เหลือยังรอยืนยัน Elysia Cloudflare adapter ยัง experimental ต้องทดสอบกับ Workers runtime จริง; หลีกเลี่ยง Bun-only APIs ใน request handlers ดู [Elysia adapter](https://elysiajs.com/integrations/cloudflare-worker)
 
 ให้ scaffold ticket pin versions ที่เข้ากันจริงจาก official docs ตอนเริ่ม ไม่ pin SDK จากการคาดเดาในเอกสารนี้
 
@@ -27,7 +30,7 @@
 flowchart LR
   User[iPhone / ourhoomu-front] --> Native[Google / Apple consent]
   Native --> User
-  User --> API[ourhoomu-api / Edge Functions]
+  User --> API[ourhoomu-api / Elysia on Cloudflare Workers]
   API --> Auth[Identity integration pending]
   API --> DB[Neon PostgreSQL + SQL transactions]
   API --> Store[Neon private slip bucket]

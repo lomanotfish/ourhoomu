@@ -1,6 +1,6 @@
 # API contract v0.1 — Proposed
 
-Base URL: รอเลือก API hosting หลังเปลี่ยนเป็น Neon ตาม [ADR-0002](../adr/0002-neon.md); logical routes ใต้ /v1 ยังเป็นข้อเสนอ ไม่ใช่ API ที่ deploy แล้ว Backend/data/FE ต้องตรึง OpenAPI และ identity/SQL transaction contract ก่อนทำคู่ขนาน
+Base URL: รอ Cloudflare deployment ของ Elysia API ตาม [SW-0020](../team/tickets/SW-0020.md); logical routes ใต้ /v1 ยังเป็นข้อเสนอ ไม่ใช่ API ที่ deploy แล้ว Backend/data/FE ต้องตรึง OpenAPI และ identity/SQL transaction contract ก่อนทำคู่ขนาน
 
 ## กติกากลาง
 

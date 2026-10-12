@@ -4,13 +4,19 @@
 
 ## เริ่มต้นและขยาย
 
-ใช้ Neon project ourhoomu branch production ตามผู้ใช้ระบุ ตรวจ plan/usage จริงใน Console และ [Neon pricing](https://neon.com/pricing) ก่อนรับรองค่าใช้จ่าย pilot; API hosting/Auth integration/scheduler ยังไม่เลือก จึงยังสรุปค่า hosting ทั้งระบบว่า $0 ไม่ได้
+ใช้ Neon project ourhoomu branch production ตามผู้ใช้ระบุ ตรวจ plan/usage จริงใน Console และ [Neon pricing](https://neon.com/pricing) ก่อนรับรองค่าใช้จ่าย pilot; API hosting เลือก Cloudflare Workers Free แล้วตาม SW-0020; Auth integration/scheduler ยังรอตรึงและทดสอบ จึงยังสรุปค่า hosting ทั้งระบบว่า $0 ไม่ได้
 
 ไม่ใช้ Supabase quotas เดิมกับ Neon ตรวจ DB compute/storage, object storage/egress, history retention และ branch copies ตาม account จริงก่อนเปิด pilot
 
 ตัวอย่าง 50 สลิป/เดือน × 0.5 MB × 12 ≈ 300 MB เป็นประมาณการไฟล์ ไม่ใช่ free quota; retries/รูปจริง/สำเนาใน branches เพิ่ม usage ได้ ให้มี monitor ที่ 70%/85% ของโควตาที่ account ใช้จริง
 
 การอัปเกรดขึ้นกับ usage/availability/backup ที่ต้องการ ไม่เปลี่ยนแพลตฟอร์มหรือรับรองราคาเพียงเพราะผู้ใช้ไม่เกิน 10 คน
+
+## Cloudflare Workers Free ที่เลือก
+
+ใช้ Workers Free สำหรับ Elysia API ตามคำสั่งผู้ใช้ ไม่เปิด Workers Paid หรือบริการที่คิดเงินแยกโดยไม่มี authorization ปัจจุบัน Free จำกัด 100,000 requests/วัน และ CPU 10 ms/invocation; เกิน daily quota จะถูกจำกัด (error 1027 สำหรับ fail-closed) แทน usage overage billing โควตารีเซ็ต 00:00 UTC/07:00 Asia/Bangkok ใช้ fail-closed สำหรับ API ที่ตรวจสิทธิ์ ไม่ข้ามการตรวจไป origin เมื่อ quota หมด
+
+แหล่งตรวจ 2026-10-12: [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/) และ [daily limits](https://developers.cloudflare.com/workers/platform/limits/#daily-requests) เงื่อนไขนี้เป็น Workers Free ไม่ครอบคลุม R2/บริการเสียเงินอื่น, Neon, SlipOK, LINE หรือ EAS; ต้องตรวจ plan/account จริงก่อน deploy ยังไม่ได้สร้างหรือ deploy Cloudflare Worker
 
 ## ค่าใช้จ่ายแยกจาก hosting
 
@@ -19,7 +25,7 @@
 | Neon | ตรวจ plan/usage/quotas ของ account จริง ไม่ใช้ราคา Supabase เดิม |
 | EAS Build | Free ระบุได้ถึง 15 iOS builds และ 15 Android builds/เดือน คิว priority ต่ำ; ตรวจโควตาอีกครั้งก่อน release |
 | Apple Developer Program | $99/ปีสำหรับ TestFlight |
-| Slip verifier | ยังรอเลือก; ตัวเลือกเริ่ม 88 หรือ 99 บาทต่อ 30 วัน มี free/trial ที่ต้องพิสูจน์เงื่อนไข |
+| Slip verifier | เลือก SlipOK แล้ว; แพ็กเกจ/งบ/credentials ยังรอยืนยัน ดู comparison |
 | Domain / SMTP | ไม่มีความจำเป็นสำหรับ pilot native social-login + แชร์ invite เอง; ถ้าเพิ่มเว็บหรือ email ภายหลังประเมินใหม่ |
 
 แหล่ง: [Expo pricing](https://expo.dev/pricing), [Apple membership](https://developer.apple.com/programs/), [Slip comparison](slip-providers.md) ราคา USD/THB แยกสกุล ไม่แปลงอัตราแลกเปลี่ยนหรือรับรองยอดรวมหลังภาษี
@@ -28,7 +34,11 @@
 
 Root มี npm manifest/lockfile สำหรับ @neon/config และ @neon/env จาก config init; npm ci ติดตั้ง tooling นี้ได้ Neon CLI ติดตั้ง global 8.3.5 ยังไม่มี app/workspace scripts ดูคำสั่งจริงใน [Neon setup](neon-setup.md)
 
-SW-0003 ต้องตรึง Node/Expo/package manager และ API runtime ก่อน scaffold; SQL migrations อยู่ ourhoomu-api/migrations ไม่ใช้ Supabase CLI/local containers เดิม ไม่เปลี่ยน production branch เพื่อทดลอง migrations
+SW-0003 ใช้ Bun stable ล่าสุดที่เข้ากันสำหรับ install/scripts ทั้ง front/back, React Native + Expo และ Elysia + Cloudflare adapter; pin exact Bun/Node LTS/Expo/React Native/Drizzle/Wrangler versions หลัง compatibility checks โดย frontend ยังต้องมี Node LTS ตาม [Expo Bun guide](https://docs.expo.dev/guides/using-bun/) ส่วน production API ใช้ Workers runtime และ mobile ใช้ Hermes
+
+แยก app dependency/lockfile boundary จาก root Neon tooling เดิม; ตอน scaffold กำหนด Bun lockfile ที่ EAS อ่านได้และ frozen installs สำหรับแอป ไม่ให้ competing npm/Bun lockfiles เลือก package manager ผิด Root npm ci สำหรับ Neon setup คงใช้งานได้จนมี tooling migration ที่ได้รับอนุมัติ
+
+Drizzle ORM นิยาม schema/query และ Drizzle Kit สร้าง migration; custom SQL สำหรับ RLS/grants/routines/invariants ที่จำเป็นต้อง review ด้วย SQL migrations อยู่ ourhoomu-api/migrations ไม่ใช้ Supabase CLI/local containers เดิม ไม่เปลี่ยน production branch เพื่อทดลอง migrations
 
 Frontend ต้องมี scripts dev/ios/typecheck/test ที่ตรวจแล้ว Google/Apple จริงใช้ development build ไม่อ้าง Expo Go เป็น production login proof ดู [Expo setup](https://docs.expo.dev/build/setup/)
 

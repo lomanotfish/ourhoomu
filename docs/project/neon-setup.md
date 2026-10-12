@@ -41,4 +41,4 @@ neon mcp -y ใช้ global config และ account-wide key ตาม default
 
 ## สิ่งที่ยังไม่เสร็จ
 
-การตั้งค่านี้ไม่พิสูจน์ Google/Apple native login, API auth/house permissions, per-user slip access, tables/transactions, upload/download flow หรือ purge/backup retention แอปยังไม่มี runtime ตาม [checklist](../../checklist.md) ต้องตรึง API hosting/Auth integration และให้ผู้ใช้ตรวจแบบก่อนเริ่มพัฒนา
+การตั้งค่านี้ไม่พิสูจน์ Google/Apple native login, API auth/house permissions, per-user slip access, tables/transactions, upload/download flow หรือ purge/backup retention แอปยังไม่มี runtime ตาม [checklist](../../checklist.md) API hosting เลือก Cloudflare Workers ตาม SW-0020 แล้ว แต่ยังต้องตรึง Auth integration และให้ผู้ใช้ตรวจแบบก่อนเริ่มพัฒนา

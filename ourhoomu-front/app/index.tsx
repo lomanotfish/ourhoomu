@@ -55,7 +55,7 @@ export default function Welcome() {
               <Label style={{ fontWeight: '700' }}>เกี่ยวกับการเข้าสู่ระบบจริง</Label>
             </View>
             <Small style={{ color: colors.cocoa, marginTop: 5 }}>
-              Google และ Apple จะเปิดใช้เมื่อ API, OAuth และ iOS build พร้อม
+              เข้าสู่ระบบด้วย Google และ Apple จะพร้อมเมื่อเชื่อมต่อบัญชีจริง
               ตอนนี้เป็นเดโมที่ไม่เชื่อมบัญชีหรือข้อมูลจริง
             </Small>
           </Card>

@@ -241,7 +241,7 @@ export default function NewBill() {
           )}
         </Card>
         <Button title="บันทึกบิลตัวอย่าง" onPress={submit} />
-        <Small style={{ textAlign: 'center' }}>บิลจริงต้องให้ API คำนวณและยืนยันอีกครั้ง</Small>
+        <Small style={{ textAlign: 'center' }}>บิลนี้เป็นตัวอย่าง การบันทึกบิลจริงจะพร้อมเมื่อเชื่อมต่อบริการ</Small>
       </View>
     </Page>
   );

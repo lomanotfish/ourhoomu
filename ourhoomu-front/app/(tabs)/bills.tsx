@@ -165,7 +165,7 @@ export default function Bills() {
       >
         <ReceiptText size={22} color={colors.mintDark} />
         <Small style={{ flex: 1, color: colors.cocoa }}>
-          เดโมนี้คำนวณส่วนแบ่งบนเครื่อง เงินที่รอตรวจไม่ลดหนี้จน API ยืนยันจริง
+          ข้อมูลนี้เป็นตัวอย่างในเครื่อง ยอดรอตรวจจะยังไม่ลดจากยอดที่ต้องจ่าย
         </Small>
       </Card>
     </Page>

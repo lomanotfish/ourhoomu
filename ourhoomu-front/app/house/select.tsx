@@ -137,7 +137,7 @@ export default function SelectHouse() {
       <Card style={{ backgroundColor: colors.mint, borderWidth: 0, marginTop: 24 }}>
         <Pill tone="butter">DEMO ONLY</Pill>
         <Small style={{ color: colors.cocoa, marginTop: 8 }}>
-          การเชิญจริงต้องสร้างรหัสที่หมดอายุและใช้ได้ครั้งเดียวผ่าน API
+          รหัสนี้ใช้กับบ้านตัวอย่างเท่านั้น คำเชิญจริงจะพร้อมเมื่อเชื่อมต่อบริการ
           รหัสที่นี่ใช้ลองหน้าจอเท่านั้น
         </Small>
       </Card>

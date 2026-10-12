@@ -171,7 +171,7 @@ export default function HouseTab() {
           <Small>ยังไม่เชื่อมต่อ LINE · การเปลี่ยนแปลงแสดงภายในแอปเท่านั้น</Small>
           <View style={{ height: 1, backgroundColor: colors.line, marginVertical: 13 }} />
           <Label style={{ fontWeight: '700' }}>Google / Apple และข้อมูลบัญชี</Label>
-          <Small>รอ API และ iOS build สำหรับเข้าสู่ระบบ ออกจากระบบ และขอลบบัญชีจริง</Small>
+          <Small>การเข้าสู่ระบบ ออกจากระบบ และลบบัญชีจริงจะพร้อมเมื่อเชื่อมต่อบริการ</Small>
         </Card>
         <Card style={{ backgroundColor: colors.mint, borderWidth: 0, marginTop: 14 }}>
           <Label style={{ fontWeight: '700' }}>ข้อมูลเดโมอยู่ในหน่วยความจำ</Label>

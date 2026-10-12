@@ -258,7 +258,7 @@ export default function Chores() {
       )}
       <Card style={{ marginTop: 17, backgroundColor: colors.peach, borderWidth: 0 }}>
         <Label style={{ fontWeight: '700' }}>เวรเป็นของใคร คนนั้นกดเสร็จ</Label>
-        <Small>การทำเสร็จในเดโมจะปรากฏในกิจกรรมบ้าน ส่วนข้อมูลจริงรอ API ยืนยัน</Small>
+        <Small>เมื่อทำเวรตัวอย่างเสร็จ สมาชิกจะเห็นในกิจกรรมบ้าน ข้อมูลจริงจะพร้อมเมื่อเชื่อมต่อบริการ</Small>
       </Card>
     </Page>
   );

@@ -172,7 +172,7 @@ export default function BillDetail() {
                   <Small>
                     {name(p.payerId)} ·{' '}
                     {p.status === 'awaiting_confirmation'
-                      ? 'รอผู้สร้างบิลยืนยันผ่าน API ในอนาคต'
+                      ? 'รอผู้สร้างบิลยืนยันเมื่อเชื่อมข้อมูลจริง'
                       : 'รอตรวจ · เดโมไม่ส่ง SlipOK'}
                   </Small>
                 </View>
@@ -207,7 +207,7 @@ export default function BillDetail() {
       >
         <Info size={20} color={colors.cocoa} />
         <Small style={{ flex: 1, color: colors.cocoa }}>
-          เดโมไม่อัปโหลดสลิปและไม่ยืนยันเงิน ยอดจริง การตรวจ SlipOK และสิทธิ์ดูสลิปต้องมาจาก API
+          นี่เป็นรายการตัวอย่างในเครื่อง ยังไม่ส่งสลิปหรือตรวจเงินโอนจริง ยอดค้างจึงยังไม่ลดลง
           ในภายหลัง
         </Small>
       </Card>
@@ -289,7 +289,7 @@ export default function BillDetail() {
               </View>
               <Small style={{ marginVertical: 15 }}>
                 {method === 'cash'
-                  ? 'คำขอจะรอผู้สร้างบิลยืนยันเมื่อมี API จริง'
+                  ? 'คำขอตัวอย่างจะอยู่ในสถานะรอ การยืนยันเงินจริงจะพร้อมเมื่อเชื่อมต่อบริการ'
                   : 'ไม่มีการโอนหรืออัปโหลดสลิปจริง สถานะจะค้างรอการตรวจ'}
               </Small>
               <Button title="ส่งคำขอตัวอย่าง" onPress={submit} />

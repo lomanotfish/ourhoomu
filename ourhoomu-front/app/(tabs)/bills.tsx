@@ -85,7 +85,7 @@ export default function Bills() {
               backgroundColor: filter === item.id ? colors.cocoa : colors.paper,
               borderRadius: 999,
               paddingHorizontal: 15,
-              minHeight: 42,
+              minHeight: 44,
               borderWidth: 1,
               borderColor: filter === item.id ? colors.cocoa : colors.line,
             }}

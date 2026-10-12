@@ -208,7 +208,6 @@ export default function BillDetail() {
         <Info size={20} color={colors.cocoa} />
         <Small style={{ flex: 1, color: colors.cocoa }}>
           นี่เป็นรายการตัวอย่างในเครื่อง ยังไม่ส่งสลิปหรือตรวจเงินโอนจริง ยอดค้างจึงยังไม่ลดลง
-          ในภายหลัง
         </Small>
       </Card>
       <Modal

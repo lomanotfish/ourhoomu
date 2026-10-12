@@ -175,7 +175,7 @@ export default function Chores() {
               borderRadius: 99,
               backgroundColor: view === item.id ? colors.cocoa : colors.paper,
               paddingHorizontal: 14,
-              minHeight: 42,
+              minHeight: 44,
               borderWidth: 1,
               borderColor: view === item.id ? colors.cocoa : colors.line,
             }}

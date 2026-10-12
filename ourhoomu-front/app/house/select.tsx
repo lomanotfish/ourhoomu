@@ -118,7 +118,7 @@ export default function SelectHouse() {
       {form === 'join' && (
         <Card style={{ marginTop: 14, gap: 10 }}>
           <Label style={{ fontWeight: '700' }}>เข้าร่วมบ้านตัวอย่าง</Label>
-          <Small>ใช้รหัส MINT เพื่อลอง flow เข้าร่วม ไม่มีการส่งคำเชิญจริง</Small>
+          <Small>ใช้รหัส MINT เพื่อลองเข้าร่วมบ้าน ไม่มีการส่งคำเชิญจริง</Small>
           <Field
             label="รหัสเข้าร่วม"
             autoCapitalize="characters"

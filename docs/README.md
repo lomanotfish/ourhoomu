@@ -7,6 +7,7 @@
 | ต้องการทราบ | เอกสาร |
 |---|---|
 | ผู้ใช้ยืนยันอะไร / acceptance | [Requirement brief](team/requirements.md) |
+| MVP spec และ capability/dependency map | [MVP spec](project/spec.md) |
 | Stack และขอบเขตระบบ | [Architecture](project/architecture.md) |
 | การหารเงิน งวด เวร และ retention | [Domain และ data model](project/domain.md) |
 | ตาราง คอลัมน์ ERD constraints และ transaction | [Database design](project/database.md) |
@@ -16,7 +17,7 @@
 | LINE OA แจ้งยืนยันการจ่ายเงิน | [LINE OA design](project/line-oa.md) |
 | Hosting, ค่าใช้จ่าย, backup, release | [Operations](project/operations.md) |
 | สิ่งที่ยืนยันแล้ว / ข้อเสนอ / เรื่องรอเลือก | [Decision log](project/decisions.md) |
-| เหตุผลเลือก stack | [ADR-0001](adr/0001-stack.md) |
+| Stack ปัจจุบัน / ข้อเสนอเก่า | [ADR-0003](adr/0003-selected-stack.md), [ADR-0001 ที่ superseded](adr/0001-stack.md) |
 | Neon ที่เลือกและผลตั้งค่าจริง | [ADR-0002](adr/0002-neon.md), [Neon setup](project/neon-setup.md) |
 | Agent ต้องเริ่มและส่งมอบอย่างไร | [Agent guide](team/agent-guide.md) |
 | งานที่จะทำและ dependencies | [Ticket board](team/board.md) |

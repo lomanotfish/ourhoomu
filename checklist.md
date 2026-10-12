@@ -35,6 +35,9 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 
 - [x] SW-0019: ออกแบบ PostgreSQL 29 ตาราง พร้อม ERD/data dictionary/constraints/indexes/transactions/retention และตรวจรวมเอกสาร — [database](docs/project/database.md)
 - [x] SW-0020: บันทึก stack Elysia/Cloudflare Workers Free + Drizzle/PostgreSQL + React Native/Expo/Bun tooling — [ticket](docs/team/tickets/SW-0020.md); local `9349182`, 208 ลิงก์ภายในผ่าน
+- [ ] SW-0021: รวม MVP spec/backlog และตรวจ links/dependency graph หลังรวม — [spec](docs/project/spec.md), [ticket](docs/team/tickets/SW-0021.md)
+- [ ] SW-0022: ตรวจ Elysia Workers/Drizzle Neon transaction feasibility — [ticket](docs/team/tickets/SW-0022.md)
+- [ ] SW-0024: ตรึง Google/Apple session/Neon actor contract — [ticket](docs/team/tickets/SW-0024.md)
 - [ ] ยืนยัน database policy ที่ยังเสนอ รวม replay floor/late-transfer recovery, auth/driver/actor context และ LINE binding ก่อนสร้าง schema จริง
 
 - [ ] SW-0003: Monorepo/toolchain/CI และ local app/API รันได้
@@ -65,6 +68,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 ## 4. Retention, acceptance และ pilot
 
 - [ ] SW-0013: ลบประวัติทุกประเภทตาม created_at รวม files/child/cache/logs/provider/backup และ restore จริง
+- [ ] SW-0023: ตรวจ Free tier scheduler/retention feasibility ก่อน SW-0007/0013 — [ticket](docs/team/tickets/SW-0023.md)
 - [ ] SW-0012: Independent pre-release QA/security AC1a และ AC2–AC7 บน integrated SHA ผ่าน; AC1b รอ TestFlight
 - [ ] SW-0014: Apple/Expo/Google credentials และอนุญาต upload ภายนอกพร้อม
 - [ ] SW-0014: ปิด AC1b ด้วย TestFlight build/review/ติดตั้งและ smoke จริง พร้อมแผนอัปเดตก่อน 90 วัน

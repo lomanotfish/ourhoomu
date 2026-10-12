@@ -18,6 +18,7 @@
 - ขอออกแบบ database ตาม requirement ล่าสุด — [database design](database.md), SW-0019; ยังไม่ได้อนุมัติ schema migration/full implementation
 
 - 2026-10-12: ยืนยัน PostgreSQL บน Neon + Drizzle ORM สำหรับ schema/query, Elysia API บน Cloudflare Workers Free และ React Native + Expo; คำสั่งล่าสุด “ใช้ bun react native expo” แทนคำสั่งก่อนหน้าที่ไม่ใช้ Bun ฝั่ง frontend ใช้ Bun stable ล่าสุดที่เข้ากันสำหรับ dependencies/scripts ทั้งสองฝั่ง และ pin exact versions ตอน SW-0003; Workers runtime/Hermes เป็น runtime ปลายทาง ดู [SW-0020](../team/tickets/SW-0020.md) ยังไม่อนุมัติ full design/application implementation หรือ Cloudflare deploy
+- 2026-10-12: Tech Lead จัด [MVP spec](spec.md) และ investigation tickets SW-0022–0024 เพื่อปิดความเสี่ยงของ stack/identity/retention; งานเอกสาร SW-0021 ไม่ถือว่าผู้ใช้ยืนยัน D2–D12 หรือ feasibility แล้ว ดู [ADR-0003](../adr/0003-selected-stack.md)
 
 ## ข้อเสนอของ Tech Lead สำหรับตรวจแบบ
 

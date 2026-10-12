@@ -12,6 +12,8 @@
 
 คำสั่งเลือก stack ล่าสุดยืนยัน PostgreSQL + Drizzle ORM สำหรับ schema/query, Elysia API บน Cloudflare Workers Free และ React Native + Expo โดยใช้ Bun tooling ทั้ง front/back ตาม [SW-0020](tickets/SW-0020.md) ไม่ใช่การอนุมัติ scaffold/migration/deploy แอป
 
+Tech Lead ตีความคำขอล่าสุดให้ตรวจ backlog และทำ spec ครอบคลุม MVP ทั้งแอปเป็นเอกสาร [MVP spec](../project/spec.md) ตาม [SW-0021](tickets/SW-0021.md); ข้อเสนอใน spec ยังรอผู้ใช้ตรวจและไม่ทำให้ application tickets พร้อมพัฒนาโดยอัตโนมัติ
+
 ## ข้อกำหนดที่ผู้ใช้ยืนยัน
 
 | ID | พฤติกรรมที่ต้องได้ |

@@ -12,9 +12,9 @@
 - [checklist.md](checklist.md): ความคืบหน้าและหลักฐานตรวจรับ อัปเดตโดย Tech Lead
 - [docs/team/board.md](docs/team/board.md): tickets, dependencies และ checkpoint สำหรับทำงานต่อ
 
-ฐานข้อมูลที่ผู้ใช้เลือก: **Neon PostgreSQL** โปรเจกต์ ourhoomu (`lucky-bar-14515304`) branch `production` และ Object Storage bucket `slip` แบบ private ตาม [neon.ts](neon.ts) ข้อเสนอ frontend ยังเป็น Expo / React Native / TypeScript ส่วน API hosting และ Google/Apple identity provider ต้องปรับ contract ก่อนพัฒนา ดู [ADR-0002](docs/adr/0002-neon.md)
+Stack ที่ผู้ใช้เลือก: **React Native + Expo**, **Elysia บน Cloudflare Workers Free**, **Neon PostgreSQL + Drizzle ORM** และ **Bun สำหรับ dependencies/scripts ทั้ง front/back** ดู [MVP spec](docs/project/spec.md) และ [ADR-0003](docs/adr/0003-selected-stack.md) Neon project ourhoomu (`lucky-bar-14515304`) branch `production` มี Object Storage bucket `slip` แบบ private ตาม [neon.ts](neon.ts) Google/Apple identity/session contract ยังต้องตรึงก่อนพัฒนา
 
-เริ่มอ่าน [requirement](docs/team/requirements.md) → [architecture](docs/project/architecture.md) → [คำตัดสินที่ยังรอ](docs/project/decisions.md) → [checklist](checklist.md)
+เริ่มอ่าน [requirement](docs/team/requirements.md) → [MVP spec](docs/project/spec.md) → [คำตัดสินที่ยังรอ](docs/project/decisions.md) → [checklist](checklist.md)
 
 ## ค่าใช้จ่าย
 

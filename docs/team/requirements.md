@@ -6,13 +6,17 @@
 
 แอพ iOS สำหรับคนอยู่บ้านร่วมกัน เริ่มต้นไม่เกิน 10 ผู้ใช้ รองรับหลายบ้านในบัญชีเดียว ลดการตามเงินและความสับสนว่าใครมีเวรอะไร
 
-ขอบเขตเดิมคือออกแบบและเอกสารก่อนพัฒนา ต่อมาผู้ใช้อนุญาต Neon setup โดยเฉพาะ: ติดตั้ง CLI/skills/MCP, link production, ติดตั้ง config dependencies, เขียน neon.ts และ neon deploy ตาม SW-0015 ยังไม่อนุญาต application implementation, domain migrations หรือเผยแพร่ iOS build
+ขอบเขตเดิมคือออกแบบและเอกสารก่อนพัฒนา ต่อมาผู้ใช้อนุญาต Neon setup โดยเฉพาะ: ติดตั้ง CLI/skills/MCP, link production, ติดตั้ง config dependencies, เขียน neon.ts และ neon deploy ตาม SW-0015 ในคำสั่งเดิมยังไม่อนุญาต application implementation, domain migrations หรือเผยแพร่ iOS build
 
 คำสั่งล่าสุด “ออกแบบ database ตาม requirement” อนุญาต database design ตาม [SW-0019](tickets/SW-0019.md) ครอบคลุม SlipOK และ LINE OA ที่เพิ่มแล้ว ไม่ใช่การอนุมัติรัน migration บน production หรืออนุมัติ pending product decisions
 
 คำสั่งเลือก stack ล่าสุดยืนยัน PostgreSQL + Drizzle ORM สำหรับ schema/query, Elysia API บน Cloudflare Workers Free และ React Native + Expo โดยใช้ Bun tooling ทั้ง front/back ตาม [SW-0020](tickets/SW-0020.md) ไม่ใช่การอนุมัติ scaffold/migration/deploy แอป
 
 Tech Lead ตีความคำขอล่าสุดให้ตรวจ backlog และทำ spec ครอบคลุม MVP ทั้งแอปเป็นเอกสาร [MVP spec](../project/spec.md) ตาม [SW-0021](tickets/SW-0021.md); ข้อเสนอใน spec ยังรอผู้ใช้ตรวจและไม่ทำให้ application tickets พร้อมพัฒนาโดยอัตโนมัติ
+
+## Frontend authorization — 2026-10-12
+
+ผู้ใช้สั่ง “เริ่มทำฝั่ง front ได้เลยเน้นมี animation สวยงาม mobile app สี theme ที่น่ารัก ไม่ต้องสนใจ figma” อนุญาต scaffold และพัฒนา frontend ตาม React Native + Expo/Bun ที่เลือกแล้ว โดยใช้ UX/spec เดิมเป็นข้อมูลและออกแบบ UI ในโค้ดได้เลย ไม่ต้องรอ SW-0025/Figma. รอบส่งมอบนี้เป็น frontend ที่รันและกด flows ได้ด้วยข้อมูลตัวอย่าง: overview, bills/split/partial-payment states, chores/schedule/complete, houses/members และ entry/settings. การเลือกพาสเทล cream/peach/mint, ภาษาไทย และรายละเอียด visual/motion เป็น implementation choices ของ Lead. API/auth/slip/LINE integration และข้อมูลจริงยังรอ tickets เดิม; mock acceptance ไม่ใช้ปิด AC1a–AC7/AC10.
 
 ## ข้อกำหนดที่ผู้ใช้ยืนยัน
 
@@ -34,6 +38,7 @@ Tech Lead ตีความคำขอล่าสุดให้ตรวจ 
 | R14 | เปรียบเทียบ API ตรวจสลิปแล้ว ผู้ใช้เลือก SlipOK เมื่อ 2026-10-12 ยังไม่อนุมัติซื้อ; ต้องผ่าน recipient/retention gate ก่อนส่งสลิปจริง |
 | R15 | ใช้ Neon database โปรเจกต์ lucky-bar-14515304 branch production ใน working directory; ติดตั้ง CLI/skills/MCP และ deploy config preview.buckets.slip access=private |
 | R16 | ส่ง LINE OA push message เมื่อยืนยันการจ่ายเงิน ผู้ใช้ให้ Channel ID/secret/access token (long-lived) ภายหลัง; ผู้รับข้อความและ binding flow รอยืนยันตาม [LINE OA design](../project/line-oa.md) |
+| R18 | อนุญาตพัฒนา frontend mobile app พร้อม animation และ theme น่ารัก โดยไม่ต้องรอ Figma; frontend preview ใช้ข้อมูลตัวอย่างจน API พร้อม ตาม SW-0026–0028 |
 | R17 | PostgreSQL บน Neon; Drizzle ORM นิยาม schema และ query; Elysia API บน Cloudflare Workers Free; frontend React Native + Expo; Bun stable ล่าสุดที่ตรวจความเข้ากันได้สำหรับ dependencies/scripts ทั้ง front/back โดย production API ใช้ Workers runtime และ iOS ใช้ Hermes |
 
 ตัวอย่าง R6–R8 ที่ผู้ใช้ยืนยัน: ค่าใช้จ่าย 200 บาท หารสองคน 50%/50% โดย A เป็นผู้รับเงิน/คนออกเงิน A รับผิดชอบ 100 บาทอัตโนมัติ B ต้องจ่ายคืน 100 บาท B จ่าย 40 แล้ว 60 ได้

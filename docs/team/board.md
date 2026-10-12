@@ -1,6 +1,6 @@
 # Team board — OurHoomu
 
-อัปเดต 2026-10-12 · Scope: เอกสาร MVP spec/backlog รวม SlipOK/LINE OA และ Neon setup/deploy เฉพาะ SW-0015 · Application implementation: ยังไม่ได้รับอนุมัติ
+อัปเดต 2026-10-12 · Scope: เอกสาร MVP spec/backlog รวม SlipOK/LINE OA และ Neon setup/deploy เฉพาะ SW-0015 · Frontend implementation: อนุมัติ SW-0026–0028; API/production implementation ยัง pending
 
 Tech Lead เป็นผู้ดูแลสถานะและ checklist แหล่งพฤติกรรมคือ [requirements](requirements.md) แหล่งคำตัดสินคือ [decisions](../project/decisions.md)
 
@@ -29,11 +29,14 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0022](tickets/SW-0022.md) | Elysia Workers / Drizzle Neon transaction feasibility | research-engineer | SW-0020 | draft |
 | [SW-0023](tickets/SW-0023.md) | Free tier scheduler / retention feasibility | research-engineer | SW-0020 | draft |
 | [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | draft |
-| [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | SW-0021 และคำยืนยันผู้ใช้ 2026-10-12 | in_progress |
+| [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | ผู้ใช้ให้เริ่ม front โดยไม่รอ Figma | cancelled |
+| [SW-0026](tickets/SW-0026.md) | Frontend visual/motion/flow contract ใน repo | uxui-designer | คำสั่ง frontend ล่าสุด | ready |
+| [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + UX/spec เดิม; SW-0026 ร่วมออกแบบ | ready |
+| [SW-0028](tickets/SW-0028.md) | Independent frontend review | code-reviewer | frozen SW-0027 artifact | draft |
 
 ## Dependency / dispatch gates
 
-- ทุก application implementation ticket รอ full design approval, SW-0025 design artifact review และ Neon identity/driver/actor contract; SW-0025 ทำ design artifact เพื่อทบทวนเท่านั้น ไม่ถือว่าผู้ใช้ออกแบบอนุมัติแล้ว; stack ยืนยันตาม SW-0020 แล้ว; SW-0015 ได้รับอนุมัติ setup/deploy โดยเฉพาะ มี ticket ไม่ได้แปลว่า agent ถูกเปิด
+- API/production implementation tickets ยังรอ full domain approval และ Neon identity/driver/actor contract; frontend demo SW-0026–0028 ได้รับอนุญาตใหม่โดยตรงและไม่ต้องรอ Figma. SW-0009/10/11 คง pending เฉพาะ integration acceptance; SW-0025 ทำ design artifact เพื่อทบทวนเท่านั้น ไม่ถือว่าผู้ใช้ออกแบบอนุมัติแล้ว; stack ยืนยันตาม SW-0020 แล้ว; SW-0015 ได้รับอนุมัติ setup/deploy โดยเฉพาะ มี ticket ไม่ได้แปลว่า agent ถูกเปิด
 - SW-0022/0023/0024 เป็น investigation tickets แยกจาก implementation; ผลวิจัยต้องผ่าน Tech Lead review ก่อนปลด dependencies งานเอกสารนี้ไม่ได้หมายถึงงานวิจัยเหล่านั้นเสร็จ
 - SW-0022 + SW-0024 → SW-0003 → SW-0004 → SW-0005; SW-0023 → SW-0007/SW-0013; หลัง auth/schema ถูกตรวจรับแล้ว SW-0006, SW-0008 และ SW-0009 ทำขนานใน worktrees แยกได้
 - SW-0019 ออกแบบ 29 ตารางแล้ว; SW-0004 ใช้ final [database contract](../project/database.md) และยังรอ design/policy/runtime approval ก่อน migrations/tests ไม่ใช้ original worker W24h proposal แทน final replay-floor design
@@ -57,3 +60,12 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 - Final lifecycle receipts/inventory: root `.git/ourhoomu-snapshots/sw-0015/` และ `.git/ourhoomu-snapshots/sw-0021/` พร้อม Orca root comment; ไม่ลบ credentials/skills/user checkout ไปพร้อม isolated worktree
 
 ประวัติ contributor guide ก่อนรอบนี้อยู่ใน commit 6312fa6 ไม่สร้าง ticket/runtime IDs ย้อนหลังขึ้นเอง
+
+## Frontend delivery checkpoint — 2026-10-12
+
+- Objective: runnable cute animated Expo frontend; demo adapter only until API tickets are ready.
+- Integration target: current delivery branch `local`, baseline `fa82194fb9e537692f233cb841981f61269f0424`; `main` exists but does not contain the latest accepted project docs.
+- User working edit in `docs/team/agent-guide.md` preserved; it is outside this delivery ownership.
+- Orca executable `/usr/local/bin/orca`, Run `run_ad3b5396e327`; Lead workspace `/Users/afe/orca/workspaces/ourhoomu/sw-0027-front-lead`.
+- Graft frontend scope: NO_INDEXED_FILES, build succeeded (only neon.ts); `graft ask ... --in ourhoomu-front --source` returned nothing indexed.
+- Next: dispatch UX/frontend isolated workers, inspect frozen output, independent review, local merge, integrated checks and release/cleanup.

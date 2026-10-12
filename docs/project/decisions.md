@@ -43,7 +43,7 @@
 
 | เรื่อง | Owner / next action | ขวางอะไร |
 |---|---|---|
-| อนุมัติ design v0.1 รวม D1–D12 หรือระบุข้อแก้ | ผู้ใช้ผ่าน Tech Lead หลังอ่านเอกสาร | เริ่ม implementation ทุก ticket |
+| อนุมัติ design v0.1 รวม D1–D12 หรือระบุข้อแก้ | ผู้ใช้ผ่าน Tech Lead หลังอ่านเอกสาร | API/production implementation; frontend demo ได้รับอนุญาตตาม SW-0027 แล้ว |
 | Database operational policies | Tech Lead เสนอ replay floor เพื่อกันสลิปซ้ำหลัง purge/restore, nullable provenance สำหรับลบอดีตสมาชิก และ TTL/เงินเพดาน/clock tolerance ตาม [database design](database.md); ผู้ใช้ตรวจผลต่อ late-transfer UX ก่อนตรึง schema | SW-0004 และ credit/recovery ที่เกี่ยวข้อง ไม่ใช่การยืนยันว่า deploy แล้ว |
 | LINE OA ผู้รับ/การผูกบัญชีหรือกลุ่ม/ข้อความ และ retention สำเนาใน LINE | Tech Lead รอคำตอบผู้ใช้เรื่องปลายทางก่อนตรึง flow; credentials ให้ภายหลัง; scope เงินโอน/เงินสดทุกงวดเป็นข้อเสนอ | SW-0018 และการส่งข้อมูลจริง; ไม่ขัดขวางเอกสารส่วนที่ยืนยันแล้ว |
 | SlipOK credentials/แพ็กเกจและงบ | เลือก SlipOK แล้ว; ผู้ใช้เตรียม key/branch ID ใน secret store และยืนยันงบก่อนซื้อ; Tech Lead ตรวจ multi-recipient matching | ต่อ API จริง/ซื้อแพ็กเกจ ไม่ขวางการส่งเอกสาร |

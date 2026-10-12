@@ -3,8 +3,11 @@
 ## Confirm Scope Before Starting
 
 The user has authorized project design, documentation, a progress checklist,
-and the specific Neon setup/deploy in SW-0015. General application
-implementation has not been authorized yet.
+the specific Neon setup/deploy in SW-0015, and frontend scaffold/demo UI in
+SW-0026–SW-0028. The latest instruction permits an animated, cute-themed Expo
+mobile app without a Figma dependency. Read the current frontend ticket and
+requirements for its scope; backend, production data and release acceptance
+remain on their original tickets.
 Before starting new work, the Tech Lead must ask about material ambiguities,
 summarize the requirements and acceptance conditions, and wait for the user's
 explicit confirmation. Engineers route questions through the Tech Lead and
@@ -25,18 +28,19 @@ and Graft reporting. Workers ask the Lead and never open a second coordinator.
 
 ## Project Structure & Module Organization
 
-`ourhoomu` is currently a documentation-stage monorepo. Its project files include:
+`ourhoomu` is a monorepo with design documents, Neon tooling and frontend work
+under SW-0027. Its project files include:
 
 - `README.md`: the project name; expand it with setup and usage instructions as development begins.
 - `LICENSE`: the Apache 2.0 license.
 - `AGENTS.md`: this contributor guide.
 - `ourhoomu-api/README.md`: backend scope; application code is not scaffolded.
-- `ourhoomu-front/README.md`: iOS frontend scope; application code is not scaffolded.
+- `ourhoomu-front/README.md`: Expo frontend setup, demo scope and development commands.
 - `docs/`: requirements, architecture, contracts, and team tickets.
 - `checklist.md`: progress maintained by the Tech Lead.
 
-No application source, tests, or assets are present yet. Root `neon.ts` and npm
-manifests configure Neon tooling only. `.neon`, `.env*`, `node_modules`, and
+Frontend source, assets and its Bun dependencies belong in `ourhoomu-front/`.
+Root `neon.ts` and npm manifests configure Neon tooling only. `.neon`, `.env*`, `node_modules`, and
 installed `.agents` skills remain local and ignored. Never print credentials.
 The linked Neon branch is production: do not migrate or write product data
 without the relevant confirmed ticket. Read `docs/adr/0002-neon.md`; previous
@@ -44,9 +48,10 @@ Supabase-specific instructions are superseded.
 
 ## Build, Test, and Development Commands
 
-Use `npm ci` for root Neon config dependencies; there is no application build
-or local app command yet. See `docs/project/neon-setup.md` for verified Neon
-commands. Use these repository checks:
+Use `npm ci` for root Neon config dependencies. For frontend installation,
+start, typecheck and export commands, follow `ourhoomu-front/README.md` and its
+package scripts. See `docs/project/neon-setup.md` for verified Neon commands.
+Use these repository checks:
 
 - `git ls-files`: inspect tracked project files.
 - `git status --short`: review pending changes before committing.
@@ -58,11 +63,13 @@ When adding the first runnable component, document its installation, development
 
 Use Markdown headings, concise paragraphs, and fenced code blocks with language labels. Use spaces rather than tabs and two spaces for nested Markdown lists. Keep filenames descriptive and preserve established names such as `README.md` and `LICENSE`.
 
-No language-specific style, formatter, or linter is configured. Introduce appropriate configuration with the first source files and apply it consistently.
+Frontend uses TypeScript and the configuration in `ourhoomu-front/`. Apply its
+existing conventions; root Neon tooling is separate.
 
 ## Testing Guidelines
 
-No test framework, test naming convention, CI workflow, or coverage threshold is established. For documentation changes, inspect Markdown rendering, verify referenced paths and commands, and run `git diff --check`.
+Frontend checks are defined by its package scripts and README. Root CI and
+coverage thresholds are not established. For documentation changes, inspect Markdown rendering, verify referenced paths and commands, and run `git diff --check`.
 
 When adding executable behavior, include relevant tests and document their framework, naming pattern, and invocation.
 

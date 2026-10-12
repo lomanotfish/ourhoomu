@@ -32,7 +32,7 @@ bun run export:web     # สร้าง dist/ สำหรับ browser
 bun run export:ios     # ตรวจ/ส่งออก iOS JavaScript bundle ไม่ใช่ native build
 ```
 
-`bun.lock` อยู่ในแพ็กเกจนี้เท่านั้น Root `package.json`/`package-lock.json` ยังคงเป็นของ Neon tooling และไม่ต้องรัน `npm install` ที่ root สำหรับ frontend. `node_modules/`, `.expo/`, `dist/` ถูก ignore.
+`bun.lock` อยู่ในแพ็กเกจนี้เท่านั้น Root `package.json`/`package-lock.json` ยังคงเป็นของ Neon tooling และไม่ต้องรัน `npm install` ที่ root สำหรับ frontend. `node_modules/`, `.expo/`, `dist/` และไฟล์ชนิดที่ Expo สร้าง `expo-env.d.ts` ถูก ignore.
 
 ## ลอง flow
 

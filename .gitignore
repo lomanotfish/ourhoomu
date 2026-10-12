@@ -7,3 +7,4 @@ node_modules/
 graft/
 ourhoomu-front/.expo/
 ourhoomu-front/dist/
+ourhoomu-front/expo-env.d.ts

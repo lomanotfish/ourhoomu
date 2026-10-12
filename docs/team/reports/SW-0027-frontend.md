@@ -6,7 +6,7 @@ Date: 2026-10-12 · Role: frontend-engineer · Dispatch: `ctx_94393ae74fb9` · T
 
 - Worktree: `/Users/afe/orca/workspaces/ourhoomu/sw-0027-expo-frontend`; branch `witchagorn/sw-0027-expo-frontend`.
 - Ticket baseline in this worktree: `a7ec76b15ca459c2f5b41c18b5e11b7bcb2eb3c2`. Implementation commit: `d36f02a58b458d81516318f5326bd0e00865c0bc`.
-- Changed only `ourhoomu-front/**`, root `README.md` frontend status/commands, and root `.gitignore` generated frontend paths. This report is a second commit. No root package manifests, Neon, API, database, board, checklist or ticket status changed.
+- Changed only `ourhoomu-front/**`, root `README.md` frontend status/commands, and root `.gitignore` generated frontend paths. A follow-up cleanup removes generated `expo-env.d.ts` from tracking. No root package manifests, Neon, API, database, board, checklist or ticket status changed.
 
 ## Delivered
 
@@ -40,7 +40,7 @@ Concrete walkthrough: created ฿200.00 bill with creator มิว, recipient �
 
 Actual worker process argv: `codex --no-daemon --dangerously-bypass-approvals-and-sandbox -m gpt-6-sol`. This confirms skip-permission launch for this worker; role profile also configures `approval_policy = "never"` and `sandbox_mode = "danger-full-access"`.
 
-🌱 Graft: **NO_INDEXED_FILES** for frontend initially — `graft --version` returned `0.21.1`; `graft build --no-gitignore --no-ignore` in this worktree indexed only root `neon.ts` (1 file). Raw frontend docs/config were read because there was no indexed frontend source. After scaffold, **ACTIVE** — `graft build --no-gitignore --no-ignore --only-dir ourhoomu-front` indexed 23 source/config files, 96 nodes and 253 edges; final `graft check` returned `OK`. `graft grep --fixed 'fetch(' --in ourhoomu-front` found no indexed app network call. An earlier invalid regex grep and a stale check after formatting were resolved by the final build/check. Graft reported about **21,442 tokens saved across four calls** that emitted a savings figure; no savings are inferred for other calls. `graft/` remains ignored local cache.
+🌱 Graft: **NO_INDEXED_FILES** for frontend initially — `graft --version` returned `0.21.1`; `graft build --no-gitignore --no-ignore` in this worktree indexed only root `neon.ts` (1 file). Raw frontend docs/config were read because there was no indexed frontend source. After scaffold, **ACTIVE** — `graft build --no-gitignore --no-ignore --only-dir ourhoomu-front` indexed 22 source/config files, 95 nodes and 253 edges; final `graft check` returned `OK`. `graft grep --fixed 'fetch(' --in ourhoomu-front` found no indexed app network call. An earlier invalid regex grep and a stale check after formatting were resolved by the final build/check. Graft reported about **48,406 tokens saved across five calls** that emitted a savings figure; no savings are inferred for other calls. `graft/` remains ignored local cache.
 
 ## Remaining acceptance and Lead action
 

@@ -34,7 +34,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 ### Application foundation ที่ยังรออนุมัติ
 
 - [x] SW-0019: ออกแบบ PostgreSQL 29 ตาราง พร้อม ERD/data dictionary/constraints/indexes/transactions/retention และตรวจรวมเอกสาร — [database](docs/project/database.md)
-- [ ] SW-0020: บันทึก stack Elysia/Cloudflare Workers Free + Drizzle/PostgreSQL + React Native/Expo/Bun tooling — [ticket](docs/team/tickets/SW-0020.md)
+- [x] SW-0020: บันทึก stack Elysia/Cloudflare Workers Free + Drizzle/PostgreSQL + React Native/Expo/Bun tooling — [ticket](docs/team/tickets/SW-0020.md); local `9349182`, 208 ลิงก์ภายในผ่าน
 - [ ] ยืนยัน database policy ที่ยังเสนอ รวม replay floor/late-transfer recovery, auth/driver/actor context และ LINE binding ก่อนสร้าง schema จริง
 
 - [ ] SW-0003: Monorepo/toolchain/CI และ local app/API รันได้

@@ -24,7 +24,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0017](tickets/SW-0017.md) | ออกแบบ LINE OA แจ้งยืนยันการจ่าย | tech-lead | คำสั่งเพิ่มช่องทาง; ผู้รับยัง pending | done เฉพาะเอกสาร |
 | [SW-0018](tickets/SW-0018.md) | LINE OA webhook/binding/outbox/push | backend-engineer | SW-0005, SW-0006, SW-0007, SW-0017 | draft |
 | [SW-0019](tickets/SW-0019.md) | Database ERD/data dictionary/constraints/transactions | data-engineer + Tech Lead review | คำสั่งออกแบบ database; ไม่ใช่ migration | done เฉพาะแบบ |
-| [SW-0020](tickets/SW-0020.md) | ยืนยัน Elysia/Drizzle/Cloudflare Free และ Expo/React Native/Bun tooling | tech-lead | คำสั่งเลือก stack ล่าสุด | in_progress เฉพาะเอกสาร |
+| [SW-0020](tickets/SW-0020.md) | ยืนยัน Elysia/Drizzle/Cloudflare Free และ Expo/React Native/Bun tooling | tech-lead | คำสั่งเลือก stack ล่าสุด | done เฉพาะเอกสาร |
 
 ## Dependency / dispatch gates
 
@@ -41,7 +41,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 - Objective: SW-0020 ปรับเอกสาร stack ตามคำสั่งล่าสุด Bun + React Native/Expo, Elysia/Cloudflare Workers Free, Drizzle/PostgreSQL; ไม่แก้ production schema
 - Integration target: main/local; SW-0020 baseline 7d9c825; user checkout อยู่ local
-- Current ticket: SW-0020 เอกสาร stack ใน Orca isolated worktree `sw-0020-stack`; Tech Lead ทำเอง ไม่มี worker/Dispatch; SW-0019 หลักฐานเดิมอยู่ root .git/ourhoomu-snapshots/sw-0019/
+- Current ticket: SW-0020 เอกสาร stack fast-forward เข้า local ที่ `9349182` แล้ว; Tech Lead ทำเอง ไม่มี worker/Dispatch; หลักฐาน/cleanup อยู่ root `.git/ourhoomu-snapshots/sw-0020/`
 - Graft: ACTIVE; isolated/root map 1 neon.ts file/0 symbols/1 edge หลัง setup (preflight เดิม NO_INDEXED_FILES)
 - Next action: ให้ผู้ใช้ตรวจ final database/replay-floor/late-evidence policy, รับผู้รับ LINE แล้วตรึง binding/message/retention, Google-Apple integration/Neon driver/actor context และ full design ก่อน application implementation
 - Product decisions pending: full design, Neon Auth/driver integration, SlipOK credentials/งบ/recipient matching และ retention proof ของ provider/backup/branches

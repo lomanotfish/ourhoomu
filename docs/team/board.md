@@ -25,7 +25,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0018](tickets/SW-0018.md) | LINE OA webhook/binding/outbox/push | backend-engineer | SW-0005, SW-0006, SW-0007, SW-0017 | draft |
 | [SW-0019](tickets/SW-0019.md) | Database ERD/data dictionary/constraints/transactions | data-engineer + Tech Lead review | คำสั่งออกแบบ database; ไม่ใช่ migration | done เฉพาะแบบ |
 | [SW-0020](tickets/SW-0020.md) | ยืนยัน Elysia/Drizzle/Cloudflare Free และ Expo/React Native/Bun tooling | tech-lead | คำสั่งเลือก stack ล่าสุด | done เฉพาะเอกสาร |
-| [SW-0021](tickets/SW-0021.md) | รวม MVP spec และตรวจ backlog | tech-lead | SW-0020 และคำสั่งผู้ใช้ | in_progress เฉพาะเอกสาร |
+| [SW-0021](tickets/SW-0021.md) | รวม MVP spec และตรวจ backlog | tech-lead | SW-0020 และคำสั่งผู้ใช้ | done เฉพาะเอกสาร |
 | [SW-0022](tickets/SW-0022.md) | Elysia Workers / Drizzle Neon transaction feasibility | research-engineer | SW-0020 | draft |
 | [SW-0023](tickets/SW-0023.md) | Free tier scheduler / retention feasibility | research-engineer | SW-0020 | draft |
 | [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | draft |
@@ -46,12 +46,12 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 - Objective: SW-0021 รวม MVP spec และตรวจ backlog ตาม stack ล่าสุดโดยไม่แก้ production schema
 - Integration target: main/local; SW-0021 baseline `2c2b49e`; user checkout อยู่ local
-- Current ticket: SW-0021 เอกสารใน isolated worktree `sw-0021-spec-audit`; Tech Lead ทำเอง ไม่มี worker/Dispatch; SW-0020 หลักฐานอยู่ root `.git/ourhoomu-snapshots/sw-0020/`
+- Completed: SW-0021 รวม MVP spec/backlog บน `local` ที่ `749f43e` แล้ว; acceptance, final checks และ cleanup receipt อยู่ใน ticket กับ root `.git/ourhoomu-snapshots/sw-0021/`; SW-0020 หลักฐานอยู่ root `.git/ourhoomu-snapshots/sw-0020/`
 - Graft: ACTIVE; SW-0021 isolated `graft build` และ `graft map` พบ neon.ts 1 file/0 symbols/1 edge; Markdown raw fallback; root checkpoint ก่อนหน้าอยู่ SW-0020
 - Next action: ให้ผู้ใช้ตรวจ [MVP spec](../project/spec.md), final database/replay-floor/late-evidence policy และผู้รับ LINE; ตรวจรับ SW-0022/0023/0024 ก่อนเริ่ม implementation ที่พึ่งผล; full design ยังรออนุมัติ
 - Product decisions pending: full design, Neon Auth/driver integration, SlipOK credentials/งบ/recipient matching และ retention proof ของ provider/backup/branches
 - SW-0016: ผู้ใช้เลือก SlipOK แล้ว; เอกสาร/requirements/SW-0007/checklist ตรงกัน ยังไม่เชื่อม API จริงหรือซื้อแพ็กเกจ
 - Prior review: [SW-0002](tickets/SW-0002.md), [review](reports/SW-0002-design-review.md), [resolution](reports/SW-0002-resolution.md) คงเป็นประวัติของ revision เดิม ไม่ใช่ review ของ Neon revision นี้
-- Final lifecycle receipt/inventory: root .git/ourhoomu-snapshots/sw-0015/ และ Orca root comment; ไม่ลบ credentials/skills/user checkout ไปพร้อม isolated worktree
+- Final lifecycle receipts/inventory: root `.git/ourhoomu-snapshots/sw-0015/` และ `.git/ourhoomu-snapshots/sw-0021/` พร้อม Orca root comment; ไม่ลบ credentials/skills/user checkout ไปพร้อม isolated worktree
 
 ประวัติ contributor guide ก่อนรอบนี้อยู่ใน commit 6312fa6 ไม่สร้าง ticket/runtime IDs ย้อนหลังขึ้นเอง

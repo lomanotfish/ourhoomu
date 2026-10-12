@@ -35,7 +35,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 
 - [x] SW-0019: ออกแบบ PostgreSQL 29 ตาราง พร้อม ERD/data dictionary/constraints/indexes/transactions/retention และตรวจรวมเอกสาร — [database](docs/project/database.md)
 - [x] SW-0020: บันทึก stack Elysia/Cloudflare Workers Free + Drizzle/PostgreSQL + React Native/Expo/Bun tooling — [ticket](docs/team/tickets/SW-0020.md); local `9349182`, 208 ลิงก์ภายในผ่าน
-- [ ] SW-0021: รวม MVP spec/backlog และตรวจ links/dependency graph หลังรวม — [spec](docs/project/spec.md), [ticket](docs/team/tickets/SW-0021.md)
+- [x] SW-0021: รวม MVP spec/backlog และตรวจ links/dependency graph หลังรวม — integrated `local` ที่ `749f43e`; 289 local links, 23-ticket dependency/status audit และ cleanup receipt — [spec](docs/project/spec.md), [ticket](docs/team/tickets/SW-0021.md)
 - [ ] SW-0022: ตรวจ Elysia Workers/Drizzle Neon transaction feasibility — [ticket](docs/team/tickets/SW-0022.md)
 - [ ] SW-0024: ตรึง Google/Apple session/Neon actor contract — [ticket](docs/team/tickets/SW-0024.md)
 - [ ] ยืนยัน database policy ที่ยังเสนอ รวม replay floor/late-transfer recovery, auth/driver/actor context และ LINE binding ก่อนสร้าง schema จริง
@@ -79,6 +79,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 |---|---|---|
 | 2026-10-12 | SW-0002 | เอกสารรวม main/local ที่ f2782fa แล้ว; review/แก้ F1–F3, 146 local links/13 tickets/whitespace ผ่าน; reviewer released — [หลักฐาน](docs/team/tickets/SW-0002.md) |
 | 2026-10-12 | SW-0015 | Neon setup/deploy exit0, production/private slip ตรวจจริง; config/lockfile/secret exclusion/172 links ผ่าน; รวม main/local ที่ f333bf4 — [หลักฐาน](docs/team/tickets/SW-0015.md) |
+| 2026-10-12 | SW-0021 | MVP spec/backlog รวม `local` ที่ `749f43e`; 50 tracked Markdown files/289 links ผ่าน, ticket/dependency/status audit 23/23 ผ่าน; cleanup receipt — [หลักฐาน](docs/team/tickets/SW-0021.md) |
 
 ## วิธีอัปเดตเมื่อ agent ส่งงาน
 

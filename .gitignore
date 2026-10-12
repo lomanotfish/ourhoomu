@@ -5,3 +5,6 @@ node_modules/
 !.env.example
 .agents/
 graft/
+ourhoomu-front/.expo/
+ourhoomu-front/dist/
+ourhoomu-front/expo-env.d.ts

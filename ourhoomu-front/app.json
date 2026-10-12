@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "OurHoomu",
+    "slug": "ourhoomu",
+    "scheme": "ourhoomu",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFF9F1",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.ourhoomu.demo"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "name": "OurHoomu demo"
+    },
+    "plugins": ["expo-router", "expo-font", "expo-status-bar"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

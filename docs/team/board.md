@@ -44,11 +44,11 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 ## Checkpoint สำหรับ resume
 
-- Objective: SW-0021 รวม MVP spec และตรวจ backlog ตาม stack ล่าสุดโดยไม่แก้ production schema
-- Integration target: main/local; SW-0021 baseline `2c2b49e`; user checkout อยู่ local
+- Last completed: SW-0021 รวม MVP spec/backlog ตาม stack ล่าสุดแล้วโดยไม่แก้ product schema
+- Integration target record: `local`; SW-0021 baseline `2c2b49e`, author tip `749f43e`, accepted at `82c3dbf`
 - Completed: SW-0021 รวม MVP spec/backlog บน `local` ที่ `749f43e` แล้ว; acceptance, final checks และ cleanup receipt อยู่ใน ticket กับ root `.git/ourhoomu-snapshots/sw-0021/`; SW-0020 หลักฐานอยู่ root `.git/ourhoomu-snapshots/sw-0020/`
-- Graft: ACTIVE; SW-0021 isolated `graft build` และ `graft map` พบ neon.ts 1 file/0 symbols/1 edge; Markdown raw fallback; root checkpoint ก่อนหน้าอยู่ SW-0020
-- Next action: ให้ผู้ใช้ตรวจ [MVP spec](../project/spec.md), final database/replay-floor/late-evidence policy และผู้รับ LINE; ตรวจรับ SW-0022/0023/0024 ก่อนเริ่ม implementation ที่พึ่งผล; full design ยังรออนุมัติ
+- Graft evidence for SW-0021: ACTIVE; isolated `graft build` และ `graft map` พบ neon.ts 1 file/0 symbols/1 edge; Markdown raw fallback; root checkpoint ก่อนหน้าอยู่ SW-0020
+- Next action: ผู้ใช้ทบทวน [MVP spec](../project/spec.md) และ product decisions ที่ยังเสนอ; ทำ SW-0022/0023/0024 ให้ผ่าน Tech Lead review ก่อนเริ่ม implementation ที่พึ่งผล; full design ยังรออนุมัติ
 - Product decisions pending: full design, Neon Auth/driver integration, SlipOK credentials/งบ/recipient matching และ retention proof ของ provider/backup/branches
 - SW-0016: ผู้ใช้เลือก SlipOK แล้ว; เอกสาร/requirements/SW-0007/checklist ตรงกัน ยังไม่เชื่อม API จริงหรือซื้อแพ็กเกจ
 - Prior review: [SW-0002](tickets/SW-0002.md), [review](reports/SW-0002-design-review.md), [resolution](reports/SW-0002-resolution.md) คงเป็นประวัติของ revision เดิม ไม่ใช่ review ของ Neon revision นี้

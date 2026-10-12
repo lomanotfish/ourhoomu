@@ -19,7 +19,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0012](tickets/SW-0012.md) | ตรวจรับ MVP และ security boundaries อย่างอิสระ | qa-engineer | SW-0007, SW-0010, SW-0011, SW-0013 | draft |
 | [SW-0013](tickets/SW-0013.md) | Retention ทุกประวัติและแผน restore | backend-engineer | SW-0004, SW-0006, SW-0007, SW-0008 | draft |
 | [SW-0014](tickets/SW-0014.md) | เตรียมและแจก TestFlight pilot | platform-engineer | SW-0012 | draft |
-| [SW-0015](tickets/SW-0015.md) | Neon CLI/skills/MCP/link/private slip policy/deploy | tech-lead | คำสั่งผู้ใช้ระบุ target/config แล้ว | in_review |
+| [SW-0015](tickets/SW-0015.md) | Neon CLI/skills/MCP/link/private slip policy/deploy | tech-lead | คำสั่งผู้ใช้ระบุ target/config แล้ว | done |
 
 ## Dependency / dispatch gates
 
@@ -34,10 +34,11 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 - Objective: Neon setup ตามคำสั่งผู้ใช้และปรับเอกสารตาม ADR-0002
 - Integration target: main; baseline abca0b6; user checkout อยู่ local
-- Current ticket: SW-0015; external setup/deploy สำเร็จ รอตรวจ repo artifacts และรวมงาน; Lead-inline ไม่มี worker dispatch
-- Graft: NO_INDEXED_FILES ที่ preflight; isolated build 0 files/0 nodes/0 edges ก่อน config ใหม่ ผลสุดท้ายบันทึกใน SW-0015
-- Next action: ตรวจ config/lockfile/docs/secrets → local integration → cleanup → ส่งมอบ setup
+- Current ticket: SW-0015 done; setup/deploy และ integrated checks ผ่านที่ f333bf4 บน main/local; closure record commits เป็น descendants ไม่มี worker dispatch
+- Graft: ACTIVE; isolated/root map 1 neon.ts file/0 symbols/1 edge หลัง setup (preflight เดิม NO_INDEXED_FILES)
+- Next action: ตรึง API hosting/Google-Apple integration กับ Neon Auth และให้ผู้ใช้ตรวจ full design ก่อน application implementation
 - Product decisions pending: full design, API hosting/Neon Auth integration, slip provider และ retention proof ของ provider/backup/branches
 - Prior review: [SW-0002](tickets/SW-0002.md), [review](reports/SW-0002-design-review.md), [resolution](reports/SW-0002-resolution.md) คงเป็นประวัติของ revision เดิม ไม่ใช่ review ของ Neon revision นี้
+- Final lifecycle receipt/inventory: root .git/ourhoomu-snapshots/sw-0015/ และ Orca root comment; ไม่ลบ credentials/skills/user checkout ไปพร้อม isolated worktree
 
 ประวัติ contributor guide ก่อนรอบนี้อยู่ใน commit 6312fa6 ไม่สร้าง ticket/runtime IDs ย้อนหลังขึ้นเอง

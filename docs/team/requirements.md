@@ -43,7 +43,7 @@
 | AC6 (R10–R11) | สร้างเวรครบสามโหมด; หมุนไม่สร้างซ้ำ; ผู้รับกดเสร็จแล้วกิจกรรมปรากฏเมื่อสมาชิกเปิดแอป; ไม่มีขอสิทธิ์ notifications | SW-0008, SW-0011 | pending |
 | AC7 (R12) | เมื่อถึง expiry เข้าถึงรายการ/ไฟล์ไม่ได้; purge ไม่ทิ้ง child/orphan หรือคืนข้อมูลหมดอายุจาก backup | SW-0004, SW-0007, SW-0013, SW-0012 | pending |
 | AC8 (R13–R14) | มีเอกสาร/สองโฟลเดอร์/checklist/ตารางเปรียบเทียบพร้อมแหล่งข้อมูล; มี gate ก่อน implementation | SW-0002 | done เฉพาะ docs — ดู review/resolution และ integrated checks ใน ticket |
-| AC9 (R15) | CLI login/link ถูก project/branch, skills/MCP ติดตั้ง, neon.ts ตามผู้ใช้, deploy exit 0 และตรวจ slip bucket private จาก remote จริง; secrets ไม่เข้า Git | SW-0015 | ดูหลักฐานใน ticket |
+| AC9 (R15) | CLI login/link ถูก project/branch, skills/MCP ติดตั้ง, neon.ts ตามผู้ใช้, deploy exit 0 และตรวจ slip bucket private จาก remote จริง; secrets ไม่เข้า Git | SW-0015 | done เฉพาะ Neon setup — ดูหลักฐานใน ticket |
 
 แอพยังไม่ผ่าน runtime acceptance AC1a–AC7 การผ่านเอกสาร AC8 ไม่ได้ทำให้ feature ของแอพเสร็จ
 

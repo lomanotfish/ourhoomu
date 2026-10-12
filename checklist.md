@@ -28,7 +28,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [x] Link lucky-bar-14515304 branch production และตรวจ region/target
 - [x] neon.ts ตรงตัวอย่าง private slip bucket; plan/deploy exit 0 และ remote slip access=private
 - [x] ปรับ active design จาก Supabase เป็น Neon — [ADR-0002](docs/adr/0002-neon.md), [setup report](docs/project/neon-setup.md)
-- [ ] ตรวจ root config/dependencies/secrets และรวมงาน — [SW-0015](docs/team/tickets/SW-0015.md)
+- [x] ตรวจ root config/dependencies/secrets และรวมงาน — [SW-0015](docs/team/tickets/SW-0015.md)
 
 ### Application foundation ที่ยังรออนุมัติ
 
@@ -60,6 +60,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 | วันที่ | Ticket | ผล / หลักฐาน |
 |---|---|---|
 | 2026-10-12 | SW-0002 | เอกสารรวม main/local ที่ f2782fa แล้ว; review/แก้ F1–F3, 146 local links/13 tickets/whitespace ผ่าน; reviewer released — [หลักฐาน](docs/team/tickets/SW-0002.md) |
+| 2026-10-12 | SW-0015 | Neon setup/deploy exit0, production/private slip ตรวจจริง; config/lockfile/secret exclusion/172 links ผ่าน; รวม main/local ที่ f333bf4 — [หลักฐาน](docs/team/tickets/SW-0015.md) |
 
 ## วิธีอัปเดตเมื่อ agent ส่งงาน
 

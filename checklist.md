@@ -17,7 +17,8 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [x] ตรวจแบบโดย reviewer อิสระและแก้ findings — [SW-0002 resolution](docs/team/reports/SW-0002-resolution.md)
 - [x] ตรวจเอกสารหลังรวมและ release reviewer — [SW-0002 integrated checks/cleanup records](docs/team/tickets/SW-0002.md)
 - [ ] ผู้ใช้ตรวจและยืนยัน design v0.1 ก่อน implementation — [pending decisions](docs/project/decisions.md)
-- [ ] ผู้ใช้เลือก API ตรวจสลิปและงบ; provider ผ่าน retention gate — [comparison](docs/project/slip-providers.md)
+- [x] ผู้ใช้เลือก SlipOK และปรับเอกสาร/งานที่เกี่ยวข้อง — [SW-0016](docs/team/tickets/SW-0016.md)
+- [ ] SlipOK credentials/งบ พร้อมหลักฐาน multi-recipient matching และ retention gate — [provider decision](docs/project/slip-providers.md)
 
 ## 1. Foundation
 

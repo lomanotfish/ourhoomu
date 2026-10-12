@@ -13,7 +13,7 @@
 - เวรจัดเอง/ทำซ้ำ/หมุนอัตโนมัติ ผู้รับกดเสร็จ
 - แจ้งเตือนเฉพาะในแอปเมื่อเปิด ไม่มี push/local notification
 - ประวัติทุกอย่างไม่เกินหนึ่งปีนับจากสร้าง
-- ต้องเปรียบเทียบ provider; ยังไม่ได้เลือกหรือซื้อ
+- เปรียบเทียบ provider แล้ว; ผู้ใช้เลือก SlipOK ตามคำสั่ง “ใช้ slipOk แทน” เมื่อ 2026-10-12 ยังไม่ได้ซื้อหรือเชื่อม API จริง
 - เลือก Neon database; อนุญาต CLI/skills/MCP/link โปรเจกต์ lucky-bar-14515304 branch production, config private slip bucket และ neon deploy ตาม SW-0015
 
 ## ข้อเสนอของ Tech Lead สำหรับตรวจแบบ
@@ -38,7 +38,7 @@
 | เรื่อง | Owner / next action | ขวางอะไร |
 |---|---|---|
 | อนุมัติ design v0.1 รวม D1–D12 หรือระบุข้อแก้ | ผู้ใช้ผ่าน Tech Lead หลังอ่านเอกสาร | เริ่ม implementation ทุก ticket |
-| เลือก slip provider และงบ | ผู้ใช้ตรวจ [comparison](slip-providers.md); Tech Lead แนะนำทดลอง Slip2Go ก่อนแบบมีเงื่อนไข | ต่อ API จริง/ซื้อแพ็กเกจ ไม่ขวางการส่งเอกสาร |
+| SlipOK credentials/แพ็กเกจและงบ | เลือก SlipOK แล้ว; ผู้ใช้เตรียม key/branch ID ใน secret store และยืนยันงบก่อนซื้อ; Tech Lead ตรวจ multi-recipient matching | ต่อ API จริง/ซื้อแพ็กเกจ ไม่ขวางการส่งเอกสาร |
 | ผู้ให้บริการเก็บข้อมูล/ลบก่อนครบ 365 วันได้จริงหรือไม่ | Tech Lead/platform ตรวจข้อกำหนดและหลักฐานจาก provider ที่เลือก โดยไม่ส่งข้อความภายนอกจนได้รับคำสั่ง | เปิดใช้สลิปจริง; ไม่อ้างว่าสอดคล้อง retention แล้ว |
 | หากผู้สร้างบิลยืนยันเงินสดของตนเอง เมื่อผู้รับเงินเป็นคนอื่น | ข้อเสนอ: อนุญาตตามกติกาผู้สร้างยืนยันของผู้ใช้ พร้อม audit และผู้รับเห็นสถานะ; ผู้ใช้แก้ได้ในการ review | ต้องยืนยันก่อนพัฒนา flow เงินสด |
 | API hosting/Google-Apple session integration หลังเลือก Neon | Tech Lead ตรวจ Neon Auth ที่เปิดอยู่แล้ว เสนอ contract/ต้นทุนก่อนพัฒนา; setup นี้ยังไม่มี native login/API integration proof | SW-0003–SW-0005 และการเชื่อม API จริง |

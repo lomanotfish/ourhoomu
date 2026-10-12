@@ -88,7 +88,7 @@ Tech Lead ตรวจ artifact กับ acceptance และ required checks �
 
 ## Frontend รอบที่อนุญาตล่าสุด — SW-0026–0028
 
-- [ ] SW-0026: Visual/motion/flow contract ใน repo โดยไม่รอ Figma
+- [x] SW-0026: Visual/motion/flow contract ใน repo โดยไม่รอ Figma — [contract](docs/project/frontend-design.md), [Lead acceptance](docs/team/tickets/SW-0026.md)
 - [ ] SW-0027: Expo mobile app ธีมน่ารัก, four tabs, demo bills/chores/house flows และ animation/reduced motion
 - [ ] SW-0028: Independent review, integrated checks และ cleanup
 

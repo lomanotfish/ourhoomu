@@ -25,3 +25,8 @@
 | ผลตรวจแบบและการแก้ findings | [Lead resolution](team/reports/SW-0002-resolution.md), [Independent review](team/reports/SW-0002-design-review.md) |
 
 Requirement เป็นแหล่งจริงของพฤติกรรมที่ผู้ใช้ยืนยัน Domain/API/UX เป็นข้อเสนอรายละเอียดของ Tech Lead จนกว่าจะยืนยัน design v0.1 การเปลี่ยน requirement ต้องผ่านผู้ใช้และบันทึกใน decision log ก่อนเปลี่ยน acceptance
+
+## Frontend ที่อนุญาตล่าสุด
+
+- [Visual และ motion contract](project/frontend-design.md) — SW-0026
+- [Frontend implementation](team/tickets/SW-0027.md) และ [independent review](team/tickets/SW-0028.md)

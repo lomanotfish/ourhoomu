@@ -17,6 +17,11 @@ for client/server integration, read `docs/project/api-contract.md`.
 The Tech Lead alone updates ticket status and `checklist.md` after acceptance
 and integration, recording actual evidence.
 
+The main session acts as Tech Lead and reads the installed `software-tech-lead`
+skill and its `references/agent-runtime.md` before coordinating engineers through
+Orca. Read `docs/team/agent-guide.md` for isolation, review, integration, cleanup,
+and Graft reporting. Workers ask the Lead and never open a second coordinator.
+
 ## Project Structure & Module Organization
 
 `ourhoomu` is currently a documentation-stage monorepo. Its project files include:

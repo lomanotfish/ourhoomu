@@ -28,7 +28,7 @@
 | D7 | อายุประวัติใช้ 365 วันจาก created_at เป็นขีดสูงสุด เริ่มปิดการเข้าถึงและลบก่อน deadline 24 ชั่วโมงเพื่อเผื่อ retry; child ต้องไม่อยู่เกิน parent; ข้อมูลบัญชี/บ้านที่ยังใช้งานเป็น current state ไม่ใช่ประวัติหมดอายุ |
 | D8 | บิลเผยแพร่แล้วตรึงยอด/ผู้หาร/ผู้รับ/บัญชีรับเงิน; ยกเลิกได้ก่อนมีเงินยืนยันเท่านั้น ไม่แก้ยอดย้อนหลัง |
 | D9 | สลิปหนึ่งธุรกรรมต่อหนึ่งงวด ไม่แบ่งสลิปเดียวคร่อมหลายบิล; เงินโอนที่ตรวจไม่ได้คง pending/needs_attention ไม่มี manual approve แทน |
-| D10 | all domain reads/writes ผ่าน API; native login consent และ signed file transfer เป็นขั้นตอนนอก API ที่จำเป็น |
+| D10 | all domain reads/writes และ slip downloads ผ่าน API; native login consent และ signed file upload เป็นขั้นตอนนอก API ที่จำเป็น; download ตรวจ membership สดทุก request |
 | D11 | ไม่เพิ่มหน้าจอ manual account linking ใน MVP; ใช้ Supabase user ID เป็น identity ของแอป ต้องทดสอบ automatic linking ของ verified email ตาม Supabase Auth ก่อนตรึงพฤติกรรม ไม่รวมบัญชีจาก display name |
 | D12 | เมื่อเปิด/กลับเข้า foreground/กด refresh ดึงข้อมูลล่าสุด; offline อ่าน cache ที่ไม่หมดอายุได้ แต่การจ่าย/ยืนยัน/ทำเวรต้องออนไลน์ |
 

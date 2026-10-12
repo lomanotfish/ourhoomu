@@ -45,7 +45,7 @@ Dev/local ใช้ข้อมูลจำลอง ส่วน pilot มี p
 
 Retention เป็นงาน server ที่ทำแม้ไม่มีใครเปิดแอป จึงต้องมี Cron แม้การแจ้งสมาชิกจะเกิดเฉพาะเปิดแอป ดูนโยบาย [domain](domain.md)
 
-- API และ RLS มี expiry filter; signed URLs อายุสั้นและ clamp parent expiry
+- API และ RLS มี expiry filter; slip download เป็น authenticated stream พร้อม fresh membership check และ no-store; signed upload URLs อายุสั้นและ clamp parent expiry
 - Physical purge มี durable deletion job ลบ Storage ผ่าน Storage API ตามลำดับแล้วค่อยลบ metadata; retry มีขอบเขตและ monitor queue age
 - เริ่มงานลบก่อนขีดหนึ่งปีตามแบบที่ตกลง เก็บ failure หลักฐานแบบไม่แนบข้อมูลส่วนตัว; ถ้า host pause/งานลบพลาดข้าม deadline ยังเป็น retention failure ไม่ถือว่าซ่อนจาก API แล้วผ่าน
 - Free pause ทำให้รับรอง physical deletion SLA ไม่ได้จากราคาเพียงอย่างเดียว ก่อน pilot ต้องพิสูจน์ scheduled jobs/monitoring ที่ใช้งานจริง ถ้ารับรองไม่ได้ต้องอัปเกรดหรือกลับผู้ใช้ตัดสิน ไม่สร้าง keepalive เพื่อหลบ policy
@@ -65,6 +65,8 @@ Operational dashboard ติดตาม API errors, verification pending age, q
 TestFlight ไม่ต้องเก็บ UDID; external testers ใช้กลุ่ม invite เฉพาะและมี beta review Build มีอายุ 90 วัน วางรอบอัปโหลดก่อนหมดอายุ ไม่เพิ่มสมาชิกบ้านเป็น App Store Connect admin เพื่อเลี่ยง external review ดู [Apple TestFlight](https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview/)
 
 ก่อนแจก: design/implementation ได้รับอนุมัติ, Google/Apple จริงผ่าน, cross-house/RLS/slip privacy และเงินถูกต้อง, retention/backup/provider gates ผ่าน, privacy disclosure และ account deletion พร้อม, required checks ผ่าน, เจ้าของบัญชีอนุญาตการส่ง build ภายนอก การอนุญาตทำเอกสารไม่ใช่สิทธิ์ publish/deploy
+
+ลำดับหลักฐาน: SW-0012 ให้ pre-release go/no-go จาก development build บน iPhone (AC1a และ AC2–AC7) ก่อนเริ่ม SW-0014; หลัง upload/review จึงติดตั้ง TestFlight และทำ smoke เพื่อปิด AC1b ใน SW-0014 การผ่าน pre-release QA ยังไม่ใช่การผ่าน TestFlight
 
 ## Verification ที่ต้องสร้างใน implementation
 

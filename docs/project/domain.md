@@ -8,7 +8,7 @@ User มีได้หลาย House ผ่าน HouseMembership; สมา�
 
 Invite token สุ่มด้วย secure RNG เก็บเพียง digest ใช้ได้ครั้งเดียว อายุ 7 วัน เมื่อรับให้สร้าง membership กับ consume invite ใน transaction เดียว ผู้ใช้ที่เป็นสมาชิกแล้วต้องไม่เพิ่มซ้ำและไม่ใช้สิทธิ์เชิญโดยไม่ตั้งใจ ตรวจ invite ก่อน redirect หนึ่งบ้าน
 
-ออกจากบ้าน/ถูกนำออก: เสียสิทธิ์ API และสลิปทันที ล้าง client cache; ประวัติที่ยังไม่หมดอายุยังแสดงชื่อ snapshot ให้คนที่มีสิทธิ์ ผู้รับเงินหรือผู้สร้างบิลที่มีบิลค้างต้องเคลียร์/ยกเลิกก่อนออกจากบ้านใน MVP ไม่ให้โอน ownership ของบิลที่เผยแพร่แล้วเงียบ ๆ สมาชิกอื่นออกได้แต่ยอดที่ติดอยู่ยังคงในประวัติของบ้าน ไม่สร้าง assignments ใหม่ให้คนที่ออก
+ออกจากบ้าน/ถูกนำออก: เสียสิทธิ์ API และคำขอดาวน์โหลดสลิปใหม่ทันที ล้าง client cache; ไม่อ้างว่าเรียกคืนสำเนาที่ดาวน์โหลดไปแล้วหรือ bytes ที่เริ่มส่งก่อนเพิกถอนได้ ประวัติที่ยังไม่หมดอายุยังแสดงชื่อ snapshot ให้คนที่มีสิทธิ์ ผู้รับเงินหรือผู้สร้างบิลที่มีบิลค้างต้องเคลียร์/ยกเลิกก่อนออกจากบ้านใน MVP ไม่ให้โอน ownership ของบิลที่เผยแพร่แล้วเงียบ ๆ สมาชิกอื่นออกได้แต่ยอดที่ติดอยู่ยังคงในประวัติของบ้าน ไม่สร้าง assignments ใหม่ให้คนที่ออก
 
 ## บิลและการหาร
 
@@ -63,11 +63,13 @@ awaiting_confirmation → confirmed / rejected; confirm ทำ atomic และ 
 
 ### Privacy
 
-ภาพสลิปและ normalized provider details อ่านได้เฉพาะ uploader และ recipient ที่ยังเป็นสมาชิกบ้าน ข้อกำหนดนี้ override owner role และ creator role
+ภาพสลิปและ normalized provider details อ่านได้เฉพาะ uploader และ recipient ที่ยังเป็นสมาชิกบ้าน ข้อกำหนดนี้ override owner role และ creator role ภาพส่งผ่าน authenticated API ที่ตรวจ membership/expiry สดทุก request ไม่คืน reusable Storage read URL
 
 สมาชิกบ้านอ่านชื่อบิล รายการผู้หาร จำนวน/ยอดที่ยืนยันและสถานะรวมได้; cash creator เห็นจำนวนที่ต้องยืนยันได้ แต่ไม่ได้เห็นภาพสลิปที่ตนไม่มีสิทธิ์ API ต้องใช้ explicit DTO projection ไม่ SELECT * ของ payment/private detail
 
 บัญชีผู้รับ snapshot ใช้สำหรับโอนและตรวจ matching เปิดเฉพาะผู้ร่วมบิลที่ต้องใช้จ่าย แสดงเลข masked ในรายการ; ผู้รับจัดการบัญชีตนเอง ค่าเปลี่ยนหลัง publish ใช้กับบิลใหม่เท่านั้น การตรวจต้องอาศัย identifier ที่ยืนยันได้ ไม่ใช้ชื่อคล้ายกันหรือเลขท้ายไม่กี่หลักเป็นหลักฐานพอเพียง
+
+ก่อน publish ให้ draft creator ดูเฉพาะ eligible account ID และ metadata แบบ masked ของ recipient ที่เลือกในบ้านเดียวกันผ่าน draft-scoped selector ไม่เห็นเลขเต็มเมื่อไม่มีหน้าที่จ่ายและไม่มีสิทธิ์แก้บัญชีของผู้อื่น ถ้าไม่มีบัญชีที่ใช้ได้ต้องให้ recipient ตั้งค่าก่อน publish; ตรวจ account ownership/active revision พร้อม snapshot แบบ atomic
 
 ## เวรงานบ้าน
 
@@ -99,7 +101,7 @@ API บังคับ scope ก่อนคืน feed; กิจกรรม�
 - Chore occurrence: retention_deadline_at = occurrence.created_at + 365 days และ expires_at ก่อนหน้านั้น 24 ชั่วโมง; completion events ไม่อยู่เกิน occurrence
 - Events ที่ไม่มี parent: ใช้ deadline จาก created_at + 365 days และ access expiry ก่อน 24 ชั่วโมงเช่นกัน; invitation ใช้อายุสั้นกว่านี้
 - Current profile, active membership, บ้าน, บัญชีรับเงินที่ใช้งาน และตารางเวรที่ยัง active เป็น current state ไม่ใช่ประวัติ ไม่บังคับลบทิ้งเมื่อผู้ใช้ยังใช้งาน; เมื่อเลิกใช้ให้แยก archived snapshot ที่มี expiry
-- API/query/RLS ปฏิเสธข้อมูลที่ now >= expires_at ทันที รวมการดาวน์โหลดสลิป Signed URL ต้องหมดอายุไม่เกิน expiry และไม่เกิน 60 วินาที ไม่เลื่อนอายุ parent ด้วยการสร้าง child ใหม่
+- API/query/RLS ปฏิเสธข้อมูลที่ now >= expires_at ทันที รวมคำขอดาวน์โหลดสลิปใหม่ผ่าน authenticated API; signed upload URL ต้องหมดอายุไม่เกิน expiry และไม่เกิน 60 วินาที ไม่เลื่อนอายุ parent ด้วยการสร้าง child ใหม่
 - แสดงวันข้อมูลถูกลบและรายการค้างใกล้ครบปีในแอปเมื่อเปิด ไม่มีการแจ้งเตือนนอกแอป ไม่มีการ roll ยอดค้างไปเป็นบิลใหม่อัตโนมัติเพื่อเลี่ยง retention
 - Physical purge เริ่มเมื่อ expires_at ถึงกำหนด งานรันทุกชั่วโมงและ retry ต้องเสร็จก่อน retention_deadline_at; UI แสดงวันที่เริ่มลบ ไม่รับรองว่าจะเก็บเต็ม 365 วัน การเผื่อ 24 ชั่วโมงยังไม่ใช่ guarantee หาก host หยุดทำงาน ต้องพิสูจน์ operations gate ก่อนใช้จริง
 - ไฟล์ Storage ต้องถูกลบผ่าน Storage API ก่อนลบ metadata, retries เป็น durable jobs พร้อม alert ให้ผู้ดูแลระบบ (operational dashboard ไม่ใช่ push ถึงสมาชิก) ไม่ลบแต่ database แล้วทิ้ง object

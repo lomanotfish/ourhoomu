@@ -10,7 +10,7 @@
 | Client state | TanStack Query, React Hook Form, Zod, SecureStore | server cache, validation, เก็บ session อย่างปลอดภัย |
 | API | Supabase Edge Functions, Deno, TypeScript | auth/session gateway, permissions, validation, slip adapter |
 | Database | Supabase PostgreSQL, SQL migrations, RLS, transactional RPC | เงินและ state changes ที่ต้อง atomic |
-| Files | Supabase private Storage | สลิป; API ออก URL อายุสั้นหลังตรวจสิทธิ์ |
+| Files | Supabase private Storage | สลิป; upload URL อายุสั้น ดาวน์โหลดผ่าน API ที่ตรวจสิทธิ์สด |
 | Authentication | Supabase Auth + Google/Apple | identity และ session; แอพแลก/refresh/revoke ผ่าน API |
 | Background maintenance | Supabase Cron + retention function | purge ประวัติ/ไฟล์ตามอายุ; ไม่ส่ง notifications |
 | Distribution | Expo development build, EAS Build, TestFlight | ทดสอบ native integrations และแจก beta |
@@ -27,7 +27,8 @@ flowchart LR
   API --> Auth[Supabase Auth]
   API --> DB[PostgreSQL + RLS + RPC]
   API --> Store[Private Storage]
-  User -->|API-issued signed URL| Store
+  User -->|API-issued signed upload URL| Store
+  Store -->|Private slip bytes via API| API
   API --> Provider[External slip verifier]
   Cron[Scheduled retention] --> API
 ```
@@ -44,6 +45,8 @@ Frontend ไม่เรียก domain tables หรือ Supabase Auth โ�
 6. ไม่เชื่อ user ID/email/role จาก body; ไม่เก็บ token ใน logs ไม่ใช้ email หรือชื่อเป็น account identity
 
 Google/Apple native integrations ต้องพิสูจน์บน development build/iPhone จริง ออกแบบ public auth endpoints แยกจาก protected endpoints อย่างชัดเจนตาม [Securing Edge Functions](https://supabase.com/docs/guides/functions/auth) ผู้ให้บริการ: [Google](https://supabase.com/docs/guides/auth/social-login/auth-google), [Apple](https://supabase.com/docs/guides/auth/social-login/auth-apple)
+
+Slip reads ผ่าน authenticated API stream ตรวจ live membership/uploader/recipient/expiry ทุก request และ no-store โดยไม่คืน direct Storage read URL เพื่อปฏิเสธคำขอใหม่ทันทีหลังออกจากบ้าน Signed URLs ของ Storage ยังใช้ได้จนหมดอายุตาม [Supabase downloads](https://supabase.com/docs/guides/storage/serving/downloads) จึงใช้เฉพาะการ upload ที่จำกัดและตรวจสิทธิ์ซ้ำก่อน finalize
 
 ## Atomicity
 

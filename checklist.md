@@ -14,7 +14,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [x] เปรียบเทียบ Slip2Go / EasySlip / SlipOK พร้อม sources และเงื่อนไขรอยืนยัน — [comparison](docs/project/slip-providers.md)
 - [x] ออกแบบ domain/schema/API/UX และเขียนกติกา agents — [docs index](docs/README.md)
 - [x] สร้าง tickets พร้อม owner/dependencies/acceptance — [board](docs/team/board.md)
-- [ ] ตรวจแบบโดย reviewer อิสระและแก้ findings — SW-0002
+- [x] ตรวจแบบโดย reviewer อิสระและแก้ findings — [SW-0002 resolution](docs/team/reports/SW-0002-resolution.md)
 - [ ] ตรวจเอกสารหลังรวมและ cleanup งานรอบนี้ — SW-0002
 - [ ] ผู้ใช้ตรวจและยืนยัน design v0.1 ก่อน implementation — [pending decisions](docs/project/decisions.md)
 - [ ] ผู้ใช้เลือก API ตรวจสลิปและงบ; provider ผ่าน retention gate — [comparison](docs/project/slip-providers.md)
@@ -40,15 +40,15 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 ## 4. Retention, acceptance และ pilot
 
 - [ ] SW-0013: ลบประวัติทุกประเภทตาม created_at รวม files/child/cache/logs/provider/backup และ restore จริง
-- [ ] SW-0012: Independent QA/security และ acceptance R1–R12 บน integrated SHA ผ่าน
+- [ ] SW-0012: Independent pre-release QA/security AC1a และ AC2–AC7 บน integrated SHA ผ่าน; AC1b รอ TestFlight
 - [ ] SW-0014: Apple/Expo/Google credentials และอนุญาต upload ภายนอกพร้อม
-- [ ] SW-0014: TestFlight build/review/ติดตั้งจริง และแผนอัปเดตก่อน 90 วัน
+- [ ] SW-0014: ปิด AC1b ด้วย TestFlight build/review/ติดตั้งและ smoke จริง พร้อมแผนอัปเดตก่อน 90 วัน
 
 ## บันทึกตรวจรับ
 
 | วันที่ | Ticket | ผล / หลักฐาน |
 |---|---|---|
-| 2026-10-12 | SW-0002 | Requirement และเอกสารฉบับร่างเขียนแล้ว; review/integration ยัง pending |
+| 2026-10-12 | SW-0002 | Requirement/design/review และแก้ F1–F3 แล้ว; integration/checks/cleanup ยัง pending |
 
 ## วิธีอัปเดตเมื่อ agent ส่งงาน
 

@@ -4,7 +4,7 @@ Base URL: Supabase Functions URL ของ function api, logical routes ใต�
 
 ## กติกากลาง
 
-- JSON + HTTPS; access token แบบ Bearer สำหรับทุก route ยกเว้น auth bootstrap/refresh ที่ระบุ
+- JSON + HTTPS; access token แบบ Bearer สำหรับทุก route ยกเว้น auth bootstrap/refresh ที่ระบุ; slip download คืน binary stream ตาม contract ด้านล่าง
 - Server ใช้ session identity และ membership สด ไม่รับ user_id/house role จาก client เป็น authority
 - IDs เป็น UUID; เงิน integer satang; bps integer; timestamp ISO 8601 UTC; วันเวร YYYY-MM-DD + timezone บ้าน
 - Mutation ที่เสี่ยงซ้ำใช้ Idempotency-Key ผูก user + route + body hash; key เดิม/body ต่าง → 409; สำเร็จซ้ำคืน resource เดิม
@@ -36,6 +36,7 @@ Base URL: Supabase Functions URL ของ function api, logical routes ใต�
 | GET/POST/PATCH /me/recipient-accounts[/:id] | เจ้าของบัญชีเท่านั้น; ข้อมูลบัญชีไม่ลง logs |
 | GET/POST /houses/:houseId/bills | สมาชิกอ่าน/สร้าง draft |
 | GET/PATCH /houses/:houseId/bills/:billId | สมาชิกอ่าน; creator แก้ draft ด้วย expectedVersion |
+| GET /houses/:houseId/bills/:billId/recipient-accounts?recipientMembershipId=:id | draft creator เท่านั้น → บัญชีที่เลือกได้ของ active recipient ในบ้านเดียวกันแบบ masked DTO |
 | POST /houses/:houseId/bills/:billId/publish | creator → authoritative shares/self-covered snapshot |
 | POST /houses/:houseId/bills/:billId/void | creator → void เฉพาะไม่มี confirmed installment |
 | POST /houses/:houseId/bills/:billId/payments | ผู้จ่ายของ share ตนเอง → attempt method/amount/reservation |
@@ -46,7 +47,7 @@ Base URL: Supabase Functions URL ของ function api, logical routes ใต�
 | POST /payments/:attemptId/confirm-cash | bill creator → ยืนยันงวดเงินสด |
 | POST /payments/:attemptId/reject-cash | bill creator → ปฏิเสธพร้อมเหตุ |
 | POST /payments/:attemptId/cancel | payer → ยกเลิกก่อนยืนยันตาม state |
-| GET /payments/:attemptId/slip | uploader หรือ recipient → private signed read URL ไม่เกิน 60s/expiry |
+| GET /payments/:attemptId/slip | uploader หรือ recipient ที่ยังเป็นสมาชิก → authenticated binary stream; ตรวจสิทธิ์/expiry สดทุก request ไม่คืน Storage URL |
 | GET/POST /houses/:houseId/chore-schedules | สมาชิก → ดู/สร้าง schedule |
 | POST /houses/:houseId/chore-schedules/preview | สมาชิก → preview rule โดยไม่บันทึก |
 | PATCH /houses/:houseId/chore-schedules/:id | creator/owner → revision สำหรับอนาคต |
@@ -60,6 +61,20 @@ Base URL: Supabase Functions URL ของ function api, logical routes ใต�
 
 Path ที่ไม่มี houseId ต้อง resolve parent → live membership → private viewer permission ก่อนอ่าน/เขียนเสมอ URL มี id ถูกต้องไม่ได้แปลว่ามีสิทธิ์
 
+## การเลือกบัญชีของผู้รับเงิน
+
+การจัดการบัญชี /me/recipient-accounts เป็น owner-only เสมอ ส่วน draft-scoped selector ให้ creator ที่ยังเป็นสมาชิกเลือกบัญชีของตนหรือสมาชิก B ที่เลือกเป็น recipient ได้ โดยต้องเป็น draft ของตนและ B ยัง active ในบ้านเดียวกัน ไม่เปิด directory บัญชีทั้งบ้าน
+
+คืนเฉพาะบัญชีที่เปิดใช้งานและใช้กับ provider matching ที่เลือกได้ เป็น DTO { id, version, bankCode, label, maskedAccount, isDefault } ไม่คืนเลขเต็ม/รายละเอียดส่วนตัว ไม่ใช้ข้อมูล masked เป็นหลักฐานตรวจสลิป ไม่มีบัญชีที่ใช้ได้ให้คืนรายการว่างพร้อม reason=recipient_account_required; UI ขอให้ B ตั้งค่าบัญชีก่อน publish ไม่มีสิทธิ์แก้บัญชีแทน B
+
+Publish ส่ง recipientAccountVersion จาก selector และ validate ใน transaction เดียวว่า recipient ยัง active, account ยังเปิดใช้และเป็นของ recipientMembershipId จริง รวมถึง version ตรงก่อนสร้าง snapshot; ID ที่เดาเอง/ของคนอื่นใช้ไม่ได้ คืน 409 recipient_account_unavailable เมื่อบัญชีเปลี่ยนหรือใช้ไม่ได้ ผู้ร่วมบิลที่ต้องชำระและ recipient เท่านั้นจึงรับข้อมูลปลายทางเต็มตาม published bill DTO; creator ที่ไม่ต้องจ่ายและไม่ใช่ recipient เห็นเฉพาะ masked metadata
+
+## การดาวน์โหลดสลิป
+
+API ตรวจ session, live membership, uploader/recipient และ parent expiry จากสถานะปัจจุบันทุก request แล้วอ่าน private Storage ผ่าน backend และ stream bytes กลับ ไม่ redirect หรือคืน bearer read URL ใช้ Cache-Control: private, no-store; client อ่านผ่าน authenticated fetch และแสดงจาก memory โดยล้างเมื่อออกจากบ้าน/logout/หมดอายุ ไม่มี persistent image cache
+
+คำขอดาวน์โหลดใหม่หลัง removal/leave/expiry ต้องถูกปฏิเสธ แม้เคยดาวน์โหลดสำเร็จ; ไม่อ้างว่าเพิกถอนสำเนาที่ผู้ใช้บันทึกไปแล้วหรือ bytes ที่เริ่มส่งก่อนเพิกถอนได้ Signed URLs ใช้เฉพาะ upload ที่จำกัด path/expiry และต้องตรวจ membership อีกครั้งก่อน finalize
+
 ## ตัวอย่าง publish bill
 
 ```json
@@ -69,6 +84,7 @@ Path ที่ไม่มี houseId ต้อง resolve parent → live membe
   "currency": "THB",
   "recipientMembershipId": "uuid-a",
   "recipientAccountId": "uuid-account",
+  "recipientAccountVersion": 1,
   "participants": [
     { "membershipId": "uuid-a", "basisPoints": 5000 },
     { "membershipId": "uuid-b", "basisPoints": 5000 }
@@ -91,4 +107,4 @@ Public result ให้ payer/recipient เห็นเหตุที่ช่�
 
 ## Acceptance ก่อนตรึง contract
 
-ทดสอบ schema เงิน/เปอร์เซ็นต์, routes ข้ามบ้าน, private DTO, idempotency, refresh race, invite consume race, duplicate transfer finalize และ retention boundary Backend/data ต้องตกลง transaction และ errorcodes ก่อน FE ต่อของจริง การผ่าน mock ไม่ใช่หลักฐาน integration
+ทดสอบ schema เงิน/เปอร์เซ็นต์, routes ข้ามบ้าน, private DTO, idempotency, refresh race, invite consume race, duplicate transfer finalize และ retention boundary รวม creator != recipient: เลือกบัญชี B ผ่าน masked selector, ไม่มีบัญชี, เปลี่ยน/ปิดบัญชีก่อน publish, ปลอม account ID และ download ใหม่หลังออกจากบ้าน Backend/data ต้องตกลง transaction และ errorcodes ก่อน FE ต่อของจริง การผ่าน mock ไม่ใช่หลักฐาน integration

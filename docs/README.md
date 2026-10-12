@@ -16,5 +16,6 @@
 | Agent ต้องเริ่มและส่งมอบอย่างไร | [Agent guide](team/agent-guide.md) |
 | งานที่จะทำและ dependencies | [Ticket board](team/board.md) |
 | ความคืบหน้าสำหรับผู้ใช้ | [Checklist](../checklist.md) |
+| ผลตรวจแบบและการแก้ findings | [Lead resolution](team/reports/SW-0002-resolution.md), [Independent review](team/reports/SW-0002-design-review.md) |
 
 Requirement เป็นแหล่งจริงของพฤติกรรมที่ผู้ใช้ยืนยัน Domain/API/UX เป็นข้อเสนอรายละเอียดของ Tech Lead จนกว่าจะยืนยัน design v0.1 การเปลี่ยน requirement ต้องผ่านผู้ใช้และบันทึกใน decision log ก่อนเปลี่ยน acceptance

@@ -6,7 +6,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 | Ticket | ผลลัพธ์ | Owner role | Dependencies | Status |
 |---|---|---|---|---|
-| [SW-0002](tickets/SW-0002.md) | Design และเอกสารสำหรับ agents | tech-lead | คำตอบผู้ใช้ครบแล้ว | in_review |
+| [SW-0002](tickets/SW-0002.md) | Design และเอกสารสำหรับ agents | tech-lead | คำตอบผู้ใช้ครบแล้ว | done |
 | [SW-0003](tickets/SW-0003.md) | ตั้งค่า monorepo และ toolchain ที่รันได้ | platform-engineer | design approval | draft |
 | [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003 | draft |
 | [SW-0005](tickets/SW-0005.md) | Google/Apple session และบ้านผ่าน API | backend-engineer | SW-0004 | draft |
@@ -33,12 +33,13 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 - Objective: ส่ง design v0.1, provider comparison และ checklist ที่ตรงสถานะจริง
 - Integration target: main ที่ baseline 6312fa6e02dc65969874d29b1474ecf4bdd9e0b8; user checkout อยู่ local
-- Working branch: witchagorn/sw-0002-project-design ใน isolated Orca worktree
-- Current ticket: SW-0002; reviewer ตรวจ artifact 6aeb4228dc9655cf27127cdc557025fbc62b2b85 แล้ว Lead แก้ F1–F3
+- Integrated artifact: f2782fa303922213f216fbefd1a929afb48a9636 บน main/local; closure status commits เป็น descendants ของ artifact นี้
+- Current ticket: SW-0002 done เฉพาะ docs; reviewer ตรวจ artifact 6aeb4228dc9655cf27127cdc557025fbc62b2b85 แล้ว Lead แก้ F1–F3 และตรวจผลรวม
 - Runtime: run_7a5023711f3d / task_5e634b90baf7 / ctx_78ed611a3ddc; CLI /usr/local/bin/orca; worker settled/released/archived และ ack แล้ว
 - Graft: NO_INDEXED_FILES; worktree map 0 files/0 symbols/0 edges; raw docs fallback
-- Next action: focused checks → local integration/checks → cleanup → ส่งผู้ใช้ตรวจแบบ
+- Next action: ผู้ใช้ตรวจ full design/decisions/provider comparison ผ่าน Tech Lead ก่อนเสนอเริ่ม SW-0003
 - Product decisions pending: full design approval, provider selection และ external retention proof
 - Runtime receipts/check results: [SW-0002](tickets/SW-0002.md), [review](reports/SW-0002-design-review.md), [Lead resolution](reports/SW-0002-resolution.md)
+- Worktree cleanup receipt/inventory ขั้นสุดท้าย: root Orca comment และ `.git/ourhoomu-snapshots/sw-0002/cleanup.json`; ไม่เหลือ active worker ของ Run นี้
 
 ประวัติ contributor guide ก่อนรอบนี้อยู่ใน commit 6312fa6 ไม่สร้าง ticket/runtime IDs ย้อนหลังขึ้นเอง

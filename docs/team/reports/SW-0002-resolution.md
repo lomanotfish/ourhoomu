@@ -25,7 +25,7 @@
 
 ## Verification และ integration
 
-ผล focused document checks, integration SHA และ cleanup เพิ่มที่ [SW-0002](../tickets/SW-0002.md) หลังรันจริง การตรวจรอบนี้เป็น Markdown paths/fences, ticket DAG, scope/whitespace และ consistency ของ F1–F3 ไม่มี application runtime หรือ provider/TestFlight proof
+ผล focused document checks และ integrated root ที่ f2782fa: 33 tracked files / 32 Markdown / 146 local links / 7 fences / 13 tickets / errors=[]; whitespace check exit 0 ดู SHA/commands และ cleanup records ที่ [SW-0002](../tickets/SW-0002.md) การตรวจรอบนี้เป็น Markdown paths/fences, ticket DAG, scope/whitespace และ consistency ของ F1–F3 ไม่มี application runtime หรือ provider/TestFlight proof
 
 ## ข้อจำกัดที่ยังต้องตัดสินก่อนพัฒนา/เปิดใช้จริง
 

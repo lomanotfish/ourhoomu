@@ -15,7 +15,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [x] ออกแบบ domain/schema/API/UX และเขียนกติกา agents — [docs index](docs/README.md)
 - [x] สร้าง tickets พร้อม owner/dependencies/acceptance — [board](docs/team/board.md)
 - [x] ตรวจแบบโดย reviewer อิสระและแก้ findings — [SW-0002 resolution](docs/team/reports/SW-0002-resolution.md)
-- [ ] ตรวจเอกสารหลังรวมและ cleanup งานรอบนี้ — SW-0002
+- [x] ตรวจเอกสารหลังรวมและ release reviewer — [SW-0002 integrated checks/cleanup records](docs/team/tickets/SW-0002.md)
 - [ ] ผู้ใช้ตรวจและยืนยัน design v0.1 ก่อน implementation — [pending decisions](docs/project/decisions.md)
 - [ ] ผู้ใช้เลือก API ตรวจสลิปและงบ; provider ผ่าน retention gate — [comparison](docs/project/slip-providers.md)
 
@@ -48,7 +48,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 
 | วันที่ | Ticket | ผล / หลักฐาน |
 |---|---|---|
-| 2026-10-12 | SW-0002 | Requirement/design/review และแก้ F1–F3 แล้ว; integration/checks/cleanup ยัง pending |
+| 2026-10-12 | SW-0002 | เอกสารรวม main/local ที่ f2782fa แล้ว; review/แก้ F1–F3, 146 local links/13 tickets/whitespace ผ่าน; reviewer released — [หลักฐาน](docs/team/tickets/SW-0002.md) |
 
 ## วิธีอัปเดตเมื่อ agent ส่งงาน
 

@@ -2,7 +2,7 @@
 
 แอพบริหารบ้านสำหรับ iPhone: หารค่าใช้จ่ายและทยอยจ่ายคืนคนออกเงิน จัดเวรงานบ้าน และติดตามสิ่งที่ต้องทำในแอป รองรับสมาชิกที่อยู่หลายบ้าน เริ่มต้นไม่เกิน 10 คน
 
-**สถานะ: มีเอกสารและตั้งค่า Neon แล้ว ยังไม่มีแอพหรือ API ที่รันได้** ผู้ใช้อนุญาต Neon setup/deploy โดยเฉพาะ งานพัฒนาแอปยังรอตรวจแบบ การแจกช่วงแรกใช้ TestFlight
+**สถานะ: มี frontend Expo สำหรับลอง flow ด้วยข้อมูลตัวอย่าง และตั้งค่า Neon แล้ว; API และการเชื่อมข้อมูลจริงยังไม่พร้อม** การแจกช่วงแรกใช้ TestFlight เมื่อ native/API acceptance ผ่าน
 
 ## โครงสร้าง monorepo
 
@@ -28,4 +28,4 @@ git diff --check
 git ls-files
 ```
 
-Root package.json/package-lock.json มีเฉพาะ Neon config tooling ที่ CLI ติดตั้ง ใช้ `npm ci` เพื่อติดตั้งตาม lockfile; ไม่มี app build/lint/test หรือ workspace scaffold ดูคำสั่งตั้งค่าและผลตรวจจริงใน [Neon setup](docs/project/neon-setup.md)
+Root package.json/package-lock.json มีเฉพาะ Neon config tooling ที่ CLI ติดตั้ง ใช้ `npm ci` เพื่อติดตั้งตาม lockfile. Frontend เป็นแพ็กเกจแยกพร้อม `bun.lock`: เข้า `ourhoomu-front/` แล้วรัน `bun install --frozen-lockfile`, `bun run web` หรือ `bun run ios`, `bun run typecheck`, `bun run test`, `bun run export:web` และ `bun run export:ios`. ดูข้อกำหนด runtime และขอบเขตเดโมใน [frontend README](ourhoomu-front/README.md); คำสั่ง Neon อยู่ใน [Neon setup](docs/project/neon-setup.md).

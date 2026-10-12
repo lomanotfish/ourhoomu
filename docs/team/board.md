@@ -29,7 +29,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0022](tickets/SW-0022.md) | Elysia Workers / Drizzle Neon transaction feasibility | research-engineer | SW-0020 | draft |
 | [SW-0023](tickets/SW-0023.md) | Free tier scheduler / retention feasibility | research-engineer | SW-0020 | draft |
 | [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | draft |
-| [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | SW-0021 และคำยืนยันผู้ใช้ 2026-10-12 | ready |
+| [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | SW-0021 และคำยืนยันผู้ใช้ 2026-10-12 | in_progress |
 
 ## Dependency / dispatch gates
 
@@ -49,7 +49,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 - Integration target record: `local`; SW-0021 baseline `2c2b49e`, author tip `749f43e`, accepted at `82c3dbf`
 - Completed: SW-0021 รวม MVP spec/backlog บน `local` ที่ `749f43e` แล้ว; acceptance, final checks และ cleanup receipt อยู่ใน ticket กับ root `.git/ourhoomu-snapshots/sw-0021/`; SW-0020 หลักฐานอยู่ root `.git/ourhoomu-snapshots/sw-0020/`
 - Graft evidence for SW-0021: ACTIVE; isolated `graft build` และ `graft map` พบ neon.ts 1 file/0 symbols/1 edge; Markdown raw fallback; root checkpoint ก่อนหน้าอยู่ SW-0020
-- Current: SW-0025 Figma prototype ครบ iOS MVP ทุก flow ใน file เดียว; worktree `/Users/afe/orca/workspaces/ourhoomu/sw-0025-uxui-ticket`; Graft ACTIVE ก่อน dispatch
+- Current: SW-0025 กำลังสร้าง Figma prototype ทุก flow ในไฟล์เดียว; Run `run_c0cb8ab739fb`, Task `task_79995c2fa29f`, Dispatch `ctx_d6b8735bc53e`; Tech Lead worktree `/Users/afe/orca/workspaces/ourhoomu/sw-0025-uxui-ticket`; UX/UI worker worktree `/Users/afe/orca/workspaces/ourhoomu/sw-0025-uxui-design`; Graft ACTIVE ก่อนค้นโค้ด, Markdown raw fallback
 - Next action: Tech Lead review integrated Figma artifact; ผู้ใช้ทบทวน [MVP spec](../project/spec.md), Figma design revision และ product decisions ที่ยังเสนอ; ทำ SW-0022/0023/0024 ให้ผ่าน review ก่อน implementation ที่พึ่งผล
 - Product decisions pending: full design, Neon Auth/driver integration, SlipOK credentials/งบ/recipient matching และ retention proof ของ provider/backup/branches
 - SW-0016: ผู้ใช้เลือก SlipOK แล้ว; เอกสาร/requirements/SW-0007/checklist ตรงกัน ยังไม่เชื่อม API จริงหรือซื้อแพ็กเกจ

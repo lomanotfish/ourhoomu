@@ -36,6 +36,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 | [SW-0029](tickets/SW-0029.md) | Plain demo UI copy integration fix | tech-lead | frozen SW-0027 | in_progress |
 
+| [SW-0030](tickets/SW-0030.md) | Narrow reviewed motion/touch/copy follow-ups | tech-lead | SW-0028 approve | in_progress |
+
 ## Dependency / dispatch gates
 
 - API/production implementation tickets ยังรอ full domain approval และ Neon identity/driver/actor contract; frontend demo SW-0026–0028 ได้รับอนุญาตใหม่โดยตรงและไม่ต้องรอ Figma. SW-0009/10/11 คง pending เฉพาะ integration acceptance; SW-0025 ทำ design artifact เพื่อทบทวนเท่านั้น ไม่ถือว่าผู้ใช้ออกแบบอนุมัติแล้ว; stack ยืนยันตาม SW-0020 แล้ว; SW-0015 ได้รับอนุมัติ setup/deploy โดยเฉพาะ มี ticket ไม่ได้แปลว่า agent ถูกเปิด

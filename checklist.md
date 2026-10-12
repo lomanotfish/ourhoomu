@@ -36,7 +36,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [x] SW-0019: ออกแบบ PostgreSQL 29 ตาราง พร้อม ERD/data dictionary/constraints/indexes/transactions/retention และตรวจรวมเอกสาร — [database](docs/project/database.md)
 - [x] SW-0020: บันทึก stack Elysia/Cloudflare Workers Free + Drizzle/PostgreSQL + React Native/Expo/Bun tooling — [ticket](docs/team/tickets/SW-0020.md); local `9349182`, 208 ลิงก์ภายในผ่าน
 - [x] SW-0021: รวม MVP spec/backlog และตรวจ links/dependency graph หลังรวม — integrated `local` ที่ `749f43e`; 289 local links, 23-ticket dependency/status audit และ cleanup receipt — [spec](docs/project/spec.md), [ticket](docs/team/tickets/SW-0021.md)
-- [ ] SW-0025: ออกแบบ UX/UI ทุก flow ของ iOS MVP ใน Figma file เดียวและทบทวนทุก state — [Figma](https://www.figma.com/design/VOdOjv1SUhkwpjzdGgZPD5), [ticket](docs/team/tickets/SW-0025.md); user design approval ยังรอหลังส่งมอบ
+- [ ] SW-0025: ออกแบบ UX/UI ทุก flow ของ iOS MVP ใน Figma file เดียวและทบทวนทุก state — [Figma](https://www.figma.com/design/VOdOjv1SUhkwpjzdGgZPD5), [ticket](docs/team/tickets/SW-0025.md); partial overview/foundations only, blocked by Starter MCP monthly call limit; no plan upgrade or purchase approved
 - [ ] SW-0022: ตรวจ Elysia Workers/Drizzle Neon transaction feasibility — [ticket](docs/team/tickets/SW-0022.md)
 - [ ] SW-0024: ตรึง Google/Apple session/Neon actor contract — [ticket](docs/team/tickets/SW-0024.md)
 - [ ] ยืนยัน database policy ที่ยังเสนอ รวม replay floor/late-transfer recovery, auth/driver/actor context และ LINE binding ก่อนสร้าง schema จริง

@@ -142,14 +142,25 @@ export function Tap({
 }) {
   const reduced = useReducedMotion();
   const scale = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    if (reduced) {
+      scale.stopAnimation();
+      scale.setValue(1);
+    }
+    return () => scale.stopAnimation();
+  }, [reduced, scale]);
   const animate = (toValue: number) => {
-    if (!reduced)
-      Animated.spring(scale, {
-        toValue,
-        useNativeDriver: Platform.OS !== 'web',
-        friction: 5,
-        tension: 180,
-      }).start();
+    if (reduced) {
+      scale.stopAnimation();
+      scale.setValue(1);
+      return;
+    }
+    Animated.spring(scale, {
+      toValue,
+      useNativeDriver: Platform.OS !== 'web',
+      friction: 5,
+      tension: 180,
+    }).start();
   };
   return (
     <Animated.View style={{ transform: [{ scale }] }}>

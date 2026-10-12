@@ -118,7 +118,7 @@ export default function SelectHouse() {
       {form === 'join' && (
         <Card style={{ marginTop: 14, gap: 10 }}>
           <Label style={{ fontWeight: '700' }}>เข้าร่วมบ้านตัวอย่าง</Label>
-          <Small>ใช้รหัส MINT เพื่อลอง flow เข้าร่วม ไม่มีการส่งคำเชิญจริง</Small>
+          <Small>ใช้รหัส MINT เพื่อลองเข้าร่วมบ้าน ไม่มีการส่งคำเชิญจริง</Small>
           <Field
             label="รหัสเข้าร่วม"
             autoCapitalize="characters"
@@ -137,7 +137,7 @@ export default function SelectHouse() {
       <Card style={{ backgroundColor: colors.mint, borderWidth: 0, marginTop: 24 }}>
         <Pill tone="butter">DEMO ONLY</Pill>
         <Small style={{ color: colors.cocoa, marginTop: 8 }}>
-          การเชิญจริงต้องสร้างรหัสที่หมดอายุและใช้ได้ครั้งเดียวผ่าน API
+          รหัสนี้ใช้กับบ้านตัวอย่างเท่านั้น คำเชิญจริงจะพร้อมเมื่อเชื่อมต่อบริการ
           รหัสที่นี่ใช้ลองหน้าจอเท่านั้น
         </Small>
       </Card>

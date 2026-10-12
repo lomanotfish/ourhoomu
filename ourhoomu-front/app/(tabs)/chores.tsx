@@ -175,7 +175,7 @@ export default function Chores() {
               borderRadius: 99,
               backgroundColor: view === item.id ? colors.cocoa : colors.paper,
               paddingHorizontal: 14,
-              minHeight: 42,
+              minHeight: 44,
               borderWidth: 1,
               borderColor: view === item.id ? colors.cocoa : colors.line,
             }}
@@ -258,7 +258,7 @@ export default function Chores() {
       )}
       <Card style={{ marginTop: 17, backgroundColor: colors.peach, borderWidth: 0 }}>
         <Label style={{ fontWeight: '700' }}>เวรเป็นของใคร คนนั้นกดเสร็จ</Label>
-        <Small>การทำเสร็จในเดโมจะปรากฏในกิจกรรมบ้าน ส่วนข้อมูลจริงรอ API ยืนยัน</Small>
+        <Small>เมื่อทำเวรตัวอย่างเสร็จจะปรากฏในกิจกรรมบ้าน ข้อมูลจริงยังไม่เชื่อมต่อ</Small>
       </Card>
     </Page>
   );

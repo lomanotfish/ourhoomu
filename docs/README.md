@@ -12,6 +12,7 @@
 | หน้าจอและ flow | [UX](project/ux.md) |
 | Frontend/backend เชื่อมกันอย่างไร | [API contract v0.1](project/api-contract.md) |
 | API ตรวจสลิปที่เปรียบเทียบ | [Slip providers](project/slip-providers.md) |
+| LINE OA แจ้งยืนยันการจ่ายเงิน | [LINE OA design](project/line-oa.md) |
 | Hosting, ค่าใช้จ่าย, backup, release | [Operations](project/operations.md) |
 | สิ่งที่ยืนยันแล้ว / ข้อเสนอ / เรื่องรอเลือก | [Decision log](project/decisions.md) |
 | เหตุผลเลือก stack | [ADR-0001](adr/0001-stack.md) |

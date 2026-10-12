@@ -60,6 +60,8 @@ Retention เป็นงาน server ที่ทำแม้ไม่มี�
 
 Operational dashboard ติดตาม API errors, verification pending age, quota, storage/DB size และ purge backlog ไม่มี notification ระบบปฏิบัติการถึงสมาชิกตาม requirement
 
+เพิ่ม LINE OA ยืนยันการจ่ายตาม [design](line-oa.md): worker ต้องทำงานได้แม้ไม่มีใครเปิดแอป ติดตาม outbox age, accepted/failed/unknown, quota และ token errors; อย่าล็อก payload/LINE ID/token เต็ม เก็บ server secrets แยกจาก mobile และ rotate/revoke ได้ Credentials/แผน OA ให้ผู้ใช้ภายหลัง ไม่รับรองว่าค่าใช้จ่ายฟรีไม่จำกัด ขอบเขต purge ของข้อความ LINE ยังต้องยืนยันก่อนส่งข้อมูลจริง
+
 ## TestFlight และ release gate
 
 TestFlight ไม่ต้องเก็บ UDID; external testers ใช้กลุ่ม invite เฉพาะและมี beta review Build มีอายุ 90 วัน วางรอบอัปโหลดก่อนหมดอายุ ไม่เพิ่มสมาชิกบ้านเป็น App Store Connect admin เพื่อเลี่ยง external review ดู [Apple TestFlight](https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview/)

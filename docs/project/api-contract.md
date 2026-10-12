@@ -4,7 +4,9 @@ Base URL: รอเลือก API hosting หลังเปลี่ยนเ
 
 ## กติกากลาง
 
-- JSON + HTTPS; access token แบบ Bearer สำหรับทุก route ยกเว้น auth bootstrap/refresh ที่ระบุ; slip download คืน binary stream ตาม contract ด้านล่าง
+- JSON + HTTPS; access token แบบ Bearer สำหรับทุก app route ยกเว้น auth bootstrap/refresh ที่ระบุ; LINE webhook ใช้ signature แยกตาม contract ด้านล่าง; slip download คืน binary stream ตาม contract ด้านล่าง
+
+LINE OA addition: logical `POST /integrations/line/webhook` เป็น public HTTPS callback ตรวจ signature จาก raw body ก่อน parse และ deduplicate webhook event IDs; ไม่ใช้ app Bearer แทน signature ส่วน authenticated linking/unlinking routes และ group/DM DTO รอตรึงตามผู้รับที่ผู้ใช้เลือก ไม่รับ arbitrary LINE ID จาก client เป็นสิทธิ์ส่งข้อความ ดู [LINE OA design](line-oa.md)
 - Server ใช้ session identity และ membership สด ไม่รับ user_id/house role จาก client เป็น authority
 - IDs เป็น UUID; เงิน integer satang; bps integer; timestamp ISO 8601 UTC; วันเวร YYYY-MM-DD + timezone บ้าน
 - Mutation ที่เสี่ยงซ้ำใช้ Idempotency-Key ผูก user + route + body hash; key เดิม/body ต่าง → 409; สำเร็จซ้ำคืน resource เดิม

@@ -22,11 +22,12 @@
 | R8 | สมาชิกอื่นทยอยจ่ายได้ หลายงวด; โอนเงินแนบสลิปและตรวจด้วย API ภายนอก; เงินสดให้ผู้สร้างบิลยืนยัน |
 | R9 | ไฟล์สลิปดูได้เฉพาะผู้แนบสลิปและผู้รับเงิน ผู้สร้างบิลหรือ owner บ้านไม่ได้สิทธิ์เพิ่มโดยอัตโนมัติ |
 | R10 | เวรมีสามโหมด: จัดเอง ทำซ้ำ และหมุนอัตโนมัติ; ผู้รับเวรกดทำเสร็จ |
-| R11 | แจ้งสิ่งที่ต้องทำและความเปลี่ยนแปลงในแอปเมื่อเปิด; ไม่ใช้ push หรือ local/system notifications |
+| R11 | แจ้งสิ่งที่ต้องทำและความเปลี่ยนแปลงในแอปเมื่อเปิด; ไม่ใช้ APNs/Expo Push หรือ local notifications ในแอพ iOS; เพิ่ม LINE OA ตาม R16 |
 | R12 | ประวัติทุกประเภท รวมสลิป บิล การจ่าย เวร และกิจกรรม เก็บไม่เกินหนึ่งปีนับจากวันสร้าง |
 | R13 | Agent ถาม requirement ให้แน่ใจ สรุป และรอผู้ใช้ยืนยันก่อนเริ่มงาน; สถานะจริงและ checklist ดูแลโดย Tech Lead |
 | R14 | เปรียบเทียบ API ตรวจสลิปแล้ว ผู้ใช้เลือก SlipOK เมื่อ 2026-10-12 ยังไม่อนุมัติซื้อ; ต้องผ่าน recipient/retention gate ก่อนส่งสลิปจริง |
 | R15 | ใช้ Neon database โปรเจกต์ lucky-bar-14515304 branch production ใน working directory; ติดตั้ง CLI/skills/MCP และ deploy config preview.buckets.slip access=private |
+| R16 | ส่ง LINE OA push message เมื่อยืนยันการจ่ายเงิน ผู้ใช้ให้ Channel ID/secret/access token (long-lived) ภายหลัง; ผู้รับข้อความและ binding flow รอยืนยันตาม [LINE OA design](../project/line-oa.md) |
 
 ตัวอย่าง R6–R8 ที่ผู้ใช้ยืนยัน: ค่าใช้จ่าย 200 บาท หารสองคน 50%/50% โดย A เป็นผู้รับเงิน/คนออกเงิน A รับผิดชอบ 100 บาทอัตโนมัติ B ต้องจ่ายคืน 100 บาท B จ่าย 40 แล้ว 60 ได้
 
@@ -44,6 +45,7 @@
 | AC7 (R12) | เมื่อถึง expiry เข้าถึงรายการ/ไฟล์ไม่ได้; purge ไม่ทิ้ง child/orphan หรือคืนข้อมูลหมดอายุจาก backup | SW-0004, SW-0007, SW-0013, SW-0012 | pending |
 | AC8 (R13–R14) | มีเอกสาร/สองโฟลเดอร์/checklist/ตารางเปรียบเทียบพร้อมแหล่งข้อมูล; มี gate ก่อน implementation | SW-0002 | done เฉพาะ docs — ดู review/resolution และ integrated checks ใน ticket |
 | AC9 (R15) | CLI login/link ถูก project/branch, skills/MCP ติดตั้ง, neon.ts ตามผู้ใช้, deploy exit 0 และตรวจ slip bucket private จาก remote จริง; secrets ไม่เข้า Git | SW-0015 | done เฉพาะ Neon setup — ดูหลักฐานใน ticket |
+| AC10 (R16) | การยืนยันเงิน enqueue แจ้ง LINE หลัง commit ตามผู้รับที่ยืนยัน; retries ไม่เครดิต/แจ้งซ้ำผิด; webhook/binding ปลอดภัย; LINE failure ไม่ย้อนยอด; ทดสอบส่งจริงเมื่อพร้อม | SW-0018 | pending ผู้รับ/credentials/design approval |
 
 แอพยังไม่ผ่าน runtime acceptance AC1a–AC7 การผ่านเอกสาร AC8 ไม่ได้ทำให้ feature ของแอพเสร็จ
 
@@ -53,6 +55,6 @@ Stack, ภาษา UI ไทย, timezone Asia/Bangkok, สิทธิ์ owne
 
 ## นอก MVP ที่เสนอ
 
-รับ/โอนเงินจริงผ่านแอป, payment gateway, wallet, การหักบัญชีธนาคาร, multi-currency, chat, push notification, อ่านสลิปด้วย OCR แล้วอนุมัติแทน API และระบบทำงาน offline ที่แก้ยอดเงินได้ การหักส่วนผู้รับเงินเป็นการลงบัญชีค่าใช้จ่ายเท่านั้น
+รับ/โอนเงินจริงผ่านแอป, payment gateway, wallet, การหักบัญชีธนาคาร, multi-currency, chat, APNs/Expo Push/local notifications ของแอพ iOS (LINE OA ยืนยันการจ่ายอยู่ในขอบเขตตาม R16), อ่านสลิปด้วย OCR แล้วอนุมัติแทน API และระบบทำงาน offline ที่แก้ยอดเงินได้ การหักส่วนผู้รับเงินเป็นการลงบัญชีค่าใช้จ่ายเท่านั้น
 
 [Board](board.md) · [Checklist](../../checklist.md)

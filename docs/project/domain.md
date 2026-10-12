@@ -89,7 +89,7 @@ pending → completed โดย assignee เท่านั้น; schedule crea
 
 ## แจ้งในแอป
 
-เมื่อเปิดแอป กลับ foreground หรือ pull-to-refresh API คืนยอดค้าง เงินสดรอยืนยัน สลิปที่ต้องตรวจซ้ำ เวรวันนี้/เลยกำหนด และกิจกรรมที่สมาชิกทำเสร็จ ใช้ ActivityEvent + read cursor/badge ภายในแอป ไม่มี APNs, Expo Push, local notifications, notification permissions หรือ background alert delivery
+เมื่อเปิดแอป กลับ foreground หรือ pull-to-refresh API คืนยอดค้าง เงินสดรอยืนยัน สลิปที่ต้องตรวจซ้ำ เวรวันนี้/เลยกำหนด และกิจกรรมที่สมาชิกทำเสร็จ ใช้ ActivityEvent + read cursor/badge ภายในแอป ไม่มี APNs, Expo Push, local notifications หรือ iOS notification permissions เพิ่ม LINE OA push เฉพาะการยืนยันการจ่ายตาม [LINE OA design](line-oa.md); confirmed event/outbox ต้อง atomic และไม่เครดิตซ้ำเมื่อ retry ผู้รับข้อความยังรอยืนยัน
 
 API บังคับ scope ก่อนคืน feed; กิจกรรมแสดงสถานะตามสิทธิ์ ไม่แนบภาพสลิป/ข้อมูลธนาคารส่วนตัวใน feed
 
@@ -102,7 +102,7 @@ API บังคับ scope ก่อนคืน feed; กิจกรรม�
 - Events ที่ไม่มี parent: ใช้ deadline จาก created_at + 365 days และ access expiry ก่อน 24 ชั่วโมงเช่นกัน; invitation ใช้อายุสั้นกว่านี้
 - Current profile, active membership, บ้าน, บัญชีรับเงินที่ใช้งาน และตารางเวรที่ยัง active เป็น current state ไม่ใช่ประวัติ ไม่บังคับลบทิ้งเมื่อผู้ใช้ยังใช้งาน; เมื่อเลิกใช้ให้แยก archived snapshot ที่มี expiry
 - API/query/RLS ปฏิเสธข้อมูลที่ now >= expires_at ทันที รวมคำขอดาวน์โหลดสลิปใหม่ผ่าน authenticated API; signed upload URL ต้องหมดอายุไม่เกิน expiry และไม่เกิน 60 วินาที ไม่เลื่อนอายุ parent ด้วยการสร้าง child ใหม่
-- แสดงวันข้อมูลถูกลบและรายการค้างใกล้ครบปีในแอปเมื่อเปิด ไม่มีการแจ้งเตือนนอกแอป ไม่มีการ roll ยอดค้างไปเป็นบิลใหม่อัตโนมัติเพื่อเลี่ยง retention
+- แสดงวันข้อมูลถูกลบและรายการค้างใกล้ครบปีในแอปเมื่อเปิด ไม่ส่ง LINE สำหรับการหมดอายุ; LINE OA มีเฉพาะยืนยันการจ่ายตาม R16 ไม่มีการ roll ยอดค้างไปเป็นบิลใหม่อัตโนมัติเพื่อเลี่ยง retention
 - Physical purge เริ่มเมื่อ expires_at ถึงกำหนด งานรันทุกชั่วโมงและ retry ต้องเสร็จก่อน retention_deadline_at; UI แสดงวันที่เริ่มลบ ไม่รับรองว่าจะเก็บเต็ม 365 วัน การเผื่อ 24 ชั่วโมงยังไม่ใช่ guarantee หาก host หยุดทำงาน ต้องพิสูจน์ operations gate ก่อนใช้จริง
 - ไฟล์ Storage ต้องถูกลบผ่าน Storage API ก่อนลบ metadata, retries เป็น durable jobs พร้อม alert ให้ผู้ดูแลระบบ (operational dashboard ไม่ใช่ push ถึงสมาชิก) ไม่ลบแต่ database แล้วทิ้ง object
 - Purge keys/queue/logs/cache/backup และ provider copies ด้วย; data model ที่ไม่มี indefinite audit retention การ restore ต้อง purge expired data ก่อนเปิด API

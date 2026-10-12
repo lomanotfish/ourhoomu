@@ -46,6 +46,15 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 
 ## 3. เวรและกิจกรรม
 
+### LINE OA แจ้งยืนยันการจ่ายเงิน
+
+- [x] SW-0017: บันทึก requirement/design LINE OA และตรวจรวมเอกสาร — [design](docs/project/line-oa.md), [ticket](docs/team/tickets/SW-0017.md)
+- [ ] ยืนยันผู้รับ LINE/ข้อความ/binding และ retention ของสำเนาใน LINE
+- [ ] ผู้ใช้ตั้ง Channel ID/Channel secret/long-lived access token ใน backend secret store
+- [ ] SW-0018: outbox/push/retries และ webhook/binding ตามผู้รับที่ยืนยัน ทดสอบจริงหลัง credentials พร้อม
+
+### เวรและกิจกรรมภายในแอป
+
 - [ ] SW-0008: API จัดเอง/ทำซ้ำ/หมุนอัตโนมัติ, completion และ feed
 - [ ] SW-0011: UI เวร/preview/in-app badges/foreground refresh ไม่มี system notifications
 

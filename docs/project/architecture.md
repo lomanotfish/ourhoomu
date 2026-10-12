@@ -12,7 +12,9 @@
 | Database | Neon PostgreSQL; SQL migrations, grants/RLS และ transactions รอ implementation | เงินและ state changes ที่ต้อง atomic |
 | Files | Neon Object Storage bucket slip: private | infrastructure ตรวจแล้ว; app permissions ยังไม่พัฒนา |
 | Authentication | Google/Apple ผ่าน API; ต้องตรวจ integration กับ Neon Auth ที่เปิดอยู่แล้ว | ยังไม่มี app session/native login proof |
-| Background maintenance | Scheduler/retention worker รอเลือกกับ API hosting | ต้อง purge แม้ไม่มีใครเปิดแอป; ไม่ส่ง notifications |
+| Background maintenance | Scheduler/retention/outbox worker รอเลือกกับ API hosting | purge แม้ไม่มีใครเปิดแอป; LINE OA ยืนยันการจ่ายตาม R16; ไม่มี APNs/Expo Push |
+
+เพิ่ม [LINE OA payment notifications](line-oa.md): transaction ยืนยันเงินบันทึก outbox พร้อม domain event; worker ส่ง Messaging API หลัง commit ด้วย server credentials เท่านั้น LINE failure ไม่ย้อนเครดิต ปลายทางและ binding ยังรอผู้ใช้ยืนยัน ไม่ใช่ integration ที่ deploy แล้ว
 | Distribution | Expo development build, EAS Build, TestFlight | ทดสอบ native integrations และแจก beta |
 
 ให้ scaffold ticket pin versions ที่เข้ากันจริงจาก official docs ตอนเริ่ม ไม่ pin SDK จากการคาดเดาในเอกสารนี้

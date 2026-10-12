@@ -31,8 +31,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | draft |
 | [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | ผู้ใช้ให้เริ่ม front โดยไม่รอ Figma | cancelled |
 | [SW-0026](tickets/SW-0026.md) | Frontend visual/motion/flow contract ใน repo | uxui-designer | คำสั่ง frontend ล่าสุด | done |
-| [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + UX/spec เดิม; SW-0026 ร่วมออกแบบ | in_progress |
-| [SW-0028](tickets/SW-0028.md) | Independent frontend review | code-reviewer | frozen SW-0027 artifact | draft |
+| [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + UX/spec เดิม; SW-0026 ร่วมออกแบบ | in_review |
+| [SW-0028](tickets/SW-0028.md) | Independent frontend review | code-reviewer | frozen SW-0027 artifact | ready |
 
 ## Dependency / dispatch gates
 
@@ -73,3 +73,5 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 - Active: SW-0026 `task_9054f1fb337f` / `ctx_4e6910965a66`; SW-0027 `task_f21d639e3447` / `ctx_94393ae74fb9`. Both actual worker-start receipts ready/input_accepted, separate top-level worktrees at `a7ec76b`.
 
 - SW-0026 accepted: `43cf37c` design/report plus Lead pending-only contract refinement; worker settled succeeded, released with captured transcript before acknowledgement. Frontend can read `docs/project/frontend-design.md`; design acceptance is not device/API acceptance.
+
+- SW-0027 frozen `c4e913c`, implementation worker settled/released; independent SW-0028 review next. Exact app worktree remains isolated and preserved; final native/API acceptance remains pending on existing tickets.

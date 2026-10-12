@@ -6,7 +6,7 @@
 
 แอพ iOS สำหรับคนอยู่บ้านร่วมกัน เริ่มต้นไม่เกิน 10 ผู้ใช้ รองรับหลายบ้านในบัญชีเดียว ลดการตามเงินและความสับสนว่าใครมีเวรอะไร
 
-ผู้ใช้ยืนยันว่ารอบนี้ทำเฉพาะออกแบบ tech stack จัดทำเอกสารสำหรับ agents และ checklist สร้างพื้นที่ backend ชื่อ ourhoomu-api และ frontend ชื่อ ourhoomu-front ใน repo เดียว ยังไม่เขียน application code ติดตั้ง dependencies สร้าง cloud resources หรือเผยแพร่ build
+ขอบเขตเดิมคือออกแบบและเอกสารก่อนพัฒนา ต่อมาผู้ใช้อนุญาต Neon setup โดยเฉพาะ: ติดตั้ง CLI/skills/MCP, link production, ติดตั้ง config dependencies, เขียน neon.ts และ neon deploy ตาม SW-0015 ยังไม่อนุญาต application implementation, domain migrations หรือเผยแพร่ iOS build
 
 ## ข้อกำหนดที่ผู้ใช้ยืนยัน
 
@@ -26,6 +26,7 @@
 | R12 | ประวัติทุกประเภท รวมสลิป บิล การจ่าย เวร และกิจกรรม เก็บไม่เกินหนึ่งปีนับจากวันสร้าง |
 | R13 | Agent ถาม requirement ให้แน่ใจ สรุป และรอผู้ใช้ยืนยันก่อนเริ่มงาน; สถานะจริงและ checklist ดูแลโดย Tech Lead |
 | R14 | เปรียบเทียบ API ตรวจสลิปให้ผู้ใช้เลือก ยังไม่มีการอนุมัติซื้อหรือเลือก provider |
+| R15 | ใช้ Neon database โปรเจกต์ lucky-bar-14515304 branch production ใน working directory; ติดตั้ง CLI/skills/MCP และ deploy config preview.buckets.slip access=private |
 
 ตัวอย่าง R6–R8 ที่ผู้ใช้ยืนยัน: ค่าใช้จ่าย 200 บาท หารสองคน 50%/50% โดย A เป็นผู้รับเงิน/คนออกเงิน A รับผิดชอบ 100 บาทอัตโนมัติ B ต้องจ่ายคืน 100 บาท B จ่าย 40 แล้ว 60 ได้
 
@@ -42,6 +43,7 @@
 | AC6 (R10–R11) | สร้างเวรครบสามโหมด; หมุนไม่สร้างซ้ำ; ผู้รับกดเสร็จแล้วกิจกรรมปรากฏเมื่อสมาชิกเปิดแอป; ไม่มีขอสิทธิ์ notifications | SW-0008, SW-0011 | pending |
 | AC7 (R12) | เมื่อถึง expiry เข้าถึงรายการ/ไฟล์ไม่ได้; purge ไม่ทิ้ง child/orphan หรือคืนข้อมูลหมดอายุจาก backup | SW-0004, SW-0007, SW-0013, SW-0012 | pending |
 | AC8 (R13–R14) | มีเอกสาร/สองโฟลเดอร์/checklist/ตารางเปรียบเทียบพร้อมแหล่งข้อมูล; มี gate ก่อน implementation | SW-0002 | done เฉพาะ docs — ดู review/resolution และ integrated checks ใน ticket |
+| AC9 (R15) | CLI login/link ถูก project/branch, skills/MCP ติดตั้ง, neon.ts ตามผู้ใช้, deploy exit 0 และตรวจ slip bucket private จาก remote จริง; secrets ไม่เข้า Git | SW-0015 | ดูหลักฐานใน ticket |
 
 แอพยังไม่ผ่าน runtime acceptance AC1a–AC7 การผ่านเอกสาร AC8 ไม่ได้ทำให้ feature ของแอพเสร็จ
 

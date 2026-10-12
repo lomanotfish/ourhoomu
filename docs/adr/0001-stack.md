@@ -1,7 +1,7 @@
 # ADR-0001: Expo + Supabase ใน monorepo
 
 Date: 2026-10-12
-Status: Proposed — รอผู้ใช้ตรวจ design v0.1
+Status: Superseded สำหรับ backend/database โดย [ADR-0002](0002-neon.md) ตามคำสั่งผู้ใช้เลือก Neon; เก็บข้อเสนอเดิมนี้เป็นประวัติ ห้ามนำ Supabase-specific setup ไปพัฒนาต่อ
 
 ## Context
 

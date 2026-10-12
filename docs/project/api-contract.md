@@ -1,6 +1,6 @@
 # API contract v0.1 — Proposed
 
-Base URL: Supabase Functions URL ของ function api, logical routes ใต้ /v1 ไม่ใช่ API ที่ deploy แล้ว ใน implementation ticket ให้ backend/data/FE ตรึง OpenAPI พร้อม schemas จากข้อเสนอนี้ก่อนทำคู่ขนาน
+Base URL: รอเลือก API hosting หลังเปลี่ยนเป็น Neon ตาม [ADR-0002](../adr/0002-neon.md); logical routes ใต้ /v1 ยังเป็นข้อเสนอ ไม่ใช่ API ที่ deploy แล้ว Backend/data/FE ต้องตรึง OpenAPI และ identity/SQL transaction contract ก่อนทำคู่ขนาน
 
 ## กติกากลาง
 
@@ -99,7 +99,7 @@ API ตรวจ session, live membership, uploader/recipient และ parent e
 
 Normalized result: verification status, provider attempt id, bank transaction reference, actual amountSatang, transactionAt, recipient matching outcome และ error classification เก็บเฉพาะค่าจำเป็นใน private tables ไม่ให้ frontend ตัดสินผล
 
-Provider key/server client และ service-role key อยู่ใน backend secrets; ไม่มีใน EXPO_PUBLIC_* Backend ส่งไฟล์ที่อยู่ใน storage ของตน ไม่ fetch URL ตาม body
+Provider key, DATABASE_URL และ Neon storage credentials อยู่ใน backend secrets; ไม่มีใน EXPO_PUBLIC_* Backend ส่งไฟล์ที่อยู่ใน storage ของตน ไม่ fetch URL ตาม body
 
 provider error classes: invalid, mismatch, bank_delayed, quota_exhausted, rate_limited, timeout_unknown; mapping ไป domain state ต้องมี fixtures/contract tests จาก provider ที่เลือก ไม่ hardcode ว่า HTTP 200 = verified
 

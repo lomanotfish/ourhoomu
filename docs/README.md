@@ -2,6 +2,8 @@
 
 เอกสารเขียนเมื่อ 2026-10-12 เป็น design v0.1 ที่รอผู้ใช้ตรวจฉบับเต็ม **การยืนยันขอบเขตจัดทำเอกสารยังไม่ใช่การอนุมัติให้เขียนแอพ**
 
+อัปเดต: ผู้ใช้เลือก Neon และอนุญาต setup/deploy เฉพาะ SW-0015 แล้ว [ADR-0002](adr/0002-neon.md) แทนข้อเสนอ Supabase; ไม่ใช่การอนุมัติพัฒนาฟีเจอร์ทั้งหมด
+
 | ต้องการทราบ | เอกสาร |
 |---|---|
 | ผู้ใช้ยืนยันอะไร / acceptance | [Requirement brief](team/requirements.md) |
@@ -13,6 +15,7 @@
 | Hosting, ค่าใช้จ่าย, backup, release | [Operations](project/operations.md) |
 | สิ่งที่ยืนยันแล้ว / ข้อเสนอ / เรื่องรอเลือก | [Decision log](project/decisions.md) |
 | เหตุผลเลือก stack | [ADR-0001](adr/0001-stack.md) |
+| Neon ที่เลือกและผลตั้งค่าจริง | [ADR-0002](adr/0002-neon.md), [Neon setup](project/neon-setup.md) |
 | Agent ต้องเริ่มและส่งมอบอย่างไร | [Agent guide](team/agent-guide.md) |
 | งานที่จะทำและ dependencies | [Ticket board](team/board.md) |
 | ความคืบหน้าสำหรับผู้ใช้ | [Checklist](../checklist.md) |

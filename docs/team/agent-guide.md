@@ -4,7 +4,7 @@
 
 1. อ่าน AGENTS.md → requirements.md → board.md → ticket ที่ได้รับ → design เฉพาะส่วน อ่าน checklist เพื่อเห็นภาพรวม ไม่ใช้ checkbox แทน acceptance evidence
 2. Tech Lead ถามข้อไม่ชัด สรุป scope/acceptance และรอผู้ใช้ยืนยันก่อนเริ่มเขียนไฟล์หรือพัฒนา Workers ส่งคำถามผ่าน Tech Lead ไม่ถามผู้ใช้แยก สิทธิ์เดิมที่ยืนยันแล้วใช้ต่อได้ภายใน scope นั้น
-3. รอบปัจจุบันอนุมัติเฉพาะเอกสาร ห้ามถือว่าการมี design/tickets คืออนุมัติ scaffold สร้าง credentials/cloud หรือเขียนแอพ
+3. อนุมัติเอกสารและ Neon setup/deploy เฉพาะ SW-0015 แล้ว ไม่ใช่สิทธิ์ scaffold หรือเขียนแอปทั่วไป อ่าน ADR-0002 แทน Supabase-specific design; ห้ามรัน migration/product writes บน production จากการมี credentials เพียงอย่างเดียว
 4. ทุก agent อ่าน Graft skill และ software-tech-lead/references/agent-runtime.md ตรวจ Graft ใน worktree งานก่อนค้น indexed source รายงาน ACTIVE/NO_INDEXED_FILES/UNAVAILABLE/ERROR พร้อมคำสั่งผลจริง ใช้ raw docs/config ได้เมื่อไม่ indexed
 5. Tech Lead เลือก target branch จริง/baseSHA สร้าง isolated worktree ผ่าน Orca ตาม ownership Writer ขนานต้องคนละ checkout reviewer อ่านผลที่ freeze แล้วได้ Agent ใหม่ใช้ approval_policy=never/sandbox_mode=danger-full-access ตามคำสั่งผู้ใช้ ตรวจ launch จริงก่อนอ้าง effective
 

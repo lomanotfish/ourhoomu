@@ -2,8 +2,9 @@
 
 ## Confirm Scope Before Starting
 
-The current user-authorized scope is project design, documentation, and a
-progress checklist. Application implementation has not been authorized yet.
+The user has authorized project design, documentation, a progress checklist,
+and the specific Neon setup/deploy in SW-0015. General application
+implementation has not been authorized yet.
 Before starting new work, the Tech Lead must ask about material ambiguities,
 summarize the requirements and acceptance conditions, and wait for the user's
 explicit confirmation. Engineers route questions through the Tech Lead and
@@ -34,11 +35,18 @@ and Graft reporting. Workers ask the Lead and never open a second coordinator.
 - `docs/`: requirements, architecture, contracts, and team tickets.
 - `checklist.md`: progress maintained by the Tech Lead.
 
-No application source, tests, or assets are present yet. When introducing them, choose clear locations such as `src/`, `tests/`, and `assets/`, and document the actual layout in `README.md`.
+No application source, tests, or assets are present yet. Root `neon.ts` and npm
+manifests configure Neon tooling only. `.neon`, `.env*`, `node_modules`, and
+installed `.agents` skills remain local and ignored. Never print credentials.
+The linked Neon branch is production: do not migrate or write product data
+without the relevant confirmed ticket. Read `docs/adr/0002-neon.md`; previous
+Supabase-specific instructions are superseded.
 
 ## Build, Test, and Development Commands
 
-There is no package manifest, build system, dependency installation step, or local application command yet. Use these repository checks:
+Use `npm ci` for root Neon config dependencies; there is no application build
+or local app command yet. See `docs/project/neon-setup.md` for verified Neon
+commands. Use these repository checks:
 
 - `git ls-files`: inspect tracked project files.
 - `git status --short`: review pending changes before committing.

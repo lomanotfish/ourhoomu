@@ -1,22 +1,22 @@
 # Hosting, ค่าใช้จ่าย และ operations
 
-ตรวจข้อมูล 2026-10-12 แผนนี้ยังไม่ provision cloud, deploy API หรือส่ง TestFlight
+อัปเดต 2026-10-12: Neon setup/deploy สำเร็จตาม SW-0015 ยังไม่ deploy product API หรือ TestFlight ดู [setup report](neon-setup.md) และ [ADR-0002](../adr/0002-neon.md)
 
 ## เริ่มต้นและขยาย
 
-ใช้ Supabase Free หนึ่ง project สำหรับ pilot และ local Supabase สำหรับพัฒนา; EAS Free สำหรับสร้าง beta ไม่มี web frontend hosting ที่ต้องซื้อสำหรับ native app ใช้ default Supabase domain ก่อน
+ใช้ Neon project ourhoomu branch production ตามผู้ใช้ระบุ ตรวจ plan/usage จริงใน Console และ [Neon pricing](https://neon.com/pricing) ก่อนรับรองค่าใช้จ่าย pilot; API hosting/Auth integration/scheduler ยังไม่เลือก จึงยังสรุปค่า hosting ทั้งระบบว่า $0 ไม่ได้
 
-Free tier ที่หน้า [Supabase pricing](https://supabase.com/pricing) ระบุ: DB 500 MB, file storage 1 GB, 50,000 MAU, Edge Functions 500,000 invocations; uncached egress 5 GB และ cached egress 5 GB; active projects ไม่เกิน 2; อาจ pause หลังไม่ใช้งานหนึ่งสัปดาห์ และไม่มี automatic backups
+ไม่ใช้ Supabase quotas เดิมกับ Neon ตรวจ DB compute/storage, object storage/egress, history retention และ branch copies ตาม account จริงก่อนเปิด pilot
 
-นี่เป็นโควตาผู้ให้บริการ ไม่ใช่การรับรองว่าการใช้งานใด ๆ จะฟรีตลอดไป ตัวอย่างคำนวณของเรา 50 สลิป/เดือน × 0.5 MB × 12 ≈ 300 MB ยังไม่รวมขนาดรูปจริง retries และ artifacts; จำกัด 5 MB ต่อไฟล์อย่างเดียวไม่พอถ้าผู้ใช้ไม่บีบรูป ตรวจ usage รายเดือนและเตือนผู้ดูแลที่ 70%/85%
+ตัวอย่าง 50 สลิป/เดือน × 0.5 MB × 12 ≈ 300 MB เป็นประมาณการไฟล์ ไม่ใช่ free quota; retries/รูปจริง/สำเนาใน branches เพิ่ม usage ได้ ให้มี monitor ที่ 70%/85% ของโควตาที่ account ใช้จริง
 
-Pro เริ่ม $25/เดือนตามหน้าราคา ณ วันที่ตรวจ ควรอัปเกรดเมื่อพื้นที่/egress ใกล้เต็ม ต้องการลด pause risk หรือใช้ backup/availability ที่ free ไม่ครอบคลุมก่อนเปิดกลุ่มใหญ่ ไม่ย้าย stack เพราะเกิน 10 คนโดยอัตโนมัติ
+การอัปเกรดขึ้นกับ usage/availability/backup ที่ต้องการ ไม่เปลี่ยนแพลตฟอร์มหรือรับรองราคาเพียงเพราะผู้ใช้ไม่เกิน 10 คน
 
 ## ค่าใช้จ่ายแยกจาก hosting
 
 | รายการ | เริ่มต้น |
 |---|---|
-| Supabase | $0/เดือนภายใน free quota |
+| Neon | ตรวจ plan/usage/quotas ของ account จริง ไม่ใช้ราคา Supabase เดิม |
 | EAS Build | Free ระบุได้ถึง 15 iOS builds และ 15 Android builds/เดือน คิว priority ต่ำ; ตรวจโควตาอีกครั้งก่อน release |
 | Apple Developer Program | $99/ปีสำหรับ TestFlight |
 | Slip verifier | ยังรอเลือก; ตัวเลือกเริ่ม 88 หรือ 99 บาทต่อ 30 วัน มี free/trial ที่ต้องพิสูจน์เงื่อนไข |
@@ -26,17 +26,17 @@ Pro เริ่ม $25/เดือนตามหน้าราคา ณ ว
 
 ## Setup และ local workflow เมื่ออนุมัติพัฒนา
 
-SW-0003 ต้องเลือกและ pin Node LTS, pnpm, Expo SDK, Deno และ Supabase CLI ตาม compatibility จริง มี Docker สำหรับ local Supabase และ Xcode/Simulator สำหรับ iOS บน Mac
+Root มี npm manifest/lockfile สำหรับ @neon/config และ @neon/env จาก config init; npm ci ติดตั้ง tooling นี้ได้ Neon CLI ติดตั้ง global 8.3.5 ยังไม่มี app/workspace scripts ดูคำสั่งจริงใน [Neon setup](neon-setup.md)
 
-API โครงสร้างเป็น ourhoomu-api/supabase/ คำสั่งอ้างอิง CLI ที่จะนำไปห่อเป็น scripts เช่น supabase --workdir ourhoomu-api start, functions serve, db reset (เฉพาะ local), db lint และ test db ต้อง validate กับเวอร์ชันที่ pin ก่อนลง README เป็นคำสั่งใช้งานจริง
+SW-0003 ต้องตรึง Node/Expo/package manager และ API runtime ก่อน scaffold; SQL migrations อยู่ ourhoomu-api/migrations ไม่ใช้ Supabase CLI/local containers เดิม ไม่เปลี่ยน production branch เพื่อทดลอง migrations
 
-Frontend ต้องมี scripts dev/ios/typecheck/test ที่ทดสอบแล้ว Google/Apple จริงใช้ development build; ไม่อ้างว่า Expo Go พิสูจน์ production login ได้ ใช้ [Supabase CLI reference](https://supabase.com/docs/reference/cli/introduction) และ [Expo setup](https://docs.expo.dev/build/setup/)
+Frontend ต้องมี scripts dev/ios/typecheck/test ที่ตรวจแล้ว Google/Apple จริงใช้ development build ไม่อ้าง Expo Go เป็น production login proof ดู [Expo setup](https://docs.expo.dev/build/setup/)
 
 ## Secrets และ environments
 
 Dev/local ใช้ข้อมูลจำลอง ส่วน pilot มี project จริงแยก Secrets อยู่ใน environment/secrets store:
 - Public app config: API base URL, OAuth client IDs ที่เผยแพร่ได้, app bundle ID
-- Server-only: Supabase service credentials สำหรับงานเฉพาะ, slip key, signing/challenge secrets ถ้าจำเป็น
+- Server-only: DATABASE_URL/Neon branch storage credentials, slip key, signing/challenge secrets ถ้าจำเป็น
 - Build credentials: Apple signing / App Store Connect / Google OAuth config
 
 ไฟล์ env.example มี placeholders เท่านั้น ไม่ใส่ keys ใน repo/EXPO_PUBLIC_* หรือ worker reports ไม่ส่ง production keys ใน chat Freeze bundle ID ก่อนตั้งค่า Apple/Google Audience และ nonce ต้องตรง environment
@@ -48,8 +48,8 @@ Retention เป็นงาน server ที่ทำแม้ไม่มี�
 - API และ RLS มี expiry filter; slip download เป็น authenticated stream พร้อม fresh membership check และ no-store; signed upload URLs อายุสั้นและ clamp parent expiry
 - Physical purge มี durable deletion job ลบ Storage ผ่าน Storage API ตามลำดับแล้วค่อยลบ metadata; retry มีขอบเขตและ monitor queue age
 - เริ่มงานลบก่อนขีดหนึ่งปีตามแบบที่ตกลง เก็บ failure หลักฐานแบบไม่แนบข้อมูลส่วนตัว; ถ้า host pause/งานลบพลาดข้าม deadline ยังเป็น retention failure ไม่ถือว่าซ่อนจาก API แล้วผ่าน
-- Free pause ทำให้รับรอง physical deletion SLA ไม่ได้จากราคาเพียงอย่างเดียว ก่อน pilot ต้องพิสูจน์ scheduled jobs/monitoring ที่ใช้งานจริง ถ้ารับรองไม่ได้ต้องอัปเกรดหรือกลับผู้ใช้ตัดสิน ไม่สร้าง keepalive เพื่อหลบ policy
-- DB backups ไม่ได้รวม Storage objects โดยอัตโนมัติ ดู [Supabase backups](https://supabase.com/docs/guides/platform/backups)
+- Scheduler ยังไม่ติดตั้ง การ deploy bucket ไม่พิสูจน์ physical deletion SLA ต้องทดสอบ retry/monitoring กับ scale-to-zero และ outages ของ host จริงก่อน pilot
+- ตรวจ Neon history/restore และ Object Storage branch semantics จาก provider จริง ห้ามนำสมมติฐาน backup ของ Supabase มาใช้; child branches/snapshots ที่มีสลิปต้องถูกลบภายใน parent deadline เดิมด้วย
 - ก่อนใช้ข้อมูลจริงต้องมี encrypted export/restore สำหรับ DB+files และทดสอบ restore การทำ backup ต้องไม่ยืดอายุข้อมูล: แต่ละ archive มี expiry ตามข้อมูลที่หมดอายุเร็วสุดหรือใช้วิธีลบ/cryptographic erasure ที่พิสูจน์ได้; ห้ามเก็บ backup เกิน retention เพียงเพราะอยากกู้คืน
 - Restore ไป isolated environment ทำ purge ก่อนเปิด API; ไม่คืนบัญชี/permissions เก่าที่ถูกเพิกถอน
 - Provider copies และ managed backups ที่ควบคุมไม่ได้ยังเป็น blocker จนมีหลักฐาน policy/deletion ไม่รับรองลบทุกสำเนาจาก design อย่างเดียว
@@ -80,4 +80,4 @@ TestFlight ไม่ต้องเก็บ UDID; external testers ใช้ก
 | Retention | clock-boundary tests, object+metadata deletion/retry, orphan, backup restore/provider evidence |
 | UI | iPhone flow, accessibility, failure/retry, 0/1/many houses, no notifications permission |
 
-ขณะนี้ยังไม่มี runtime tests เพราะเป็น docs-only repo Required checks รอบนี้คือ git diff --check, local Markdown paths, ownership/scope และ independent design review
+ยังไม่มี application runtime tests รอบ Neon setup ตรวจ CLI plan/deploy/status, bucket access จาก remote, local context/env presence โดยไม่พิมพ์ secrets, lockfile install และ Git/document checks; ผล infrastructure ไม่ปิด acceptance ของแอป

@@ -1,6 +1,6 @@
 # OurHoomu checklist
 
-อัปเดต: 2026-10-12 · **ระยะปัจจุบัน: ออกแบบและเอกสาร ยังไม่มีแอพที่รันได้**
+อัปเดต: 2026-10-12 · **ระยะปัจจุบัน: เอกสารและ Neon setup ยังไม่มีแอพที่รันได้**
 
 Tech Lead เท่านั้นอัปเดตหลังตรวจรับและรวมงาน ใส่ ticket/หลักฐานจริงทุกครั้ง [x] หมายถึงผลลัพธ์ในข้อนั้นเสร็จ ไม่ได้หมายความว่าฟีเจอร์แอพเสร็จ ดู [board](docs/team/board.md) และ [requirement acceptance](docs/team/requirements.md)
 
@@ -20,6 +20,17 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [ ] ผู้ใช้เลือก API ตรวจสลิปและงบ; provider ผ่าน retention gate — [comparison](docs/project/slip-providers.md)
 
 ## 1. Foundation
+
+### Neon setup ที่ผู้ใช้อนุญาต — SW-0015
+
+- [x] ติดตั้ง Neon CLI และ login ผ่าน browser
+- [x] ติดตั้ง project skills และ global MCP ตามคำสั่ง
+- [x] Link lucky-bar-14515304 branch production และตรวจ region/target
+- [x] neon.ts ตรงตัวอย่าง private slip bucket; plan/deploy exit 0 และ remote slip access=private
+- [x] ปรับ active design จาก Supabase เป็น Neon — [ADR-0002](docs/adr/0002-neon.md), [setup report](docs/project/neon-setup.md)
+- [ ] ตรวจ root config/dependencies/secrets และรวมงาน — [SW-0015](docs/team/tickets/SW-0015.md)
+
+### Application foundation ที่ยังรออนุมัติ
 
 - [ ] SW-0003: Monorepo/toolchain/CI และ local app/API รันได้
 - [ ] SW-0004: Schema/RLS/RPC, transaction และ generated contract ผ่าน
@@ -52,4 +63,4 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 
 ## วิธีอัปเดตเมื่อ agent ส่งงาน
 
-Tech Lead ตรวจ artifact กับ acceptance และ required checks → รวมเข้า target → ตรวจผลรวม → อัปเดต ticket/board/checklist พร้อม commit/report/คำสั่งผลจริง เก็บ blocker พร้อม owner และ next action งานที่ไม่ผ่านคง unchecked ผู้ใช้อนุญาตเอกสารแล้วแต่ยังไม่อนุญาตเริ่มพัฒนา
+Tech Lead ตรวจ artifact กับ acceptance และ required checks → รวมเข้า target → ตรวจผลรวม → อัปเดต ticket/board/checklist พร้อม commit/report/คำสั่งผลจริง เก็บ blocker พร้อม owner/next action งานที่ไม่ผ่านคง unchecked ผู้ใช้อนุญาตเอกสารและ Neon setup/deploy เฉพาะรอบนี้ ยังไม่อนุญาตพัฒนาฟีเจอร์แอป

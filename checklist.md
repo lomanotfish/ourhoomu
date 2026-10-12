@@ -1,6 +1,6 @@
 # OurHoomu checklist
 
-อัปเดต: 2026-10-12 · **ระยะปัจจุบัน: เอกสารและ Neon setup ยังไม่มีแอพที่รันได้**
+อัปเดต: 2026-10-12 · **ระยะปัจจุบัน: เริ่ม frontend Expo ตามคำอนุญาตล่าสุด; runtime acceptance ยัง pending**
 
 Tech Lead เท่านั้นอัปเดตหลังตรวจรับและรวมงาน ใส่ ticket/หลักฐานจริงทุกครั้ง [x] หมายถึงผลลัพธ์ในข้อนั้นเสร็จ ไม่ได้หมายความว่าฟีเจอร์แอพเสร็จ ดู [board](docs/team/board.md) และ [requirement acceptance](docs/team/requirements.md)
 
@@ -36,7 +36,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [x] SW-0019: ออกแบบ PostgreSQL 29 ตาราง พร้อม ERD/data dictionary/constraints/indexes/transactions/retention และตรวจรวมเอกสาร — [database](docs/project/database.md)
 - [x] SW-0020: บันทึก stack Elysia/Cloudflare Workers Free + Drizzle/PostgreSQL + React Native/Expo/Bun tooling — [ticket](docs/team/tickets/SW-0020.md); local `9349182`, 208 ลิงก์ภายในผ่าน
 - [x] SW-0021: รวม MVP spec/backlog และตรวจ links/dependency graph หลังรวม — integrated `local` ที่ `749f43e`; 289 local links, 23-ticket dependency/status audit และ cleanup receipt — [spec](docs/project/spec.md), [ticket](docs/team/tickets/SW-0021.md)
-- [ ] SW-0025: ออกแบบ UX/UI ทุก flow ของ iOS MVP ใน Figma file เดียวและทบทวนทุก state — [Figma](https://www.figma.com/design/VOdOjv1SUhkwpjzdGgZPD5), [ticket](docs/team/tickets/SW-0025.md); partial overview/foundations only, blocked by Starter MCP monthly call limit; no plan upgrade or purchase approved
+- SW-0025 cancelled: ผู้ใช้ให้เริ่ม frontend โดยไม่รอ Figma; partial artifact เก็บเป็นประวัติ — [ticket](docs/team/tickets/SW-0025.md)
 - [ ] SW-0022: ตรวจ Elysia Workers/Drizzle Neon transaction feasibility — [ticket](docs/team/tickets/SW-0022.md)
 - [ ] SW-0024: ตรึง Google/Apple session/Neon actor contract — [ticket](docs/team/tickets/SW-0024.md)
 - [ ] ยืนยัน database policy ที่ยังเสนอ รวม replay floor/late-transfer recovery, auth/driver/actor context และ LINE binding ก่อนสร้าง schema จริง
@@ -85,3 +85,11 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 ## วิธีอัปเดตเมื่อ agent ส่งงาน
 
 Tech Lead ตรวจ artifact กับ acceptance และ required checks → รวมเข้า target → ตรวจผลรวม → อัปเดต ticket/board/checklist พร้อม commit/report/คำสั่งผลจริง เก็บ blocker พร้อม owner/next action งานที่ไม่ผ่านคง unchecked ผู้ใช้อนุญาตเอกสารและ Neon setup/deploy เฉพาะรอบนี้ ยังไม่อนุญาตพัฒนาฟีเจอร์แอป
+
+## Frontend รอบที่อนุญาตล่าสุด — SW-0026–0028
+
+- [ ] SW-0026: Visual/motion/flow contract ใน repo โดยไม่รอ Figma
+- [ ] SW-0027: Expo mobile app ธีมน่ารัก, four tabs, demo bills/chores/house flows และ animation/reduced motion
+- [ ] SW-0028: Independent review, integrated checks และ cleanup
+
+Frontend demo ไม่ใช้ปิดการตรวจ API/social login/SlipOK/LINE/retention/TestFlight ของ tickets เดิม.

@@ -30,8 +30,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0023](tickets/SW-0023.md) | Free tier scheduler / retention feasibility | research-engineer | SW-0020 | draft |
 | [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | draft |
 | [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | ผู้ใช้ให้เริ่ม front โดยไม่รอ Figma | cancelled |
-| [SW-0026](tickets/SW-0026.md) | Frontend visual/motion/flow contract ใน repo | uxui-designer | คำสั่ง frontend ล่าสุด | ready |
-| [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + UX/spec เดิม; SW-0026 ร่วมออกแบบ | ready |
+| [SW-0026](tickets/SW-0026.md) | Frontend visual/motion/flow contract ใน repo | uxui-designer | คำสั่ง frontend ล่าสุด | in_progress |
+| [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + UX/spec เดิม; SW-0026 ร่วมออกแบบ | in_progress |
 | [SW-0028](tickets/SW-0028.md) | Independent frontend review | code-reviewer | frozen SW-0027 artifact | draft |
 
 ## Dependency / dispatch gates
@@ -69,3 +69,5 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 - Orca executable `/usr/local/bin/orca`, Run `run_ad3b5396e327`; Lead workspace `/Users/afe/orca/workspaces/ourhoomu/sw-0027-front-lead`.
 - Graft frontend scope: NO_INDEXED_FILES, build succeeded (only neon.ts); `graft ask ... --in ourhoomu-front --source` returned nothing indexed.
 - Next: dispatch UX/frontend isolated workers, inspect frozen output, independent review, local merge, integrated checks and release/cleanup.
+
+- Active: SW-0026 `task_9054f1fb337f` / `ctx_4e6910965a66`; SW-0027 `task_f21d639e3447` / `ctx_94393ae74fb9`. Both actual worker-start receipts ready/input_accepted, separate top-level worktrees at `a7ec76b`.

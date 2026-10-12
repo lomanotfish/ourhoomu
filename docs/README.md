@@ -9,6 +9,7 @@
 | ผู้ใช้ยืนยันอะไร / acceptance | [Requirement brief](team/requirements.md) |
 | Stack และขอบเขตระบบ | [Architecture](project/architecture.md) |
 | การหารเงิน งวด เวร และ retention | [Domain และ data model](project/domain.md) |
+| ตาราง คอลัมน์ ERD constraints และ transaction | [Database design](project/database.md) |
 | หน้าจอและ flow | [UX](project/ux.md) |
 | Frontend/backend เชื่อมกันอย่างไร | [API contract v0.1](project/api-contract.md) |
 | API ตรวจสลิปที่เปรียบเทียบ | [Slip providers](project/slip-providers.md) |

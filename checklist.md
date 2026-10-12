@@ -33,6 +33,9 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 
 ### Application foundation ที่ยังรออนุมัติ
 
+- [x] SW-0019: ออกแบบ PostgreSQL 29 ตาราง พร้อม ERD/data dictionary/constraints/indexes/transactions/retention และตรวจรวมเอกสาร — [database](docs/project/database.md)
+- [ ] ยืนยัน database policy ที่ยังเสนอ รวม replay floor/late-transfer recovery, auth/runtime และ LINE binding ก่อนสร้าง schema จริง
+
 - [ ] SW-0003: Monorepo/toolchain/CI และ local app/API รันได้
 - [ ] SW-0004: Schema/RLS/RPC, transaction และ generated contract ผ่าน
 - [ ] SW-0005: Google/Apple session ผ่าน API, บ้าน/คำเชิญ/บัญชีรับเงิน

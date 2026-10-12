@@ -15,6 +15,7 @@
 - ประวัติทุกอย่างไม่เกินหนึ่งปีนับจากสร้าง
 - เปรียบเทียบ provider แล้ว; ผู้ใช้เลือก SlipOK ตามคำสั่ง “ใช้ slipOk แทน” เมื่อ 2026-10-12 ยังไม่ได้ซื้อหรือเชื่อม API จริง
 - เลือก Neon database; อนุญาต CLI/skills/MCP/link โปรเจกต์ lucky-bar-14515304 branch production, config private slip bucket และ neon deploy ตาม SW-0015
+- ขอออกแบบ database ตาม requirement ล่าสุด — [database design](database.md), SW-0019; ยังไม่ได้อนุมัติ schema migration/full implementation
 
 ## ข้อเสนอของ Tech Lead สำหรับตรวจแบบ
 
@@ -38,6 +39,7 @@
 | เรื่อง | Owner / next action | ขวางอะไร |
 |---|---|---|
 | อนุมัติ design v0.1 รวม D1–D12 หรือระบุข้อแก้ | ผู้ใช้ผ่าน Tech Lead หลังอ่านเอกสาร | เริ่ม implementation ทุก ticket |
+| Database operational policies | Tech Lead เสนอ replay floor เพื่อกันสลิปซ้ำหลัง purge/restore, nullable provenance สำหรับลบอดีตสมาชิก และ TTL/เงินเพดาน/clock tolerance ตาม [database design](database.md); ผู้ใช้ตรวจผลต่อ late-transfer UX ก่อนตรึง schema | SW-0004 และ credit/recovery ที่เกี่ยวข้อง ไม่ใช่การยืนยันว่า deploy แล้ว |
 | LINE OA ผู้รับ/การผูกบัญชีหรือกลุ่ม/ข้อความ และ retention สำเนาใน LINE | Tech Lead รอคำตอบผู้ใช้เรื่องปลายทางก่อนตรึง flow; credentials ให้ภายหลัง; scope เงินโอน/เงินสดทุกงวดเป็นข้อเสนอ | SW-0018 และการส่งข้อมูลจริง; ไม่ขัดขวางเอกสารส่วนที่ยืนยันแล้ว |
 | SlipOK credentials/แพ็กเกจและงบ | เลือก SlipOK แล้ว; ผู้ใช้เตรียม key/branch ID ใน secret store และยืนยันงบก่อนซื้อ; Tech Lead ตรวจ multi-recipient matching | ต่อ API จริง/ซื้อแพ็กเกจ ไม่ขวางการส่งเอกสาร |
 | ผู้ให้บริการเก็บข้อมูล/ลบก่อนครบ 365 วันได้จริงหรือไม่ | Tech Lead/platform ตรวจข้อกำหนดและหลักฐานจาก provider ที่เลือก โดยไม่ส่งข้อความภายนอกจนได้รับคำสั่ง | เปิดใช้สลิปจริง; ไม่อ้างว่าสอดคล้อง retention แล้ว |

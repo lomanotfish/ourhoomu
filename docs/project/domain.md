@@ -110,27 +110,12 @@ API บังคับ scope ก่อนคืน feed; กิจกรรม�
 
 แผน purge ล่วงหน้าเป็นข้อเสนอเพื่อทำให้ไม่เกินหนึ่งปีจริง ผู้ใช้ตรวจร่วมกับ D7 ก่อน implementation ดูข้อจำกัด external copies ใน [operations](operations.md) และ [provider comparison](slip-providers.md)
 
-## Logical schema สำหรับ data-engineer
+## Database design สำหรับ data-engineer
 
-| Entity | Fields / constraints สำคัญ |
-|---|---|
-| profiles | user_id unique → auth.users; display_name; current locale |
-| auth_challenges | provider; challenge/proof digest; expiry ไม่เกิน 5 นาที; consumed_at; atomic consume; ไม่มี raw ID token |
-| houses | id; name; timezone; created_by |
-| house_memberships | id; house_id; user_id; role; state; unique(house_id,user_id); เก็บชื่อ snapshot แยกใน history |
-| house_invitations | house_id; token_digest unique; expiry; consumed_by/at; revoked_at |
-| recipient_accounts | owner_user_id; bank_code; private account identifier; masked display; access เฉพาะเจ้าของ/การใช้ในบิลที่อนุญาต |
-| bills | house_id; creator_id; recipient_id; total_satang; currency THB; status; due_date; version; account snapshot; created_at; expires_at; retention_deadline_at |
-| bill_shares | bill_id + membership_id unique; bps; amount_satang; self_covered; snapshot name; composite house linkage |
-| payment_attempts | share_id; payer_id; method; declared/verified amount; status; idempotency key; reservation; version; expiry capped to bill |
-| slip_artifacts | attempt_id; uploader_id; private object path unique; hash; size/type; finalized_at; expires_at capped to bill |
-| verified_transfers | normalized bank reference unique across app while retained; transaction_at; attempt_id; minimal result; expiry capped to parent |
-| chore_schedules | house_id; creator_id; mode; local rule; ordered pool; anchor; revision; active flag |
-| chore_occurrences | house_id; schedule_id nullable; local_date; assignee_id; task snapshot; state; completed_at; created_at; expires_at; retention_deadline_at; unique rule occurrence |
-| activity_events | house_id; actor; event_type; subject; minimal payload; created_at; expiry capped to parent |
-| activity_read_state | user_id + house_id unique; last_seen cursor; current state |
-| maintenance_jobs | bounded metadata/object deletion/reconcile state; no raw slip/token; expire/delete on completion and within parent retention |
+ใช้ [database design SW-0019](database.md) เป็นแหล่งจริงล่าสุดสำหรับตาราง/columns/types/PK/FK/CHECK/indexes/transactions และ ERD แทน logical table shorthand เดิม ซึ่งเคยมี profiles→auth.users ที่ไม่ตรง Neon แบบใหม่ใช้ app-owned users/issuer-subject identities โดยไม่สมมติ managed auth schema; provider/session/runtime ยัง pending
 
-Cross-house foreign keys/checks และ authorization ต้องป้องกัน id ของบ้านอื่นตั้งแต่ database; ไม่พึ่งการกรอง frontend Index อย่างน้อย membership(user_id,state), bills(house_id,created_at,id), shares(bill_id), attempts(share_id,status), occurrences(house_id,local_date), events(house_id,created_at,id), expiry indexes ที่ purge ใช้
+Schema implementation อยู่ SW-0004 และยัง draft การส่งแบบไม่ได้สร้างตารางหรือผ่าน migration/RLS/concurrency tests แล้ว
 
-Retention อาจชน unique bank reference หลังลบประวัติ: รับธุรกรรมเฉพาะ transaction_at >= bill.created_at เสมอ เพื่อไม่ให้โอนเก่าที่ลบ dedupe แล้วนำกลับมาใช้กับบิลใหม่
+Retention กับ dedupe: transaction_at>=bill.created_at อย่างเดียวไม่กัน replay หลังลบ reference หากบิลเก่าอีกใบยังอยู่ แบบเสนอ singleton replay_floor_at ซึ่งเพิ่มก่อน purge/early reference deletion และ fence หลัง restore ก่อนเปิด credit (§3.3); ไม่เก็บ hash รายธุรกรรมเกิน parent expiry และไม่กำหนดสลิปทั่วไปอายุ24ชั่วโมง ต้องตรวจ late-transfer/needs_attention UX ก่อน implementation
+
+Current chore templates/revisions อาจอ้างอดีตสมาชิกนานกว่าประวัติ จึงต้องมี nullable provenance/pool slots และ privacy-maintenance detach ที่รักษา rotation position พร้อม revoke LINE bindings ของสมาชิก/ผู้ผูกที่ออกก่อน purge ตามแบบ ไม่เก็บ membership history ถาวรเพื่อให้ FK ผ่าน

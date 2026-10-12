@@ -8,6 +8,8 @@
 
 ขอบเขตเดิมคือออกแบบและเอกสารก่อนพัฒนา ต่อมาผู้ใช้อนุญาต Neon setup โดยเฉพาะ: ติดตั้ง CLI/skills/MCP, link production, ติดตั้ง config dependencies, เขียน neon.ts และ neon deploy ตาม SW-0015 ยังไม่อนุญาต application implementation, domain migrations หรือเผยแพร่ iOS build
 
+คำสั่งล่าสุด “ออกแบบ database ตาม requirement” อนุญาต database design ตาม [SW-0019](tickets/SW-0019.md) ครอบคลุม SlipOK และ LINE OA ที่เพิ่มแล้ว ไม่ใช่การอนุมัติรัน migration บน production หรืออนุมัติ pending product decisions
+
 ## ข้อกำหนดที่ผู้ใช้ยืนยัน
 
 | ID | พฤติกรรมที่ต้องได้ |

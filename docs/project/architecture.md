@@ -15,6 +15,8 @@
 | Background maintenance | Scheduler/retention/outbox worker รอเลือกกับ API hosting | purge แม้ไม่มีใครเปิดแอป; LINE OA ยืนยันการจ่ายตาม R16; ไม่มี APNs/Expo Push |
 
 เพิ่ม [LINE OA payment notifications](line-oa.md): transaction ยืนยันเงินบันทึก outbox พร้อม domain event; worker ส่ง Messaging API หลัง commit ด้วย server credentials เท่านั้น LINE failure ไม่ย้อนเครดิต ปลายทางและ binding ยังรอผู้ใช้ยืนยัน ไม่ใช่ integration ที่ deploy แล้ว
+
+แบบ PostgreSQL ล่าสุด: [database design](database.md) แสดง 29 ตารางพร้อม ERD, data dictionary, composite tenant FKs, money/chores/LINE transactions และ purge/restore; เป็น proposed contract สำหรับ SW-0004 ยังไม่มี domain tables ที่ deploy แล้ว
 | Distribution | Expo development build, EAS Build, TestFlight | ทดสอบ native integrations และแจก beta |
 
 ให้ scaffold ticket pin versions ที่เข้ากันจริงจาก official docs ตอนเริ่ม ไม่ pin SDK จากการคาดเดาในเอกสารนี้

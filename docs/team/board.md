@@ -45,6 +45,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0039](tickets/SW-0039.md) | Independent data/security contract review | data-engineer | Frozen SW-0036 proposal | done (changes_requested; follow-up pending) |
 | [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | in_progress |
 | [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (changes_requested) |
+| [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen aa36bf3, SW-0034 | ready |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates

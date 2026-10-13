@@ -2865,7 +2865,7 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/Bill"
+                            "$ref": "#/components/schemas/BillListItem"
                           }
                         }
                       },
@@ -8221,6 +8221,22 @@
             "items": {
               "$ref": "#/components/schemas/Participant"
             }
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "description": "House-local due date used for overdue badge; does not change money state",
+            "examples": [
+              "2026-10-20"
+            ]
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the bill",
+            "examples": [
+              "🏡"
+            ]
           }
         },
         "required": [
@@ -8228,7 +8244,8 @@
           "totalSatang",
           "currency",
           "recipientMembershipId",
-          "participants"
+          "participants",
+          "dueDate"
         ]
       },
       "BillPatch": {
@@ -8267,6 +8284,22 @@
             "minimum": 1,
             "examples": [
               1
+            ]
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "description": "House-local due date used for overdue badge; does not change money state",
+            "examples": [
+              "2026-10-20"
+            ]
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the bill",
+            "examples": [
+              "🏡"
             ]
           }
         },
@@ -8440,7 +8473,7 @@
           },
           "totalSatang": {
             "type": "integer",
-            "minimum": 0,
+            "minimum": 1,
             "maximum": 900000000000,
             "examples": [
               20000
@@ -8458,13 +8491,13 @@
           "status": {
             "type": "string",
             "examples": [
-              "published"
+              "open"
             ],
             "enum": [
               "draft",
-              "published",
+              "open",
               "settled",
-              "void"
+              "voided"
             ]
           },
           "version": {
@@ -8502,6 +8535,22 @@
               "2026-10-13T00:00:00Z"
             ],
             "format": "date-time"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "description": "House-local due date used for overdue badge; does not change money state",
+            "examples": [
+              "2026-10-20"
+            ]
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the bill",
+            "examples": [
+              "🏡"
+            ]
           }
         },
         "required": [
@@ -8516,7 +8565,8 @@
           "version",
           "shares",
           "createdAt",
-          "expiresAt"
+          "expiresAt",
+          "dueDate"
         ],
         "x-field-visibility": {
           "recipientAccountPrivate": "present only for live recipient or payer with outstanding share; absent for all others including creator/owner by default",
@@ -8835,6 +8885,14 @@
           },
           "rule": {
             "$ref": "#/components/schemas/ChoreRule"
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the chore or schedule",
+            "examples": [
+              "🧹"
+            ]
           }
         },
         "required": [
@@ -8867,6 +8925,14 @@
             "minimum": 1,
             "examples": [
               1
+            ]
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the chore or schedule",
+            "examples": [
+              "🧹"
             ]
           }
         },
@@ -8915,6 +8981,14 @@
               "2026-10-13T00:00:00Z"
             ],
             "format": "date-time"
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the chore or schedule",
+            "examples": [
+              "🧹"
+            ]
           }
         },
         "required": [
@@ -8949,6 +9023,14 @@
               "550e8400-e29b-41d4-a716-446655440001"
             ],
             "format": "uuid"
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the chore or schedule",
+            "examples": [
+              "🧹"
+            ]
           }
         },
         "required": [
@@ -8976,6 +9058,14 @@
             "minimum": 1,
             "examples": [
               1
+            ]
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the chore or schedule",
+            "examples": [
+              "🧹"
             ]
           }
         },
@@ -9053,6 +9143,14 @@
               "2026-10-13T00:00:00Z"
             ],
             "format": "date-time"
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the chore or schedule",
+            "examples": [
+              "🧹"
+            ]
           }
         },
         "required": [
@@ -9171,6 +9269,163 @@
         },
         "required": [
           "throughCursor"
+        ]
+      },
+      "BillListItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Active-house summary projection. No shares, full bank destination, slip or provider fields.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "houseId": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "creatorMembershipId": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "recipientMembershipId": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "examples": [
+              "ค่าใช้จ่ายส่วนกลาง"
+            ]
+          },
+          "emoji": {
+            "type": "string",
+            "maxLength": 8,
+            "description": "Optional client display icon persisted with the bill",
+            "examples": [
+              "🏡"
+            ]
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "description": "House-local due date used for overdue badge; does not change money state",
+            "examples": [
+              "2026-10-20"
+            ]
+          },
+          "totalSatang": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 900000000000,
+            "examples": [
+              20000
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "examples": [
+              "THB"
+            ],
+            "enum": [
+              "THB"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "examples": [
+              "open"
+            ],
+            "enum": [
+              "draft",
+              "open",
+              "settled",
+              "voided"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "examples": [
+              1
+            ]
+          },
+          "recipientAccountMasked": {
+            "type": "string",
+            "examples": [
+              "••••7890"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "format": "date-time"
+          },
+          "confirmedSatang": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 900000000000,
+            "description": "Sum of confirmed payer installments; recipient self-covered share excluded",
+            "examples": [
+              0
+            ]
+          },
+          "outstandingSatang": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 900000000000,
+            "description": "Sum of unpaid non-recipient shares; pending attempts do not reduce this",
+            "examples": [
+              0
+            ]
+          },
+          "pendingSatang": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 900000000000,
+            "description": "Sum of active reserved payment amounts, shown separately from outstanding",
+            "examples": [
+              0
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "houseId",
+          "creatorMembershipId",
+          "recipientMembershipId",
+          "title",
+          "dueDate",
+          "totalSatang",
+          "currency",
+          "status",
+          "version",
+          "createdAt",
+          "expiresAt",
+          "confirmedSatang",
+          "outstandingSatang",
+          "pendingSatang"
         ]
       }
     }

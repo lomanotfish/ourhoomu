@@ -18,3 +18,7 @@ Neon Managed Auth remains first candidate from approved plan, but current eviden
 Lead owns confirmation/contract acceptance, board/ticket/checklist and integration. SW-0036 backend engineer may write OpenAPI/transport contract proposal and report only, then data/security and FE inspect frozen artifact. Foundation/schema/features start after relevant accepted artifact, not from runtime task success alone. One writer per isolated worktree; shared registry/config/locks/schema owner as plan.
 
 Run run_a401e29c745e; current coordinator term_3477fed4-f980-4cc6-994c-81da695c46b2, consumer generation 3 (original term_64588939-5e2c-4ec0-a5d2-a34ed614b39e). Lead worktree /Users/afe/orca/workspaces/ourhoomu/sw-0036-core-lead, branch witchagorn/sw-0036-core-lead. Root user guide diff and untracked bun.lock preserved. Graft0.21.1 exact Lead build26files110nodes293edges; ACTIVE supported code, raw fallback for docs.
+
+## Operational clarification — 2026-10-14
+
+Lead freezes non-history mutation idempotency locator24h from initial accept; history locators persist through capped parent access expiry. Clients informed in SW-0044: no automatic uncertain old-write replay after window; semantic uniques/version checks remain. Invitation token and refresh-family encrypted replay5min rules unchanged. Latest core transaction lock order supersedes older database design idempotency-first prose. Wire7756bcc unchanged.

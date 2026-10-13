@@ -287,7 +287,7 @@ export function RowLink({
       </View>
       <View style={{ flex: 1 }}>
         <Label style={{ fontWeight: '700' }}>{title}</Label>
-        {caption && <Small>{caption}</Small>}
+        {Boolean(caption) && <Small>{caption}</Small>}
       </View>
       <ChevronRight size={19} color={colors.muted} />
     </Tap>
@@ -308,7 +308,7 @@ export function Field({
         style={[styles.input, error ? { borderColor: colors.error } : null]}
         {...props}
       />
-      {error && <Small style={{ color: colors.error }}>{error}</Small>}
+      {Boolean(error) && <Small style={{ color: colors.error }}>{error}</Small>}
     </View>
   );
 }
@@ -336,7 +336,7 @@ export function SectionHead({
       }}
     >
       <Label style={{ fontSize: 18, fontWeight: '700' }}>{title}</Label>
-      {action && onPress && (
+      {Boolean(action) && onPress && (
         <Tap onPress={onPress} accessibilityLabel={action}>
           <Small style={{ color: colors.coralDark, fontWeight: '700' }}>{action} ›</Small>
         </Tap>
@@ -385,7 +385,7 @@ export function Page({
           <Label>ย้อนกลับ</Label>
         </Tap>
       )}
-      {title && <Title style={{ marginBottom: 20 }}>{title}</Title>}
+            {Boolean(title) && <Title style={{ marginBottom: 20 }}>{title}</Title>}
       {children}
     </View>
   );

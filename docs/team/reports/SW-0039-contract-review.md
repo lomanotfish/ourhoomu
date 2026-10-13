@@ -79,3 +79,75 @@ This recovery preserved the pre-existing uncommitted report draft and added F7; 
 - **Graft: ACTIVE** for supported code in exact worktree `/Users/afe/orca/workspaces/ourhoomu/sw-0039-contract-review`: `graft --version` → `0.21.1`, `graft map` exit 0 → 26 JS/TS files, 84 symbols, 293 edges. Contract Markdown/YAML is outside the listed indexed scope, so this review uses raw documentation and immutable `git show` fallback. The map reported estimated savings **29,825 tokens, one retrieval call**; this is tool-reported orientation savings, not a measured reduction in contract review cost. The earlier build-only evidence above belongs to the preserved draft.
 
 Lead must route F7 with F1–F6 and accept an explicitly reviewed replacement SHA before unblocking dependent wire-contract implementation. Local/dev identity fixtures still cannot substitute for native issuer proof or external provider/retention gates.
+
+## Independent recheck — 2026-10-13 — frozen `115f879`
+
+**Verdict: changes_requested.** Review completed successfully; contract acceptance remains with the Lead. This section reviews immutable root-contract commit `115f8792ee75927ca42de2a41973236a376074a7`, read through `git show` without checkout or source edits. Its OpenAPI still has 48 operations and version `0.2.0-proposal`; consumers must identify it by SHA, not the unchanged version label. The original findings above remain historical evidence about `0c88553`, not assertions that each defect still exists.
+
+Original-review report commit: `3b8b2c2`. This recheck independently inspected revised OpenAPI operation references, component schemas, error responses and core module prose against the approved local/dev values. F3 is partially resolved, and two further concrete consumer defects remain as F8/F9 below.
+
+| Finding | Recheck result | Evidence in `115f879` |
+|---|---|---|
+| F1 | Addressed | Bill list `data.items` now references closed `BillListItem`, which has no shares/private-account field. Detail `Bill` retains explicit live-viewer private-account visibility. |
+| F2 | Addressed for reviewed contract surfaces | Required `BillActions`, `PaymentActions`, `ChoreActions`; method-discriminated cash/transfer `PaymentSummary`; cash decision audit fields; chore completion actor/time and separate assignment state; dashboard amounts attributed to current viewer. Field descriptions define transition presence. Runtime authority/state invariants still need implementation checks. |
+| F3 | Partially addressed; required change remains | Refresh drops 403/404/410; invitation acceptance drops 410 and defines one opaque 404 `invite_unavailable`. Other operation status maps remain generic; see residual finding below. |
+| F4 | Addressed at contract level | Refresh family lock, five-minute exact old-credential/key/body replay, different reuse revocation, concurrent convergence and logout winning over replay are now explicit in prose and `x-refresh-rotation`. No native issuer/runtime proof claimed. |
+| F5 | Addressed at contract level | Core module defines active membership before child existence/expiry, removed-member hidden 404 regardless of expiry, no retained DTO access, parent-capped tombstones and client cache clearing. |
+| F6 | Addressed within retained gates | Separate issued/metadata invitation DTOs and encrypted five-minute exact issuance retry; scoped `Member` without global user ID; version/removedAt tombstone semantics. `DELETE /v1/me` now has **no 2xx response** and must return gated 503 instead of a false `Me` success. Deletion workflow acceptance remains deferred explicitly. |
+| F7 | Addressed and instance-tested | All 47 remaining composed JSON success schemas remove the closed data-only branch and close composition with `unevaluatedProperties: false`; all 47 synthesized valid instances pass and all 47 extra-field cases fail. One fewer composed response follows removal of deletion success. |
+
+### F3 residual — Route status matrix is still incomplete
+
+- **Location:** `docs/project/openapi.yaml` at frozen `115f879`, JSON paths `paths["/v1/auth/challenges"].post.responses`, `paths["/v1/auth/exchange"].post.responses`, `paths["/v1/auth/logout"].post.responses`, `paths["/v1/me"].get.responses` and remaining house-bound operation responses; auth challenge/exchange/logout paths start at lines `20`, `174`, `464`, and `/v1/me` at `596`.
+- **Evidence:** Challenge creation still advertises 403/404/410 including `410: Previously accessible resource expired`, although this creates a public auth challenge rather than reading an expired house child. Exchange/logout/profile and most operations retain the same blanket 400/401/403/404/409/410/429 responses. Core module's improved house-read evaluation order does not provide a route-family matrix for these non-house operations or fully identify mutation authorization/expiry evaluation order. An expired credential/challenge cannot be mapped interchangeably to session 401 and retained-resource 410 without a contract rule.
+- **Required change:** Restrict each route family to applicable HTTP/error-code pairs, define auth challenge/proof/session expiry separately, and connect house-bound reads **and mutations** to the stated membership-first hiding rule. Keep unknown/cross-house/revoked-member cases indistinguishable and use 410 only where the caller has the required live access proof. Do not introduce house-existence disclosure through invitation errors. Lead/contract owner owns the revision; reviewer did not change the source.
+
+### F8 — Stale-version responses promise an untyped version projection
+
+- **Severity:** required wire-contract correction.
+- **Location:** `paths["/v1/houses/{houseId}/bills/{billId}"].patch.x-expected-version` and `.responses["409"]`; `components.schemas.Error` at `docs/project/openapi.yaml:7398-7422` in `115f879`. Same generic error DTO is reused by the other expected-version mutations. Core module transaction prose promises a current authorized version/resource projection.
+- **Issue:** `x-expected-version` promises `409 with current authorized resource version`, but closed `ErrorEnvelope`/`Error` permits only code/message/string-valued fields. There is no typed current-version or authorized-resource property, nor a specified mapping into `fields`. A generated client cannot consume the promised integer version/resource; a handler adding it as a normal typed field violates the response schema.
+- **Independent evidence:** Validating a 409 instance with `error.currentVersion=2` fails with `Additional properties are not allowed ('currentVersion' was unexpected)`. Encoding it as `error.fields.currentVersion=2` also fails: `2 is not of type 'string'`. A string encoding would be schema-valid but remains unspecified and loses the contract's typed version. This finding requests a defined representation rather than claiming every possible encoding is impossible.
+- **Required change:** Type a version-conflict error variant with `currentVersion` and, if returned, a viewer-authorized resource projection; reference it from applicable 409 responses and distinguish it from idempotency conflict. Alternatively explicitly revise the contract to require a refetch and remove the version-in-response promise. Never include another household's projection or replay private stale permissions.
+
+### F9 — Dashboard aggregates incorrectly inherit the per-bill money cap
+
+- **Severity:** required data-range correction.
+- **Location:** `components.schemas.Dashboard.properties.{outstandingSatang,owedToMeSatang,pendingSatang}.maximum`, `docs/project/openapi.yaml:9025-9062` in `115f879`.
+- **Issue:** These properties now correctly describe totals for the current viewer across a house, but each remains capped at `900000000000`, the approved bound on an individual bill/payment. The approved contract imposes no aggregate house/viewer credit limit or bill-count limit. Three legal bills of 900,000,000,000 satang split equally between recipient A and payer B give B 450,000,000,000 per bill and **1,350,000,000,000** total debt; dashboard cannot represent that exact total. A's owed-to-me total and B's fully reserved pending total can exceed the same cap. Clamping or silently omitting bills would misstate balances.
+- **Independent evidence:** `Draft202012Validator` rejects an otherwise valid Dashboard with `outstandingSatang=1350000000000`: `1350000000000 is greater than the maximum of 900000000000`. Separate instances setting owed-to-me or pending to that value fail at their corresponding property too. This example is below JavaScript's exact-integer limit, so it is specifically an aggregate bound error, not numeric precision loss.
+- **Required change:** Keep individual monetary bounds, but define exact aggregate representation/range independently and check it against the maximum possible retained bill totals. If finite safe-integer totals cannot be guaranteed, specify a precise wire representation and overflow handling. Do not add an unapproved product-wide debt limit solely to satisfy this schema.
+
+### Recheck validation and reproducibility
+
+- Frozen reads: `git show 115f879:docs/project/openapi.yaml > /tmp/sw0039-recheck-openapi.json` and `git show 115f879:docs/project/core-api-contract.md`. `openapi_spec_validator.validate_spec` **OK** for both immutable documents; structural validity alone does not resolve any data/authorization finding.
+- `Draft202012Validator` with `FormatChecker`, local component references and synthesized required fields tested all composed JSON 2xx schemas: original **0/48 valid**, every failure includes the closed branch; replacement **47/47 valid**, **47/47 reject an unknown top-level field**. Samples traverse `$ref`, select a legal `oneOf`/enum/const branch, provide required object fields, minimum-length arrays and format-valid UUID/date/timestamps. These are schema satisfiability checks, not domain-state, authorization, concurrency or provider fixtures. The binary slip response and standalone webhook success are outside this composed-response count.
+- Minimal durable reproduction of the list case (after the frozen `git show` commands above; isolated tools only):
+
+```python
+import json
+from jsonschema import Draft202012Validator, FormatChecker
+
+for name in ("original", "recheck"):
+    document = json.load(open(f"/tmp/sw0039-{name}-openapi.json"))
+    schema = document["paths"]["/v1/houses/{houseId}/bills"]["get"][
+        "responses"]["200"]["content"]["application/json"]["schema"]
+    validator = Draft202012Validator(
+        {"$ref": "#/response", "response": schema,
+         "components": document["components"]},
+        format_checker=FormatChecker(),
+    )
+    instance = {"data": [], "nextCursor": None,
+                "requestId": "550e8400-e29b-41d4-a716-446655440001"}
+    print(name, [error.message for error in validator.iter_errors(instance)])
+    print(name, "extra field rejected", bool(list(
+        validator.iter_errors(dict(instance, unexpected=True)))))
+```
+
+- Observed list output: original rejects `nextCursor`/`requestId`; replacement returns no errors; replacement unknown-field instance is rejected. Validator versions remain `openapi-spec-validator 0.7.2` / `jsonschema 4.25.1`, executed in the existing isolated `/tmp` environment with no repository dependency changes. Python emitted an existing LibreSSL/urllib3 warning during OpenAPI validator import; validations completed with exit 0 and used local documents, not network requests.
+- Report checks: executed the embedded Python reproduction successfully, verified both `/tmp` documents are byte-identical to their named `git show` sources, and checked referenced project paths. `git diff --check` passed; `git status --short` showed only this report modified before the recheck commit. Markdown inspection confirmed closed fences and the original/recheck verdict separation.
+- **Graft: ACTIVE**, same exact-worktree `graft map` evidence as the recovery checkpoint; no additional retrieval calls or invented savings. Immutable contract docs remain raw-read fallback outside indexed scope. Checks do not attest any DB write, runtime API, production, native login, provider precision, SlipOK/LINE interaction, private-storage lifecycle or deployment.
+
+### Remaining ownership and acceptance gates
+
+Lead/contract owner must resolve residual F3 and F8/F9, freeze the next SHA and request focused revalidation before accepting consumer DTOs. Core identity/provider gates remain: Google/Apple/native issuer proof, real session enforcement, SlipOK recipient/precision/retention, private-storage integration, LINE destination/binding/credentials, account-deletion workflow and external-copy/backup retention. Local/dev core authorization does not authorize production/provider/deployment work. Worker changes are limited to this report; integration, ticket/board acceptance and cleanup remain with the Lead.

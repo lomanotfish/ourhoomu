@@ -1,0 +1,3160 @@
+{
+  "id": "e9708a6d-f051-4375-a58b-f6a7fdc0ef83",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "core.recipient_accounts": {
+      "name": "recipient_accounts",
+      "schema": "core",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "owner_user_id": {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bank_code": {
+          "name": "bank_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identifier_kind": {
+          "name": "identifier_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identifier_ciphertext": {
+          "name": "identifier_ciphertext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identifier_digest": {
+          "name": "identifier_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key_version": {
+          "name": "key_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "masked_account": {
+          "name": "masked_account",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_default": {
+          "name": "is_default",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "archived_expires_at": {
+          "name": "archived_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        }
+      },
+      "indexes": {
+        "account_owner_idx": {
+          "name": "account_owner_idx",
+          "columns": [
+            {
+              "expression": "owner_user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "state",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "account_user_fk": {
+          "name": "account_user_fk",
+          "tableFrom": "recipient_accounts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "owner_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "account_owner_pair": {
+          "name": "account_owner_pair",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "owner_user_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "account_valid": {
+          "name": "account_valid",
+          "value": "identifier_kind IN ('bank_account','promptpay') AND identifier_digest ~ '^[0-9a-f]{64}$' AND length(identifier_ciphertext)>0 AND key_version>0 AND length(bank_code) BETWEEN 1 AND 32 AND length(label) BETWEEN 1 AND 100 AND length(masked_account) BETWEEN 1 AND 64 AND state IN ('active','archived') AND version>0 AND ((state='active' AND archived_at IS NULL AND archived_expires_at IS NULL) OR (state='archived' AND archived_at IS NOT NULL AND archived_expires_at>archived_at AND archived_expires_at<=archived_at+interval '8760 hours'))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.activity_events": {
+      "name": "activity_events",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "actor_membership_id": {
+          "name": "actor_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_type": {
+          "name": "event_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bill_id": {
+          "name": "bill_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occurrence_id": {
+          "name": "occurrence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confirmation_id": {
+          "name": "confirmation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "activity_feed_idx": {
+          "name": "activity_feed_idx",
+          "columns": [
+            {
+              "expression": "house_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "activities_expiry_idx": {
+          "name": "activities_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "activities_house_fk": {
+          "name": "activities_house_fk",
+          "tableFrom": "activity_events",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "activity_actor_fk": {
+          "name": "activity_actor_fk",
+          "tableFrom": "activity_events",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "actor_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "activity_bill_fk": {
+          "name": "activity_bill_fk",
+          "tableFrom": "activity_events",
+          "tableTo": "bills",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "bill_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "activity_occurrence_fk": {
+          "name": "activity_occurrence_fk",
+          "tableFrom": "activity_events",
+          "tableTo": "chore_occurrences",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "occurrence_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "activity_events_house_id_id_pk": {
+          "name": "activity_events_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "activities_id_unique": {
+          "name": "activities_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "activity_valid": {
+          "name": "activity_valid",
+          "value": "NOT(bill_id IS NOT NULL AND occurrence_id IS NOT NULL) AND (confirmation_id IS NULL OR bill_id IS NOT NULL)"
+        },
+        "activities_history": {
+          "name": "activities_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.payment_attempts": {
+      "name": "payment_attempts",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bill_id": {
+          "name": "bill_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payer_membership_id": {
+          "name": "payer_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "method": {
+          "name": "method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount_satang": {
+          "name": "amount_satang",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reservation_until": {
+          "name": "reservation_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reservation_released_at": {
+          "name": "reservation_released_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decision_by_membership_id": {
+          "name": "decision_by_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decided_at": {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rejection_reason": {
+          "name": "rejection_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "attempt_reserved_idx": {
+          "name": "attempt_reserved_idx",
+          "columns": [
+            {
+              "expression": "house_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "bill_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "payer_membership_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "reservation_until",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "attempts_expiry_idx": {
+          "name": "attempts_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "attempts_house_fk": {
+          "name": "attempts_house_fk",
+          "tableFrom": "payment_attempts",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "attempt_share_fk": {
+          "name": "attempt_share_fk",
+          "tableFrom": "payment_attempts",
+          "tableTo": "bill_shares",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "bill_id",
+            "payer_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "bill_id",
+            "membership_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "attempt_decider_fk": {
+          "name": "attempt_decider_fk",
+          "tableFrom": "payment_attempts",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "decision_by_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "payment_attempts_house_id_id_pk": {
+          "name": "payment_attempts_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "attempts_id_unique": {
+          "name": "attempts_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "attempt_bill_payer_tuple": {
+          "name": "attempt_bill_payer_tuple",
+          "nullsNotDistinct": false,
+          "columns": [
+            "house_id",
+            "bill_id",
+            "id",
+            "payer_membership_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "attempt_valid": {
+          "name": "attempt_valid",
+          "value": "amount_satang BETWEEN 1 AND 900000000000 AND version>0 AND created_at<reservation_until AND reservation_until<=expires_at AND ((method='cash' AND status IN ('awaiting_confirmation','confirmed','rejected','cancelled')) OR (method='transfer' AND status IN ('awaiting_upload','verifying','pending_verification','needs_attention','cancelled'))) AND (status NOT IN ('confirmed','rejected','cancelled') OR reservation_released_at IS NOT NULL)"
+        },
+        "attempts_history": {
+          "name": "attempts_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.bills": {
+      "name": "bills",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "creator_membership_id": {
+          "name": "creator_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_membership_id": {
+          "name": "recipient_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_user_id": {
+          "name": "recipient_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "emoji": {
+          "name": "emoji",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_satang": {
+          "name": "total_satang",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency": {
+          "name": "currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'THB'"
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "voided_at": {
+          "name": "voided_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "bills_expiry_idx": {
+          "name": "bills_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bill_feed_idx": {
+          "name": "bill_feed_idx",
+          "columns": [
+            {
+              "expression": "house_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "bills_house_fk": {
+          "name": "bills_house_fk",
+          "tableFrom": "bills",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "bill_creator_fk": {
+          "name": "bill_creator_fk",
+          "tableFrom": "bills",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "creator_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "bill_recipient_fk": {
+          "name": "bill_recipient_fk",
+          "tableFrom": "bills",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "recipient_membership_id",
+            "recipient_user_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id",
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "bills_house_id_id_pk": {
+          "name": "bills_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "bills_id_unique": {
+          "name": "bills_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "bill_recipient_tuple": {
+          "name": "bill_recipient_tuple",
+          "nullsNotDistinct": false,
+          "columns": [
+            "house_id",
+            "id",
+            "recipient_membership_id",
+            "recipient_user_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "bills_history": {
+          "name": "bills_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        },
+        "bill_valid": {
+          "name": "bill_valid",
+          "value": "total_satang BETWEEN 1 AND 900000000000 AND currency='THB' AND length(title) BETWEEN 1 AND 200 AND status IN ('draft','open','settled','voided') AND version>0 AND (emoji IS NULL OR length(emoji)<=8)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.auth_challenges": {
+      "name": "auth_challenges",
+      "schema": "core",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "proof_digest": {
+          "name": "proof_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "consumed_at": {
+          "name": "consumed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "challenge_proof": {
+          "name": "challenge_proof",
+          "nullsNotDistinct": false,
+          "columns": [
+            "proof_digest"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "challenge_valid": {
+          "name": "challenge_valid",
+          "value": "provider IN ('google','apple') AND proof_digest ~ '^[0-9a-f]{64}$' AND expires_at > created_at AND expires_at <= created_at + interval '5 minutes'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.chore_completion_events": {
+      "name": "chore_completion_events",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "occurrence_id": {
+          "name": "occurrence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actor_membership_id": {
+          "name": "actor_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transition_version": {
+          "name": "transition_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "completion_events_expiry_idx": {
+          "name": "completion_events_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "completion_events_house_fk": {
+          "name": "completion_events_house_fk",
+          "tableFrom": "chore_completion_events",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "completion_occurrence_fk": {
+          "name": "completion_occurrence_fk",
+          "tableFrom": "chore_completion_events",
+          "tableTo": "chore_occurrences",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "occurrence_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "completion_actor_fk": {
+          "name": "completion_actor_fk",
+          "tableFrom": "chore_completion_events",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "actor_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "chore_completion_events_house_id_id_pk": {
+          "name": "chore_completion_events_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "completion_events_id_unique": {
+          "name": "completion_events_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "completion_once": {
+          "name": "completion_once",
+          "nullsNotDistinct": false,
+          "columns": [
+            "house_id",
+            "occurrence_id",
+            "transition_version"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "completion_valid": {
+          "name": "completion_valid",
+          "value": "transition_version>0 AND action IN ('completed','reopened')"
+        },
+        "completion_events_history": {
+          "name": "completion_events_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.payment_confirmations": {
+      "name": "payment_confirmations",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bill_id": {
+          "name": "bill_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attempt_id": {
+          "name": "attempt_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payer_membership_id": {
+          "name": "payer_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actor_membership_id": {
+          "name": "actor_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount_satang": {
+          "name": "amount_satang",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "self_confirmed": {
+          "name": "self_confirmed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "confirmations_expiry_idx": {
+          "name": "confirmations_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "confirmations_house_fk": {
+          "name": "confirmations_house_fk",
+          "tableFrom": "payment_confirmations",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "confirmation_attempt_fk": {
+          "name": "confirmation_attempt_fk",
+          "tableFrom": "payment_confirmations",
+          "tableTo": "payment_attempts",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "bill_id",
+            "attempt_id",
+            "payer_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "bill_id",
+            "id",
+            "payer_membership_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "confirmation_actor_fk": {
+          "name": "confirmation_actor_fk",
+          "tableFrom": "payment_confirmations",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "actor_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "payment_confirmations_house_id_id_pk": {
+          "name": "payment_confirmations_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "confirmations_id_unique": {
+          "name": "confirmations_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "confirmation_once": {
+          "name": "confirmation_once",
+          "nullsNotDistinct": false,
+          "columns": [
+            "house_id",
+            "attempt_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "credit_valid": {
+          "name": "credit_valid",
+          "value": "amount_satang BETWEEN 1 AND 900000000000"
+        },
+        "confirmations_history": {
+          "name": "confirmations_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.houses": {
+      "name": "houses",
+      "schema": "core",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Asia/Bangkok'"
+        },
+        "created_by_user_id": {
+          "name": "created_by_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "house_creator_fk": {
+          "name": "house_creator_fk",
+          "tableFrom": "houses",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "created_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "house_valid": {
+          "name": "house_valid",
+          "value": "length(name) BETWEEN 1 AND 100 AND state IN ('active','archived') AND version>0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.idempotency_records": {
+      "name": "idempotency_records",
+      "schema": "core",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "actor_user_id": {
+          "name": "actor_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "route_scope": {
+          "name": "route_scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key_digest": {
+          "name": "key_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "request_hash": {
+          "name": "request_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resource_kind": {
+          "name": "resource_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resource_id": {
+          "name": "resource_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "replay_ciphertext": {
+          "name": "replay_ciphertext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "replay_until": {
+          "name": "replay_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idempotency_expiry_idx": {
+          "name": "idempotency_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "idempotency_user_fk": {
+          "name": "idempotency_user_fk",
+          "tableFrom": "idempotency_records",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "actor_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "idempotency_house_fk": {
+          "name": "idempotency_house_fk",
+          "tableFrom": "idempotency_records",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "actor_user_id",
+            "route_scope",
+            "key_digest"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "idempotency_valid": {
+          "name": "idempotency_valid",
+          "value": "key_digest ~ '^[0-9a-f]{64}$' AND request_hash ~ '^[0-9a-f]{64}$' AND length(route_scope) BETWEEN 1 AND 300 AND (replay_until IS NULL OR replay_until<=created_at+interval '5 minutes')"
+        },
+        "idempotency_history": {
+          "name": "idempotency_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.auth_identities": {
+      "name": "auth_identities",
+      "schema": "core",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issuer": {
+          "name": "issuer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subject": {
+          "name": "subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "identity_user_fk": {
+          "name": "identity_user_fk",
+          "tableFrom": "auth_identities",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "identity_issuer_subject": {
+          "name": "identity_issuer_subject",
+          "nullsNotDistinct": false,
+          "columns": [
+            "issuer",
+            "subject"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "identity_valid": {
+          "name": "identity_valid",
+          "value": "provider IN ('google','apple') AND length(issuer) BETWEEN 1 AND 512 AND length(subject) BETWEEN 1 AND 512"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.house_invitations": {
+      "name": "house_invitations",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "creator_membership_id": {
+          "name": "creator_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_digest": {
+          "name": "token_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "consumed_by_user_id": {
+          "name": "consumed_by_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consumed_at": {
+          "name": "consumed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "invitations_expiry_idx": {
+          "name": "invitations_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "invitations_house_fk": {
+          "name": "invitations_house_fk",
+          "tableFrom": "house_invitations",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "invite_creator_fk": {
+          "name": "invite_creator_fk",
+          "tableFrom": "house_invitations",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "creator_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "invite_consumer_fk": {
+          "name": "invite_consumer_fk",
+          "tableFrom": "house_invitations",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "consumed_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "house_invitations_house_id_id_pk": {
+          "name": "house_invitations_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "invitations_id_unique": {
+          "name": "invitations_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "invite_digest": {
+          "name": "invite_digest",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_digest"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "invitations_history": {
+          "name": "invitations_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        },
+        "invite_valid": {
+          "name": "invite_valid",
+          "value": "token_digest ~ '^[0-9a-f]{64}$' AND expires_at<=created_at+interval '168 hours' AND ((consumed_at IS NULL)=(consumed_by_user_id IS NULL))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.house_memberships": {
+      "name": "house_memberships",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'member'"
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "left_at": {
+          "name": "left_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "archived_expires_at": {
+          "name": "archived_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        }
+      },
+      "indexes": {
+        "member_user_active": {
+          "name": "member_user_active",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "state",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "house_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "memberships_house_fk": {
+          "name": "memberships_house_fk",
+          "tableFrom": "house_memberships",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "member_user_fk": {
+          "name": "member_user_fk",
+          "tableFrom": "house_memberships",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "house_memberships_house_id_id_pk": {
+          "name": "house_memberships_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "memberships_id_unique": {
+          "name": "memberships_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "member_house_user": {
+          "name": "member_house_user",
+          "nullsNotDistinct": false,
+          "columns": [
+            "house_id",
+            "user_id"
+          ]
+        },
+        "member_house_id_user": {
+          "name": "member_house_id_user",
+          "nullsNotDistinct": false,
+          "columns": [
+            "house_id",
+            "id",
+            "user_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "member_valid": {
+          "name": "member_valid",
+          "value": "role IN ('owner','member') AND state IN ('active','left','removed') AND version>0 AND ((state='active' AND left_at IS NULL AND archived_expires_at IS NULL) OR (state<>'active' AND left_at IS NOT NULL AND archived_expires_at>left_at AND archived_expires_at<=left_at+interval '8760 hours'))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.chore_occurrences": {
+      "name": "chore_occurrences",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "schedule_id": {
+          "name": "schedule_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "schedule_revision": {
+          "name": "schedule_revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "local_date": {
+          "name": "local_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "emoji": {
+          "name": "emoji",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creator_membership_id": {
+          "name": "creator_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignee_membership_id": {
+          "name": "assignee_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignee_name": {
+          "name": "assignee_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rotation_ordinal": {
+          "name": "rotation_ordinal",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "occurrence_dates_idx": {
+          "name": "occurrence_dates_idx",
+          "columns": [
+            {
+              "expression": "house_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "local_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "occurrences_expiry_idx": {
+          "name": "occurrences_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "occurrences_house_fk": {
+          "name": "occurrences_house_fk",
+          "tableFrom": "chore_occurrences",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "occurrence_revision_fk": {
+          "name": "occurrence_revision_fk",
+          "tableFrom": "chore_occurrences",
+          "tableTo": "chore_revisions",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "schedule_id",
+            "schedule_revision"
+          ],
+          "columnsTo": [
+            "house_id",
+            "schedule_id",
+            "revision"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "occurrence_creator_fk": {
+          "name": "occurrence_creator_fk",
+          "tableFrom": "chore_occurrences",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "creator_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "occurrence_assignee_fk": {
+          "name": "occurrence_assignee_fk",
+          "tableFrom": "chore_occurrences",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "assignee_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "chore_occurrences_house_id_id_pk": {
+          "name": "chore_occurrences_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "occurrences_id_unique": {
+          "name": "occurrences_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "occurrence_schedule_date": {
+          "name": "occurrence_schedule_date",
+          "nullsNotDistinct": false,
+          "columns": [
+            "house_id",
+            "schedule_id",
+            "local_date"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "occurrence_valid": {
+          "name": "occurrence_valid",
+          "value": "version>0 AND length(title) BETWEEN 1 AND 200 AND status IN ('pending','completed','cancelled') AND ((schedule_id IS NULL)=(schedule_revision IS NULL)) AND ((status='completed')=(completed_at IS NOT NULL)) AND (status<>'completed' OR assignee_membership_id IS NOT NULL)"
+        },
+        "occurrences_history": {
+          "name": "occurrences_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.activity_read_state": {
+      "name": "activity_read_state",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "membership_id": {
+          "name": "membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_seen_at": {
+          "name": "last_seen_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_seen_id": {
+          "name": "last_seen_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "cursor_member_fk": {
+          "name": "cursor_member_fk",
+          "tableFrom": "activity_read_state",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "activity_read_state_house_id_membership_id_pk": {
+          "name": "activity_read_state_house_id_membership_id_pk",
+          "columns": [
+            "house_id",
+            "membership_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "cursor_valid": {
+          "name": "cursor_valid",
+          "value": "((last_seen_at IS NULL)=(last_seen_id IS NULL))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.chore_revisions": {
+      "name": "chore_revisions",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "schedule_id": {
+          "name": "schedule_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "emoji": {
+          "name": "emoji",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mode": {
+          "name": "mode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "anchor_date": {
+          "name": "anchor_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "frequency": {
+          "name": "frequency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "weekdays": {
+          "name": "weekdays",
+          "type": "integer[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "superseded_at": {
+          "name": "superseded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "archive_expires_at": {
+          "name": "archive_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "revision_schedule_fk": {
+          "name": "revision_schedule_fk",
+          "tableFrom": "chore_revisions",
+          "tableTo": "chore_schedules",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "schedule_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "chore_revisions_house_id_schedule_id_revision_pk": {
+          "name": "chore_revisions_house_id_schedule_id_revision_pk",
+          "columns": [
+            "house_id",
+            "schedule_id",
+            "revision"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "revision_valid": {
+          "name": "revision_valid",
+          "value": "revision>0 AND length(title) BETWEEN 1 AND 200 AND mode IN ('repeat','rotation') AND frequency IN ('daily','weekly') AND anchor_date<=start_date AND (end_date IS NULL OR end_date>=start_date) AND weekdays <@ ARRAY[0,1,2,3,4,5,6] AND ((frequency='daily' AND cardinality(weekdays)=0) OR (frequency='weekly' AND cardinality(weekdays)>0))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.chore_rotation_members": {
+      "name": "chore_rotation_members",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "schedule_id": {
+          "name": "schedule_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "membership_id": {
+          "name": "membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "rotation_revision_fk": {
+          "name": "rotation_revision_fk",
+          "tableFrom": "chore_rotation_members",
+          "tableTo": "chore_revisions",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "schedule_id",
+            "revision"
+          ],
+          "columnsTo": [
+            "house_id",
+            "schedule_id",
+            "revision"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "rotation_member_fk": {
+          "name": "rotation_member_fk",
+          "tableFrom": "chore_rotation_members",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "chore_rotation_members_house_id_schedule_id_revision_position_pk": {
+          "name": "chore_rotation_members_house_id_schedule_id_revision_position_pk",
+          "columns": [
+            "house_id",
+            "schedule_id",
+            "revision",
+            "position"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "rotation_member_unique": {
+          "name": "rotation_member_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "house_id",
+            "schedule_id",
+            "revision",
+            "membership_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "rotation_valid": {
+          "name": "rotation_valid",
+          "value": "position>=0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.chore_schedules": {
+      "name": "chore_schedules",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "creator_membership_id": {
+          "name": "creator_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "active_revision": {
+          "name": "active_revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "schedules_house_fk": {
+          "name": "schedules_house_fk",
+          "tableFrom": "chore_schedules",
+          "tableTo": "houses",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "schedule_creator_fk": {
+          "name": "schedule_creator_fk",
+          "tableFrom": "chore_schedules",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "creator_membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "chore_schedules_house_id_id_pk": {
+          "name": "chore_schedules_house_id_id_pk",
+          "columns": [
+            "house_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "schedules_id_unique": {
+          "name": "schedules_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "schedule_valid": {
+          "name": "schedule_valid",
+          "value": "version>0 AND active_revision>0 AND state IN ('active','archived')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.sessions": {
+      "name": "sessions",
+      "schema": "core",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identity_id": {
+          "name": "identity_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_digest": {
+          "name": "access_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refresh_digest": {
+          "name": "refresh_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "generation": {
+          "name": "generation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "auth_time": {
+          "name": "auth_time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refresh_expires_at": {
+          "name": "refresh_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rotated_at": {
+          "name": "rotated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "replay_key_digest": {
+          "name": "replay_key_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "replay_body_hash": {
+          "name": "replay_body_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "replay_ciphertext": {
+          "name": "replay_ciphertext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "replay_until": {
+          "name": "replay_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_user_fk": {
+          "name": "session_user_fk",
+          "tableFrom": "sessions",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "session_identity_fk": {
+          "name": "session_identity_fk",
+          "tableFrom": "sessions",
+          "tableTo": "auth_identities",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "identity_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "session_access": {
+          "name": "session_access",
+          "nullsNotDistinct": false,
+          "columns": [
+            "access_digest"
+          ]
+        },
+        "session_refresh": {
+          "name": "session_refresh",
+          "nullsNotDistinct": false,
+          "columns": [
+            "refresh_digest"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "session_valid": {
+          "name": "session_valid",
+          "value": "generation>0 AND access_digest ~ '^[0-9a-f]{64}$' AND refresh_digest ~ '^[0-9a-f]{64}$' AND created_at<expires_at AND expires_at<=refresh_expires_at AND refresh_expires_at<=created_at+interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.bill_shares": {
+      "name": "bill_shares",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bill_id": {
+          "name": "bill_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "membership_id": {
+          "name": "membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "basis_points": {
+          "name": "basis_points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount_satang": {
+          "name": "amount_satang",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "self_covered": {
+          "name": "self_covered",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "member_name": {
+          "name": "member_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "shares_expiry_idx": {
+          "name": "shares_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "share_bill_fk": {
+          "name": "share_bill_fk",
+          "tableFrom": "bill_shares",
+          "tableTo": "bills",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "bill_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "share_member_fk": {
+          "name": "share_member_fk",
+          "tableFrom": "bill_shares",
+          "tableTo": "house_memberships",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "membership_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "bill_shares_house_id_bill_id_membership_id_pk": {
+          "name": "bill_shares_house_id_bill_id_membership_id_pk",
+          "columns": [
+            "house_id",
+            "bill_id",
+            "membership_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "share_valid": {
+          "name": "share_valid",
+          "value": "basis_points BETWEEN 1 AND 10000 AND (amount_satang IS NULL OR amount_satang BETWEEN 0 AND 900000000000) AND (NOT self_covered OR amount_satang IS NOT NULL)"
+        },
+        "shares_history": {
+          "name": "shares_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.bill_recipient_snapshots": {
+      "name": "bill_recipient_snapshots",
+      "schema": "core",
+      "columns": {
+        "house_id": {
+          "name": "house_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bill_id": {
+          "name": "bill_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_membership_id": {
+          "name": "recipient_membership_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_user_id": {
+          "name": "recipient_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_account_id": {
+          "name": "source_account_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "account_version": {
+          "name": "account_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bank_code": {
+          "name": "bank_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identifier_kind": {
+          "name": "identifier_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identifier_ciphertext": {
+          "name": "identifier_ciphertext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identifier_digest": {
+          "name": "identifier_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key_version": {
+          "name": "key_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "masked_account": {
+          "name": "masked_account",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_name": {
+          "name": "recipient_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retention_deadline_at": {
+          "name": "retention_deadline_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "snapshots_expiry_idx": {
+          "name": "snapshots_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "snapshot_bill_recipient_fk": {
+          "name": "snapshot_bill_recipient_fk",
+          "tableFrom": "bill_recipient_snapshots",
+          "tableTo": "bills",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "house_id",
+            "bill_id",
+            "recipient_membership_id",
+            "recipient_user_id"
+          ],
+          "columnsTo": [
+            "house_id",
+            "id",
+            "recipient_membership_id",
+            "recipient_user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "bill_recipient_snapshots_house_id_bill_id_pk": {
+          "name": "bill_recipient_snapshots_house_id_bill_id_pk",
+          "columns": [
+            "house_id",
+            "bill_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "snapshots_history": {
+          "name": "snapshots_history",
+          "value": "created_at < expires_at AND expires_at <= retention_deadline_at - interval '24 hours' AND retention_deadline_at <= created_at + interval '8760 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "core.users": {
+      "name": "users",
+      "schema": "core",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locale": {
+          "name": "locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'th'"
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "statement_timestamp()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "user_valid": {
+          "name": "user_valid",
+          "value": "length(display_name) BETWEEN 1 AND 100 AND locale IN ('th','en') AND state IN ('active','deletion_pending')"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "core": "core"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

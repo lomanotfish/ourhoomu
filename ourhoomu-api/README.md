@@ -1,22 +1,78 @@
-# ourhoomu-api
+# OurHoomu API
 
-โฟลเดอร์ backend ของ OurHoomu ใน monorepo เดียวกัน ปัจจุบันมีเอกสารขอบเขตเท่านั้น
+This package is the Elysia API foundation for Cloudflare Workers. The bounded
+SW-0038 runtime proof exposes only health from the production entry. Request
+validation and Neon actor probes exist in the separate test-only entry;
+product routes, session authentication and database schema belong to their
+accepted tickets.
 
-## Stack ที่เลือก
+## Requirements
 
-Database ใช้ Neon PostgreSQL และ Object Storage bucket slip: private ตาม [ADR-0002](../docs/adr/0002-neon.md) Root neon.ts/package manifests เป็น infrastructure tooling ไม่ใช่ app scaffold API ใช้ Elysia / TypeScript บน Cloudflare Workers Free, Drizzle ORM สำหรับ PostgreSQL schema/query และ Drizzle Kit สำหรับ migrations ตาม [SW-0020](../docs/team/tickets/SW-0020.md) ใช้ Bun stable ล่าสุดที่เข้ากันสำหรับ dependencies/scripts แต่ production ใช้ Workers runtime; Google/Apple session integration ยังรอตรึง
+- Bun 1.4.3 or later
+- Node.js 22 or later for the pinned TypeScript toolchain
 
-Backend เป็นเจ้าของการหารเงิน งวด การตรวจสลิป สิทธิ์บ้าน เวร และ retention ผู้ใช้ต้องผ่าน API เพื่อแลก/refresh/revoke session; frontend ไม่มี DATABASE_URL, storage credentials หรือ provider API key การดาวน์โหลดภาพสลิปผ่าน authenticated API ที่ตรวจสมาชิกสด
+## Setup and checks
 
-โครงสร้างที่จะสร้างหลังอนุมัติแบบ:
+From this directory:
 
-```text
-ourhoomu-api/
-  src/
-  migrations/
-  tests/
+```sh
+bun install --frozen-lockfile
+bun run typecheck
+bun run test
 ```
 
-โครงสร้างนี้ยังไม่ได้ scaffold ต้องตรวจ Elysia Cloudflare adapter/plugins, Neon driver และ SQL actor/transaction contract บน Neon ก่อน ไม่ใช้ Supabase CLI/service-role assumptions เดิม ดู [architecture](../docs/project/architecture.md), [domain](../docs/project/domain.md), [API contract](../docs/project/api-contract.md) และ [operations](../docs/project/operations.md)
+Start the production entry locally in Wrangler/workerd:
 
-การแก้ migration / RLS เป็น ownership ของ data-engineer การแก้ handlers / integrations เป็น ownership ของ backend-engineer ตาม ticket แต่ละใบ Tech Lead ตรวจรับและรวมผล
+```sh
+bun run dev
+```
+
+Run the production request matrix while Wrangler is running in a second
+terminal. It checks that proof routes are hidden with 404:
+
+```sh
+bun run check:runtime
+```
+
+The Neon proof uses a separate Wrangler config and test-only entry. The Lead
+must provision a schema-only synthetic Neon branch and provide two ignored
+local files: `SYNTHETIC_DB_ENV_FILE` with its direct migration URL and branch
+metadata, and `NEON_BRANCH_RECEIPT` with the authoritative branch-to-endpoint
+mapping. The setup command checks both before any SQL, creates only the
+`runtime_probe` schema and a restricted `ourhoomu_runtime_probe` role, and
+writes an ignored mode-600 `.dev.vars` for local Wrangler. It can also reuse a
+previously prepared restricted URL. Never use production or a pre-existing
+developer branch.
+
+In this directory, with both path variables set to those private files:
+
+```sh
+bun run prepare:neon-runtime
+bunx wrangler dev --config wrangler.runtime.jsonc --ip 127.0.0.1 --port 8787
+```
+
+While Wrangler is running, use another terminal in this directory with the
+same path variables:
+
+```sh
+bun run check:fixture-runtime
+bun run check:neon-runtime
+```
+
+The check exercises two actors through real `workerd` requests, a forced
+rollback, an immediately following request, and direct read-only checks of
+the restricted role and empty actor context. Stop Wrangler and remove the
+ignored `.dev.vars` after the proof. The private credential file stays in
+the Lead's ignored audit store; never add it to Git.
+
+The local dry-run bundle can be checked with:
+
+```sh
+bunx wrangler deploy --dry-run --config wrangler.jsonc --outdir /tmp/ourhoomu-api-dryrun
+```
+
+Neon schema migrations and product data remain owned by the data-engineer
+ticket. The API must derive authority from verified server sessions; callers
+cannot supply actor IDs as authority. See [the API contract](../docs/project/api-contract.md),
+[domain model](../docs/project/domain.md), [database design](../docs/project/database.md),
+and [ADR-0002](../docs/adr/0002-neon.md).

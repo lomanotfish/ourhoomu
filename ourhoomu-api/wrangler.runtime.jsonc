@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ourhoomu-api-runtime-probe",
+  "main": "tests/fixtures/worker.ts",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": [],
+  "vars": {
+    "APP_ENV": "test",
+    "ALLOWED_ORIGIN": "http://localhost:8081",
+    "RUNTIME_PROBE_ENABLED": "true"
+  }
+}

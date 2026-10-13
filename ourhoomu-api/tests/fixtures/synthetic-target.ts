@@ -1,4 +1,8 @@
-export function assertSyntheticDbUrl(value: string, endpointId: string, expectedRole: string): void {
+export function assertSyntheticDbUrl(
+  value: string,
+  endpointId: string,
+  expectedRole: string,
+): void {
   if (!/^ep-[a-z0-9-]+$/.test(endpointId)) {
     throw new Error('Invalid synthetic endpoint identifier');
   }

@@ -4,7 +4,7 @@ import type { AppConfig } from './config';
 
 export function createApp(config: AppConfig) {
   return new Elysia({ adapter: CloudflareAdapter })
-    .onRequest(({ request, set }) => {
+    .onRequest(({ set }) => {
       set.headers['access-control-allow-origin'] = config.allowedOrigin;
       set.headers['access-control-allow-methods'] = 'GET,POST,OPTIONS';
       set.headers['access-control-allow-headers'] = 'authorization,content-type';
@@ -29,9 +29,16 @@ export function createApp(config: AppConfig) {
         set.status = 404;
         return { error: { code: 'not_found', message: 'Not found' }, requestId };
       }
-      if (code === 'VALIDATION' || code === 'PARSE' || (error && typeof error === 'object' && 'status' in error && error.status === 422)) {
+      if (
+        code === 'VALIDATION' ||
+        code === 'PARSE' ||
+        (error && typeof error === 'object' && 'status' in error && error.status === 422)
+      ) {
         set.status = 400;
-        return { error: { code: 'validation_error', message: 'Request validation failed' }, requestId };
+        return {
+          error: { code: 'validation_error', message: 'Request validation failed' },
+          requestId,
+        };
       }
       set.status = 500;
       return { error: { code: 'internal_error', message: 'Internal server error' }, requestId };

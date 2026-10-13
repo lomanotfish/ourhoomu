@@ -17,9 +17,26 @@ From this directory:
 
 ```sh
 bun install --frozen-lockfile
+bun run format:check
+bun run lint
 bun run typecheck
 bun run test
 ```
+
+Biome 2.5.15 is pinned for formatting and recommended lint checks on API
+TypeScript in `src/`, `scripts/` and `tests/`, plus `package.json` and
+`biome.json`. The formatter uses two spaces, single quotes and a 100-column
+line width. Run `bun run format` to apply formatting; `format:check` and
+`lint` check without writing files, and lint warnings fail the check.
+Import assist actions are disabled so formatting does not reorganize the
+production or fixture import graph. These commands exclude generated files,
+locks, SQL, Markdown, Wrangler/TypeScript runtime configuration and the
+root/frontend packages.
+
+Tests use Bun's test runner in `tests/*.test.ts`; the existing six tests
+cover the health/error envelope, hidden production fixture routes and secure
+synthetic database URL guard. TypeScript also checks test-only fixtures, but
+Wrangler's production entry remains `src/index.ts`.
 
 Start the production entry locally in Wrangler/workerd:
 

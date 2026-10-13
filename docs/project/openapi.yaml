@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "OurHoomu logical API",
-    "version": "0.3.1-core-proposal",
+    "version": "0.3.2-core-proposal",
     "description": "SW-0036 review proposal. Core approved for local/dev; x-status marks provider/native routes blocked until proof. No deployed API is asserted."
   },
   "servers": [
@@ -5475,7 +5475,7 @@
                       "type": "object",
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/Chore"
+                          "$ref": "#/components/schemas/ChoreSchedulePreview"
                         }
                       },
                       "required": [
@@ -5568,7 +5568,8 @@
             "409",
             "429"
           ]
-        }
+        },
+        "description": "Compute unsaved date/assignee rows in startDate through startDate+13 inclusive, capped by endDate. Empty matches valid. No persisted IDs, writes or version transitions."
       }
     },
     "/v1/houses/{houseId}/chore-schedules/{id}": {
@@ -9711,6 +9712,59 @@
           "code",
           "message"
         ]
+      },
+      "ChorePreviewOccurrence": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Computed unsaved schedule occurrence; no persisted ID/version/expiry",
+        "properties": {
+          "localDate": {
+            "type": "string",
+            "format": "date",
+            "examples": [
+              "2026-10-20"
+            ]
+          },
+          "assigneeMembershipId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Selected active assignee; null means unresolved assignment",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ]
+          }
+        },
+        "required": [
+          "localDate",
+          "assigneeMembershipId"
+        ]
+      },
+      "ChoreSchedulePreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "examples": [
+              "Asia/Bangkok"
+            ]
+          },
+          "occurrences": {
+            "type": "array",
+            "maxItems": 14,
+            "items": {
+              "$ref": "#/components/schemas/ChorePreviewOccurrence"
+            }
+          }
+        },
+        "required": [
+          "timezone",
+          "occurrences"
+        ],
+        "description": "Unsaved matching occurrences in the 14-calendar-day window startDate through startDate+13 inclusive, capped by endDate; no writes or cursor"
       }
     }
   },

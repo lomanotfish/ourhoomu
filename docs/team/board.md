@@ -41,6 +41,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | done |
 | [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | done |
 | [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | in_progress |
+| [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer | SW-0022, SW-0024 | ready |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -97,3 +98,5 @@ SW-0022/23/24 source research, SW-0033 backend delivery plan, SW-0034 frontend A
 ## Core implementation active — user confirmed
 
 User “ยืนยันแผน”; approved [core implementation](core-implementation.md). SW-0036 in_progress, downstream feature tickets await accepted contracts/runtime/schema. Run run_a401e29c745e; no worker launch claimed until actual receipt. Task-relevant approved checks enabled; external provider/native/release gates retained.
+
+SW-0038 approved risk-first bounded runtime proof starts independently from full domain OpenAPI36; owns API tooling/probe fixtures only, production entry no DB/fake-actor probe. Full foundation3 remains dependent on36+38. Native/provider gates unchanged.

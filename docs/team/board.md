@@ -36,9 +36,11 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0029](tickets/SW-0029.md) | Plain demo UI copy integration fix | tech-lead | frozen SW-0027 | done |
 | [SW-0030](tickets/SW-0030.md) | Narrow reviewed motion/touch/copy follow-ups | tech-lead | SW-0028 approve | done |
 | [SW-0031](tickets/SW-0031.md) | Empty status text rendering fix | tech-lead | integrated SW-0027 | done |
-| [SW-0032](tickets/SW-0032.md) | Themed calendar selector on chore creation | frontend-engineer | User date-field feedback + integrated SW-0027 | in_review |
+| [SW-0032](tickets/SW-0032.md) | Themed calendar selector on chore creation | frontend-engineer | User date-field feedback + integrated SW-0027 | done |
 
 ## Dependency / dispatch gates
+
+SW-0032 feedback accepted: cream/mint Thai calendar replaces chore date typing. Source `e2edcb7` and evidence `6dfce71` fast-forwarded into `local`; fresh root typecheck/format/7 tests31 assertions and Chrome 320/393/1079px, keyboard/ARIA/month/today/all-three-mode smoke pass. Three workers released/captured/acknowledged; final owned-worktree cleanup receipts remain in root `.git/ourhoomu-snapshots/sw-0032/`. [Evidence](reports/SW-0032-chore-date.md). Graft ACTIVE root/exact worktree, final root build/check 26files110nodes293edges. User root guide/bun.lock preserved; native/backend acceptance remains separate.
 
 - API/production implementation tickets ยังรอ full domain approval และ Neon identity/driver/actor contract; frontend demo SW-0026–0028 ได้รับอนุญาตใหม่โดยตรงและไม่ต้องรอ Figma. SW-0009/10/11 คง pending เฉพาะ integration acceptance; SW-0025 ทำ design artifact เพื่อทบทวนเท่านั้น ไม่ถือว่าผู้ใช้ออกแบบอนุมัติแล้ว; stack ยืนยันตาม SW-0020 แล้ว; SW-0015 ได้รับอนุมัติ setup/deploy โดยเฉพาะ มี ticket ไม่ได้แปลว่า agent ถูกเปิด
 - SW-0022/0023/0024 เป็น investigation tickets แยกจาก implementation; ผลวิจัยต้องผ่าน Tech Lead review ก่อนปลด dependencies งานเอกสารนี้ไม่ได้หมายถึงงานวิจัยเหล่านั้นเสร็จ

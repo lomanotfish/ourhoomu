@@ -93,5 +93,6 @@ Tech Lead ตรวจ artifact กับ acceptance และ required checks �
 - [x] SW-0027: Expo mobile app ธีมน่ารัก, four tabs, demo bills/chores/house flows และ animation/reduced motion — [รายงาน frontend](docs/team/reports/SW-0027-frontend.md)
 - [x] SW-0028: Independent review approve, integrated checks และ worker/source worktree cleanup — [ผลรวม](docs/team/reports/SW-0027-integration.md)
 - [x] SW-0029/30/31: Plain UI copy, reduced-motion held-press reset, 44pt filters และ empty-status rendering — [ผลรวม](docs/team/reports/SW-0027-integration.md)
+- [x] SW-0032: ปฏิทินธีมมิ้นต์/ครีมแทนช่องวันที่ทำ; keyboard/ARIA, 320/393/1079px และสร้างเวรครบสามโหมดผ่านบน `local` ที่ `6dfce71`; 7 tests/31 assertions, typecheck/format และ web/iOS JS exports ผ่าน — [หลักฐาน](docs/team/reports/SW-0032-chore-date.md)
 
 Frontend demo ไม่ใช้ปิดการตรวจ API/social login/SlipOK/LINE/retention/TestFlight ของ tickets เดิม.

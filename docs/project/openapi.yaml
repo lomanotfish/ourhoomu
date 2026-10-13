@@ -3195,6 +3195,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Active member with known in-scope resource lacks required action authority; no private projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "x-error-policy": {
@@ -3203,10 +3213,12 @@
           "statuses": [
             "400",
             "401",
+            "403",
             "404",
             "410",
             "429"
-          ]
+          ],
+          "restrictedRead": "Known in-scope noncreator selector or nonuploader/nonrecipient slip action returns403 forbidden; inactive/removed or cross-house stays hidden404. Expiry410 requires live prior-access proof."
         }
       }
     },
@@ -5128,6 +5140,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Active member with known in-scope resource lacks required action authority; no private projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
           }
         },
         "x-gate-reason": "private-storage-runtime-pending",
@@ -5137,11 +5159,13 @@
           "statuses": [
             "400",
             "401",
+            "403",
             "404",
             "410",
             "429",
             "503"
-          ]
+          ],
+          "restrictedRead": "Known in-scope noncreator selector or nonuploader/nonrecipient slip action returns403 forbidden; inactive/removed or cross-house stays hidden404. Expiry410 requires live prior-access proof."
         }
       }
     },

@@ -52,7 +52,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Challenge"
@@ -62,7 +61,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -206,7 +206,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Session"
@@ -216,7 +215,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -360,7 +360,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Session"
@@ -370,7 +369,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -514,7 +514,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Me"
@@ -524,7 +523,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -633,7 +633,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Me"
@@ -643,7 +642,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -762,7 +762,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Me"
@@ -772,7 +771,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -916,7 +916,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/House"
@@ -926,7 +925,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -1068,7 +1068,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "type": "array",
@@ -1081,7 +1080,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -1202,7 +1202,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/House"
@@ -1212,7 +1211,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -1343,7 +1343,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/House"
@@ -1353,7 +1352,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -1510,7 +1510,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "type": "array",
@@ -1523,7 +1522,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -1656,7 +1656,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Invitation"
@@ -1666,7 +1665,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -1798,7 +1798,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Member"
@@ -1808,7 +1807,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -1964,7 +1964,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Invitation"
@@ -1974,7 +1973,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -2108,7 +2108,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Member"
@@ -2118,7 +2117,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -2264,7 +2264,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Member"
@@ -2274,7 +2273,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -2408,7 +2408,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "type": "array",
@@ -2421,7 +2420,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -2540,7 +2540,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/AccountPrivate"
@@ -2550,7 +2549,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -2694,7 +2694,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/AccountPrivate"
@@ -2704,7 +2703,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -2861,7 +2861,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "type": "array",
@@ -2874,7 +2873,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -3005,7 +3005,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Bill"
@@ -3015,7 +3014,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -3159,7 +3159,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Bill"
@@ -3169,7 +3168,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -3312,7 +3312,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Bill"
@@ -3322,7 +3321,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -3479,7 +3479,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/AccountSelector"
@@ -3489,7 +3488,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -3634,7 +3634,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Bill"
@@ -3644,7 +3643,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -3801,7 +3801,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Bill"
@@ -3811,7 +3810,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -3968,7 +3968,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/PaymentSummary"
@@ -3978,7 +3977,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -4145,7 +4145,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "type": "array",
@@ -4158,7 +4157,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -4291,7 +4291,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/UploadTarget"
@@ -4301,7 +4300,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -4456,7 +4456,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/PaymentSummary"
@@ -4466,7 +4465,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -4570,7 +4570,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/PaymentSummary"
@@ -4580,7 +4579,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -4648,7 +4648,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/PaymentSummary"
@@ -4658,7 +4657,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -4762,7 +4762,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/PaymentSummary"
@@ -4772,7 +4771,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -4840,7 +4840,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/PaymentSummary"
@@ -4850,7 +4849,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -4995,7 +4995,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/PaymentSummary"
@@ -5005,7 +5004,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -5150,7 +5150,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/PaymentSummary"
@@ -5160,7 +5159,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -5466,7 +5466,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "type": "array",
@@ -5479,7 +5478,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -5610,7 +5610,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/ChoreSchedule"
@@ -5620,7 +5619,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -5764,7 +5764,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Chore"
@@ -5774,7 +5773,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -5930,7 +5930,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/ChoreSchedule"
@@ -5940,7 +5939,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -6121,7 +6121,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "type": "array",
@@ -6134,7 +6133,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -6265,7 +6265,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Chore"
@@ -6275,7 +6274,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -6431,7 +6431,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Chore"
@@ -6441,7 +6440,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -6598,7 +6598,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Chore"
@@ -6608,7 +6607,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -6765,7 +6765,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Chore"
@@ -6775,7 +6774,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -6908,7 +6908,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Dashboard"
@@ -6918,7 +6917,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -7063,7 +7063,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "type": "array",
@@ -7076,7 +7075,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -7209,7 +7209,6 @@
                     },
                     {
                       "type": "object",
-                      "additionalProperties": false,
                       "properties": {
                         "data": {
                           "$ref": "#/components/schemas/Dashboard"
@@ -7219,7 +7218,8 @@
                         "data"
                       ]
                     }
-                  ]
+                  ],
+                  "unevaluatedProperties": false
                 }
               }
             }
@@ -7525,7 +7525,6 @@
       },
       "SuccessEnvelope": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "data": {},
           "requestId": {
@@ -7543,7 +7542,6 @@
       },
       "ListEnvelope": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "data": {
             "type": "array",

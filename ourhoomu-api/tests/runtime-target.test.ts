@@ -17,4 +17,12 @@ describe('synthetic Neon target guard', () => {
     expect(() => assertSyntheticDbUrl(url(`${endpoint}.evil.example`), endpoint, role)).toThrow();
     expect(() => assertSyntheticDbUrl(url(`${endpoint}.c-4.ap-southeast-1.aws.neon.tech`, 'disable'), endpoint, role)).toThrow();
   });
+
+  it('rejects driver query overrides and duplicate TLS values', () => {
+    const base = url(`${endpoint}.c-4.ap-southeast-1.aws.neon.tech`);
+    expect(() => assertSyntheticDbUrl(`${base}&host=evil.example`, endpoint, role)).toThrow();
+    expect(() => assertSyntheticDbUrl(`${base}&sslmode=disable`, endpoint, role)).toThrow();
+    expect(() => assertSyntheticDbUrl(`${base}&sslmode=require`, endpoint, role)).toThrow();
+    expect(() => assertSyntheticDbUrl(`${base}&port=5432`, endpoint, role)).toThrow();
+  });
 });

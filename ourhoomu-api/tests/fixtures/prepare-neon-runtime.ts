@@ -1,6 +1,7 @@
 import { appendFileSync, openSync, readFileSync, writeFileSync, closeSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { Pool } from '@neondatabase/serverless';
+import { assertSyntheticDbUrl } from './synthetic-target';
 
 const secretPath = process.env.SYNTHETIC_DB_ENV_FILE;
 const receiptPath = process.env.NEON_BRANCH_RECEIPT;
@@ -25,11 +26,11 @@ if (
   receipt.branch.name !== 'dev-core-sw0036-20261013' ||
   receipt.branch.init_source !== 'parent-schema' ||
   !receipt.endpoints.some((endpoint) => endpoint.id === secrets.NEON_ENDPOINT_ID && endpoint.branch_id === receipt.branch.id) ||
-  !secrets.MIGRATION_DATABASE_URL ||
-  !new URL(secrets.MIGRATION_DATABASE_URL).hostname.startsWith(secrets.NEON_ENDPOINT_ID)
+  !secrets.MIGRATION_DATABASE_URL
 ) {
   throw new Error('Refusing fixture setup: synthetic branch receipt and credentials differ');
 }
+assertSyntheticDbUrl(secrets.MIGRATION_DATABASE_URL, secrets.NEON_ENDPOINT_ID, 'neondb_owner');
 
 if (!secrets.RUNTIME_DATABASE_URL) {
   const password = randomBytes(32).toString('hex');
@@ -61,12 +62,7 @@ if (!secrets.RUNTIME_DATABASE_URL) {
   appendFileSync(secretPath, `RUNTIME_DATABASE_URL=${secrets.RUNTIME_DATABASE_URL}\n`);
 }
 
-if (
-  new URL(secrets.RUNTIME_DATABASE_URL).username !== 'ourhoomu_runtime_probe' ||
-  !new URL(secrets.RUNTIME_DATABASE_URL).hostname.startsWith(secrets.NEON_ENDPOINT_ID)
-) {
-  throw new Error('Restricted runtime URL does not match the synthetic endpoint');
-}
+assertSyntheticDbUrl(secrets.RUNTIME_DATABASE_URL, secrets.NEON_ENDPOINT_ID, 'ourhoomu_runtime_probe');
 
 const vars = new URL('../../.dev.vars', import.meta.url);
 const handle = openSync(vars, 'wx', 0o600);

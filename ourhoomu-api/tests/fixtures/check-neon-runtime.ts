@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { Pool } from '@neondatabase/serverless';
+import { assertSyntheticDbUrl } from './synthetic-target';
 
 type ProbeData = {
   role: string;
@@ -39,15 +40,8 @@ if (
   throw new Error('Synthetic branch metadata does not match the provisioning receipt');
 }
 
-for (const name of ['MIGRATION_DATABASE_URL', 'RUNTIME_DATABASE_URL'] as const) {
-  const value = secrets[name];
-  if (!value || !new URL(value).hostname.startsWith(secrets.NEON_ENDPOINT_ID)) {
-    throw new Error(`${name} does not target the provisioned synthetic endpoint`);
-  }
-}
-if (new URL(secrets.RUNTIME_DATABASE_URL).username !== 'ourhoomu_runtime_probe') {
-  throw new Error('Runtime URL must use the restricted fixture role');
-}
+assertSyntheticDbUrl(secrets.MIGRATION_DATABASE_URL, secrets.NEON_ENDPOINT_ID, 'neondb_owner');
+assertSyntheticDbUrl(secrets.RUNTIME_DATABASE_URL, secrets.NEON_ENDPOINT_ID, 'ourhoomu_runtime_probe');
 
 const base = process.env.RUNTIME_BASE_URL ?? 'http://127.0.0.1:8787';
 async function requestActor(actor: 'a' | 'b', fail = false): Promise<{ status: number; body: { data?: ProbeData; error?: { code: string } } }> {

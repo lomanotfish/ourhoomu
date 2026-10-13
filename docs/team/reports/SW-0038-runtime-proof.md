@@ -39,4 +39,10 @@ Original worker `graft build --no-gitignore --no-ignore` initially indexed 26 fi
 
 ## Acceptance boundary
 
+### Corrections following SW-0041
+
+Independent review `63c8a06` requested three fixes. The production app now exposes only `/health` and CORS; `/runtime/validate` lives exclusively in the fixture entry. Missing routes return fixed 404 `not_found`, and unexpected errors return a fixed public message. Fixture SQL preparation and checks now validate the exact endpoint DNS label, allowed `.neon.tech` domain, PostgreSQL scheme, TLS requirement and expected DB role; lookalike prefixes are rejected. A null-body 204 response also removes the adapter's CORS warning.
+
+Fresh checks after these changes passed: TypeScript; 5 Bun tests/11 assertions (including production fixture route isolation and malicious endpoint lookalikes); actual production workerd health/hidden proof route/unknown route/CORS; fixture workerd validation400/auth401/CORS; and repeated synthetic Neon/workerd two-actor, rollback and context isolation proof. Production dry-run now reports 846.79 KiB/gzip156.06 KiB. Every local Wrangler process was stopped and `.dev.vars` removed. Final Graft build indexes 36 files/130 nodes/336 edges. These fixes await the independent recheck before integration.
+
 The scoped runtime proof is ready for independent review and Lead integration. Full SW-0003 foundation still needs the accepted final SW-0036 contract and domain routes. The API package's development validation route is a bounded common-envelope proof, not an authenticated product endpoint. External credentials, native Apple/Google, SlipOK, LINE, production migrations/deployment and complete retention remain separately gated.

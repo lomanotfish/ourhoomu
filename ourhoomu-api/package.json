@@ -10,6 +10,7 @@
     "dev": "wrangler dev --config wrangler.jsonc",
     "typecheck": "tsc --noEmit",
     "check:runtime": "bun scripts/runtime-check.ts",
+    "check:fixture-runtime": "bun scripts/runtime-check.ts --fixture",
     "prepare:neon-runtime": "bun tests/fixtures/prepare-neon-runtime.ts",
     "check:neon-runtime": "bun tests/fixtures/check-neon-runtime.ts",
     "test": "bun test tests"

@@ -10,19 +10,17 @@ describe('runtime envelope', () => {
     expect(await response.json()).toMatchObject({ data: { status: 'ok' } });
   });
 
-  it('rejects invalid request bodies with the common 400 error envelope', async () => {
+  it('does not expose the test validation route from the production app', async () => {
     const response = await app.fetch(new Request('https://api.test/runtime/validate', {
-      method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer fixture' }, body: JSON.stringify({ value: '' }),
+      method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer arbitrary' }, body: JSON.stringify({ value: 'ok' }),
     }));
-    expect(response.status).toBe(400);
-    expect(await response.json()).toMatchObject({ error: { code: 'validation_error' } });
+    expect(response.status).toBe(404);
+    expect(await response.json()).toMatchObject({ error: { code: 'not_found', message: 'Not found' } });
   });
 
-  it('rejects a missing credential with 401', async () => {
-    const response = await app.fetch(new Request('https://api.test/runtime/validate', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ value: 'ok' }),
-    }));
-    expect(response.status).toBe(401);
-    expect(await response.json()).toMatchObject({ error: { code: 'unauthenticated' } });
+  it('returns a fixed 404 for an unknown route', async () => {
+    const response = await app.fetch(new Request('https://api.test/not-a-route'));
+    expect(response.status).toBe(404);
+    expect(await response.json()).toMatchObject({ error: { code: 'not_found', message: 'Not found' } });
   });
 });

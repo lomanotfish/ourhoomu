@@ -17,37 +17,24 @@ export function createApp(config: AppConfig) {
     })
     .options('*', ({ set }) => {
       set.status = 204;
-      return null;
+      return new Response(null, { status: 204 });
     })
     .get('/health', ({ requestId }) => ({
       data: { status: 'ok' },
       requestId,
     }))
-    .post('/runtime/validate', async ({ request, requestId, set }) => {
-        if (!request.headers.get('authorization')) {
-          set.status = 401;
-          return { error: { code: 'unauthenticated', message: 'Authentication required' }, requestId };
-        }
-        let parsed: unknown;
-        try { parsed = await request.json(); } catch {
-          set.status = 400;
-          return { error: { code: 'validation_error', message: 'Request validation failed' }, requestId };
-        }
-        const value = parsed && typeof parsed === 'object' && 'value' in parsed ? parsed.value : undefined;
-        if (typeof value !== 'string' || value.length < 1 || value.length > 32) {
-          set.status = 400;
-          return { error: { code: 'validation_error', message: 'Request validation failed' }, requestId };
-        }
-        return { data: { accepted: true, value }, requestId };
-      })
     .onError(({ code, error, requestId, set }) => {
       requestId ??= crypto.randomUUID();
+      if (code === 'NOT_FOUND') {
+        set.status = 404;
+        return { error: { code: 'not_found', message: 'Not found' }, requestId };
+      }
       if (code === 'VALIDATION' || code === 'PARSE' || (error && typeof error === 'object' && 'status' in error && error.status === 422)) {
         set.status = 400;
         return { error: { code: 'validation_error', message: 'Request validation failed' }, requestId };
       }
       set.status = 500;
-      return { error: { code: 'internal_error', message: error instanceof Error ? error.message : 'Internal error' }, requestId };
+      return { error: { code: 'internal_error', message: 'Internal server error' }, requestId };
     })
     .compile();
 }

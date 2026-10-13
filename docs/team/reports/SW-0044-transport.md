@@ -38,3 +38,28 @@ The coordinator confirmed that non-history idempotency locators have a 24-hour w
 ## Handoff
 
 No external API, native provider, database, or production evidence is claimed. Tech Lead should review the scoped diff and integrate; actual transport integration remains gated on the backend endpoint/runtime and native identity evidence.
+
+## SW-0045 correction pass (2026-10-14)
+
+The frozen SW-0045 report at `1f61e30` was read with `git show`; its six findings and runnable repro were used as the correction acceptance set. All six are addressed in the owned transport/session files:
+
+- **R1:** requests capture the authority revision before loading the bearer token and pass it with a 401. Replacement, logout, and same-user re-login synchronously advance that revision; a late response from the old lineage cannot replay. A late 401 after same-session refresh still takes the current-token fast path. Integrated regressions cover both paths.
+- **R2:** all credential loads and writes share one serialized queue. Replacement/logout advance revision at invocation before store I/O, and reads recheck revision after load. Deferred-load, deferred-save, deferred-clear, and replacement-versus-logout tests prove stale credentials are not returned or persisted after the newer operation.
+- **R3:** the authority remembers the latest session lineage and will not downgrade it from a stale store snapshot. A delayed old snapshot after a completed rotation returns the rotated access token without another refresh request.
+- **R4:** an uncertain refresh retains the exact old refresh token, idempotency key, serialized body, and injected-clock start time for at most five minutes. Recovery inside the window reuses the same attempt. After the window it clears the local session and sends no new-key request with the old credential. Regression fixtures model two lost responses, subsequent recovery, and expired uncertainty.
+- **R5:** API initial/replay requests and refresh attempts set `redirect: 'error'`; retries preserve that option. A real Bun loopback 307 test confirms the second listener receives no credential body. This proves Bun behavior only. **Native transport integration remains gated on an adapter/conformance check proving redirects fail closed on each supported native runtime; no native behavior is inferred from Bun.**
+- **R6:** ordinary success requires a UUID request ID. Refresh success validates required envelope ID, closed envelope/session keys, session primitive fields, UUID user ID, and date-time expiry. Error parsing requires a UUID request ID and validates closed envelope/error properties and the existing error union without validating generic endpoint DTO payloads.
+
+Regression tests use valid UUID fixture IDs and preserve the existing same-family shared refresh, one-time replay, and independent caller cancellation behavior. Verification from `ourhoomu-front/` after the fixes:
+
+- `bun test src/api/transport.test.ts src/session/authority.test.ts` — **30 passed, 0 failed, 117 assertions**.
+- `bun run typecheck` — passed.
+- `bun run format:check` — passed.
+- `git diff --check` — passed.
+- Generated DTO/types and frontend/root manifests and locks compare unchanged with the frozen HEAD.
+
+No API/native integration, provider, database, deployment, push, or production claim is made. The corrected source is ready for the coordinator's independent frozen recheck; native redirect conformance remains an explicit integration gate.
+
+### Correction-pass Graft evidence
+
+**Graft: ACTIVE** in `/Users/afe/orca/workspaces/ourhoomu/sw-0044-front-transport` at baseline `f7dec000563b8995927832cfa65658d077497371`. `graft --version` returned `0.21.1`; `graft build --no-gitignore --no-ignore .` reported 43 supported files, 216 nodes, and 476 edges at the exact worktree path; `graft check .` reported the wiring graph in sync. Retrieval commands were `graft map .`, `graft grep 'createApiClient|createSessionAuthority|toApiError|parseRefreshSession' --in ourhoomu-front/src`, five `graft skeleton` calls for the assigned source/test files, and `graft callers createSessionAuthority --depth 2`. Graft's reported estimates sum to approximately **100,141 tokens saved across eight retrieval calls**; this is an index estimate, not a runtime or model-token measurement. Markdown project instructions/contracts were read directly because they are not indexed.

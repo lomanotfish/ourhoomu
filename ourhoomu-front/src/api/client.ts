@@ -4,6 +4,7 @@ import {
   OfflineMutationError,
   SessionUnavailableError,
   isRecord,
+  isUuid,
   parseErrorEnvelope,
 } from './errors';
 
@@ -13,8 +14,13 @@ export type JsonValue =
 export type FetchFunction = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
 export interface SessionTransport {
+  getSessionRevision?(): number;
   getAccessToken(): Promise<string | null>;
-  refreshAfterUnauthorized(accessToken: string, signal?: AbortSignal): Promise<string | null>;
+  refreshAfterUnauthorized(
+    accessToken: string,
+    signal?: AbortSignal,
+    sessionRevision?: number,
+  ): Promise<string | null>;
 }
 
 export interface ApiRequestOptions {
@@ -67,6 +73,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       }
 
       let accessToken: string | null = null;
+      const sessionRevision = options.session.getSessionRevision?.();
       if (authenticated) {
         accessToken = await options.session.getAccessToken();
         if (requestOptions.signal?.aborted) throw abortError();
@@ -79,6 +86,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         headers,
         body,
         signal: requestOptions.signal,
+        redirect: 'error',
       };
       let response = await fetcher(url, init);
 
@@ -92,11 +100,12 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         const refreshedToken = await options.session.refreshAfterUnauthorized(
           accessToken,
           requestOptions.signal,
+          sessionRevision,
         );
         if (refreshedToken !== null && !requestOptions.signal?.aborted) {
           const replayHeaders = new Headers(headers);
           replayHeaders.set('Authorization', `Bearer ${refreshedToken}`);
-          response = await fetcher(url, { ...init, headers: replayHeaders });
+          response = await fetcher(url, { ...init, headers: replayHeaders, redirect: 'error' });
         }
       }
 
@@ -168,7 +177,7 @@ async function toSuccess<T>(response: Response): Promise<SuccessEnvelope<T>> {
   } catch {
     throw new ApiProtocolError('API returned a malformed success response', response.status);
   }
-  if (!isRecord(payload) || !('data' in payload) || typeof payload.requestId !== 'string') {
+  if (!isRecord(payload) || !('data' in payload) || !isUuid(payload.requestId)) {
     throw new ApiProtocolError(
       'API success response did not match the JSON envelope',
       response.status,

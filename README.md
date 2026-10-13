@@ -12,7 +12,7 @@
 - [checklist.md](checklist.md): ความคืบหน้าและหลักฐานตรวจรับ อัปเดตโดย Tech Lead
 - [docs/team/board.md](docs/team/board.md): tickets, dependencies และ checkpoint สำหรับทำงานต่อ
 
-Stack ที่ผู้ใช้เลือก: **React Native + Expo**, **Elysia บน Cloudflare Workers Free**, **Neon PostgreSQL + Drizzle ORM** และ **Bun สำหรับ dependencies/scripts ทั้ง front/back** ดู [MVP spec](docs/project/spec.md) และ [ADR-0003](docs/adr/0003-selected-stack.md) Neon project ourhoomu (`lucky-bar-14515304`) branch `production` มี Object Storage bucket `slip` แบบ private ตาม [neon.ts](neon.ts) Google/Apple identity/session contract ยังต้องตรึงก่อนพัฒนา
+Stack ที่ผู้ใช้เลือก: **React Native + Expo**, **Elysia บน Cloudflare Workers Free**, **Neon PostgreSQL + Drizzle ORM** และ **Bun สำหรับ dependencies/scripts ทั้ง front/back** ดู [MVP spec](docs/project/spec.md) และ [ADR-0003](docs/adr/0003-selected-stack.md) Neon project ourhoomu (`lucky-bar-14515304`) branch `production` มี Object Storage bucket `slip` แบบ private ตาม [neon.ts](neon.ts) API/DTO contract0.3.2 ตรึงสำหรับ core local/dev แล้ว; การพิสูจน์ Google/Apple login จริงยัง pending
 
 เริ่มอ่าน [requirement](docs/team/requirements.md) → [MVP spec](docs/project/spec.md) → [คำตัดสินที่ยังรอ](docs/project/decisions.md) → [checklist](checklist.md)
 
@@ -30,4 +30,4 @@ git ls-files
 
 Root package.json/package-lock.json มีเฉพาะ Neon config tooling ที่ CLI ติดตั้ง ใช้ `npm ci` เพื่อติดตั้งตาม lockfile. Frontend เป็นแพ็กเกจแยกพร้อม `bun.lock`: เข้า `ourhoomu-front/` แล้วรัน `bun install --frozen-lockfile`, `bun run web` หรือ `bun run ios`, `bun run typecheck`, `bun run test`, `bun run export:web` และ `bun run export:ios`. ดูข้อกำหนด runtime และขอบเขตเดโมใน [frontend README](ourhoomu-front/README.md); คำสั่ง Neon อยู่ใน [Neon setup](docs/project/neon-setup.md).
 
-API runtime foundation ใช้ Bun 1.4.3 ขึ้นไปและ Node.js 22 ขึ้นไป: เข้า `ourhoomu-api/` แล้วรัน `bun install --frozen-lockfile`, `bun run dev`, `bun run typecheck` และ `bun run test`. ขณะ Wrangler รัน ใช้ `bun run check:runtime` ในอีก terminal เพื่อตรวจ health และ route isolation. Build ใช้ `bunx wrangler deploy --dry-run --config wrangler.jsonc --outdir /tmp/ourhoomu-api-dryrun`. มีเฉพาะ health; domain endpoints กำลังพัฒนาตาม contract. วิธีพิสูจน์ Neon กับข้อมูลสังเคราะห์อยู่ใน [API README](ourhoomu-api/README.md).
+API runtime foundation ใช้ Bun 1.4.3 ขึ้นไปและ Node.js 22 ขึ้นไป: เข้า `ourhoomu-api/` แล้วรัน `bun install --frozen-lockfile`, `bun run dev`, `bun run format:check`, `bun run lint`, `bun run typecheck` และ `bun run test`. ขณะ Wrangler รัน ใช้ `bun run check:runtime` ในอีก terminal เพื่อตรวจ health และ route isolation. Build ใช้ `bunx wrangler deploy --dry-run --config wrangler.jsonc --outdir /tmp/ourhoomu-api-dryrun`. มีเฉพาะ health; domain endpoints กำลังพัฒนาตาม contract. วิธีพิสูจน์ Neon กับข้อมูลสังเคราะห์อยู่ใน [API README](ourhoomu-api/README.md).

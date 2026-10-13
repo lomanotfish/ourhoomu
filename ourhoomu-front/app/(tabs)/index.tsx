@@ -146,7 +146,7 @@ export default function Overview() {
           action="ดูทั้งหมด"
           onPress={() => router.push('/(tabs)/chores')}
         />
-        {success && (
+        {Boolean(success) && (
           <Card style={{ backgroundColor: colors.mint, borderWidth: 0, marginBottom: 10 }}>
             <Label style={{ color: colors.mintDark, fontWeight: '700' }}>✓ {success}</Label>
           </Card>

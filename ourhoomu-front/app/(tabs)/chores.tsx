@@ -222,7 +222,7 @@ export default function Chores() {
           </View>
         </View>
       )}
-      {success && (
+      {Boolean(success) && (
         <MotionIn>
           <Card
             style={{

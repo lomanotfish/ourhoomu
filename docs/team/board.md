@@ -44,9 +44,9 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer + Lead recovery | SW-0022, SW-0024 | done |
 | [SW-0039](tickets/SW-0039.md) | Independent data/security contract review | data-engineer | Frozen SW-0036 proposal | done (changes_requested; follow-up pending) |
 | [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | in_progress |
-| [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (changes_requested) |
-| [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen aa36bf3, SW-0034 | ready |
-| [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | ready |
+| [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (final approve) |
+| [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen aa36bf3, SW-0034 | in_progress |
+| [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -133,3 +133,5 @@ SW-0036 retry `ctx_f290320f8780` succeeded at `a00c383` (0.3.0-core-proposal); S
 Runtime recheck `ctx_39365e06a845` completed with `d4c23de` changes_requested, released/captured before ack `delivery_5a22938aa80b`. Production isolation and public errors passed, but URL query overrides remained. Lead correction `a648cce` rejects unknown/duplicate query keys and adds regressions; 6 tests/15 assertions and typecheck pass. Final focused recheck Task `task_e744874f2138` / Dispatch `ctx_8bfd0389a911` is active. No runtime merge/cleanup claimed.
 
 Final runtime reviewer `ctx_8bfd0389a911` approved `a648cce` in report `281d139`, released/captured before ack `delivery_2e73419f25e3`. Lead merged runtime and report into local `d9beb90`; fresh root frozen install, typecheck, 6 tests/15 assertions and actual production workerd health/hidden404/unknown404/CORS pass; server stopped. SW-0038 accepted as bounded runtime proof. Full SW-0003 still awaits final contract and package quality hooks. User-owned runtime/DTO terminals and their worktrees are preserved; no cleanup of user resources claimed. [Final review](reports/SW-0041-runtime-final.md).
+
+Current frozen contract `aa36bf3` (0.3.1-core-proposal) fixes typed version conflicts and exact dashboard aggregate strings. Author `ctx_1a146aad66fe` released/captured before ack `delivery_e0771d7cc31c`; final independent contract review `ctx_1c675b4a2290` is active. Frontend consumer SW-0042 Task `task_5bfe8618db4f` / Dispatch `ctx_23593b005671` generates matching DTOs in a new worktree; original user-owned SW-0040 checkout remains untouched. API quality slice SW-0043 Task `task_8d14cc2b1e0b` / Dispatch `ctx_52d54f62822c` is active separately. All three live process argv verified bypass permissions. Root Graft ACTIVE fresh build/check36files130nodes336edges; no new savings estimated by build/check.

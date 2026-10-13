@@ -29,3 +29,5 @@ git ls-files
 ```
 
 Root package.json/package-lock.json มีเฉพาะ Neon config tooling ที่ CLI ติดตั้ง ใช้ `npm ci` เพื่อติดตั้งตาม lockfile. Frontend เป็นแพ็กเกจแยกพร้อม `bun.lock`: เข้า `ourhoomu-front/` แล้วรัน `bun install --frozen-lockfile`, `bun run web` หรือ `bun run ios`, `bun run typecheck`, `bun run test`, `bun run export:web` และ `bun run export:ios`. ดูข้อกำหนด runtime และขอบเขตเดโมใน [frontend README](ourhoomu-front/README.md); คำสั่ง Neon อยู่ใน [Neon setup](docs/project/neon-setup.md).
+
+API runtime foundation ใช้ Bun 1.4.3 ขึ้นไปและ Node.js 22 ขึ้นไป: เข้า `ourhoomu-api/` แล้วรัน `bun install --frozen-lockfile`, `bun run dev`, `bun run typecheck` และ `bun run test`. ขณะ Wrangler รัน ใช้ `bun run check:runtime` ในอีก terminal เพื่อตรวจ health และ route isolation. Build ใช้ `bunx wrangler deploy --dry-run --config wrangler.jsonc --outdir /tmp/ourhoomu-api-dryrun`. มีเฉพาะ health; domain endpoints กำลังพัฒนาตาม contract. วิธีพิสูจน์ Neon กับข้อมูลสังเคราะห์อยู่ใน [API README](ourhoomu-api/README.md).

@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ourhoomu-api-runtime-proof",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": [],
+  "vars": {
+    "APP_ENV": "development",
+    "ALLOWED_ORIGIN": "http://localhost:8081"
+  }
+}

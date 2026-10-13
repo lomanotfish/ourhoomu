@@ -733,32 +733,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Successful operation; domain status is in data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SuccessEnvelope"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/Me"
-                        }
-                      },
-                      "required": [
-                        "data"
-                      ]
-                    }
-                  ],
-                  "unevaluatedProperties": false
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid input",
             "content": {
@@ -779,38 +753,8 @@
               }
             }
           },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
           "409": {
             "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
             "content": {
               "application/json": {
                 "schema": {
@@ -848,7 +792,7 @@
             }
           }
         },
-        "x-gate-reason": "account-deletion-workflow-pending",
+        "x-gate-reason": "account-deletion-workflow-and-retention-proof-pending",
         "requestBody": {
           "required": true,
           "content": {
@@ -860,7 +804,8 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "description": "Account deletion workflow is not yet defined or enabled; current runtime must fail closed with 503 feature_unavailable. A typed pending/blocked/completed response will be added only after the separate workflow and retention gates are approved."
       }
     },
     "/v1/houses": {

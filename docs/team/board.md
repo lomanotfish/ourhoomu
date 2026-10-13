@@ -47,8 +47,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (final approve) |
 | [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen7756bcc, SW-0034 | done |
 | [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | done |
-| [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | in_progress |
-| [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | done (changes_requested) |
+| [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | done |
+| [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | done (approve) |
 | [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | draft |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
@@ -166,3 +166,5 @@ SW-0044 all six required corrections frozen0bef56f with30tests117assertions; own
 SW-0003 narrow CORS integration follow-up by Lead: contracted PATCH/DELETE/Idempotency-Key preflight plus exposedRetry-After/X-Request-ID; red-first tests now8pass26assertions, format/lint/typecheck and actual workerd smoke/header checks pass. No domain handler or browser/native end-to-end claim.
 
 SW-0045 frozen recheck2bc18f3 originalsix scenarios pass butthree residual deferred-save/old401/newattempt/deadline races remain. Report preserved/released/captured beforeackdelivery_1cd1b9b48f48. SW-0044 second fix Tasktask_44561200cf57/Dispatchctx_015b9ab98e13 ready/inputaccepted in exclusive original checkout, effectivegpt-6-luna; no transport acceptance/merge yet. Data pooled RLS/cash/invite/owner/chore race matrix nowpasses; final expanded repro and review stillpending.
+
+SW-0044 portable transport/session accepted after independent0124f53 approval, integratedlocalcb0b17c. Fresh root frozeninstall/typecheck/format/full41tests165assertions pass. Allnine findings closed, no real API/native login claim. Final reviewer released/captured/acked. SW-0009 actual house/session/secure-store/UI integration stillpending; data final rehearsal/report pending independentSW-0046.

@@ -105,3 +105,5 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [ ] Actual backend/API/native/provider/retention/release acceptance remains pending in original tickets; research and mock do not close those criteria.
 
 - [x] SW-0042: DTOs generated from accepted0.3.2 contract; strict TypeScript/format/reproducibility checks pass. Real API integration remains pending.
+
+- [x] SW-0044: portable typed client and session race boundary accepted; 41 full tests/165 assertions and independent review pass. Actual API/native integration remains SW-0009 pending.

@@ -41,7 +41,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | done |
 | [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | done |
 | [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | in_progress |
-| [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer + Lead recovery | SW-0022, SW-0024 | in_progress |
+| [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer + Lead recovery | SW-0022, SW-0024 | done |
 | [SW-0039](tickets/SW-0039.md) | Independent data/security contract review | data-engineer | Frozen SW-0036 proposal | done (changes_requested; follow-up pending) |
 | [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | in_progress |
 | [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (changes_requested) |
@@ -129,3 +129,5 @@ Old SW-0039/0040 processes could not refresh their account tokens. SW-0039 origi
 SW-0036 retry `ctx_f290320f8780` succeeded at `a00c383` (0.3.0-core-proposal); SW-0039 recovery `ctx_4aac5ffe57f0` succeeded with findings report `3b8b2c2`/`fad3702`. Both released/captured before acknowledgement of `delivery_e7e3a9281104`. Proposal/report integrated on local `34b1c0a`; no final contract acceptance. Remaining typed-version and exact dashboard aggregate findings routed to the contract owner; route matrix needs independent recheck of the latest revision.
 
 Runtime recheck `ctx_39365e06a845` completed with `d4c23de` changes_requested, released/captured before ack `delivery_5a22938aa80b`. Production isolation and public errors passed, but URL query overrides remained. Lead correction `a648cce` rejects unknown/duplicate query keys and adds regressions; 6 tests/15 assertions and typecheck pass. Final focused recheck Task `task_e744874f2138` / Dispatch `ctx_8bfd0389a911` is active. No runtime merge/cleanup claimed.
+
+Final runtime reviewer `ctx_8bfd0389a911` approved `a648cce` in report `281d139`, released/captured before ack `delivery_2e73419f25e3`. Lead merged runtime and report into local `d9beb90`; fresh root frozen install, typecheck, 6 tests/15 assertions and actual production workerd health/hidden404/unknown404/CORS pass; server stopped. SW-0038 accepted as bounded runtime proof. Full SW-0003 still awaits final contract and package quality hooks. User-owned runtime/DTO terminals and their worktrees are preserved; no cleanup of user resources claimed. [Final review](reports/SW-0041-runtime-final.md).

@@ -100,5 +100,6 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 ## Backend planning — 2026-10-13
 
 - [x] SW-0033 backend tasks/dependencies/ownership/API-to-frontend handoffs prepared; research22/23/24, FE plan34 and independent35 review accepted, final approve60e3292 after fixa3bc4a4. [Plan](docs/team/backend-plan.md) / [delivery evidence](docs/team/reports/SW-0033-backend-plan-delivery.md).
-- [ ] User reviews material choices and confirms implementation/development target; SW-0036 freezes contracts next, SW-0037 owns provider/retention data extensions.
+- [x] User confirmed core local/dev implementation; [approved scope](docs/team/core-implementation.md). SW-0036 final contract acceptance remains pending; SW-0037 owns gated provider/retention extensions.
+- [x] SW-0038 bounded Elysia/workerd/Neon transaction proof accepted on local `d9beb90`: restricted actor RLS, rollback and context isolation; independent review closed all findings, fresh root 6 tests/15 assertions/typecheck/workerd checks pass. [Evidence](docs/team/reports/SW-0038-runtime-proof.md), [final review](docs/team/reports/SW-0041-runtime-final.md). Full domain foundation and native/provider acceptance remain pending.
 - [ ] Actual backend/API/native/provider/retention/release acceptance remains pending in original tickets; research and mock do not close those criteria.

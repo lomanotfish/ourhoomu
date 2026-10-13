@@ -41,15 +41,17 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | done |
 | [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | done |
 | [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | in_progress |
-| [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer | SW-0022, SW-0024 | ready |
+| [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer | SW-0022, SW-0024 | in_progress |
+| [SW-0039](tickets/SW-0039.md) | Independent data/security contract review | data-engineer | Frozen SW-0036 proposal | in_progress |
+| [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
 
 SW-0032 feedback accepted: cream/mint Thai calendar replaces chore date typing. Source `e2edcb7` and evidence `6dfce71` fast-forwarded into `local`; fresh root typecheck/format/7 tests31 assertions and Chrome 320/393/1079px, keyboard/ARIA/month/today/all-three-mode smoke pass. Three workers released/captured/acknowledged; final owned-worktree cleanup receipts remain in root `.git/ourhoomu-snapshots/sw-0032/`. [Evidence](reports/SW-0032-chore-date.md). Graft ACTIVE root/exact worktree, final root build/check 26files110nodes293edges. User root guide/bun.lock preserved; native/backend acceptance remains separate.
 
-- API/production implementation tickets ยังรอ full domain approval และ Neon identity/driver/actor contract; frontend demo SW-0026–0028 ได้รับอนุญาตใหม่โดยตรงและไม่ต้องรอ Figma. SW-0009/10/11 คง pending เฉพาะ integration acceptance; SW-0025 ทำ design artifact เพื่อทบทวนเท่านั้น ไม่ถือว่าผู้ใช้ออกแบบอนุมัติแล้ว; stack ยืนยันตาม SW-0020 แล้ว; SW-0015 ได้รับอนุมัติ setup/deploy โดยเฉพาะ มี ticket ไม่ได้แปลว่า agent ถูกเปิด
-- SW-0022/0023/0024 เป็น investigation tickets แยกจาก implementation; ผลวิจัยต้องผ่าน Tech Lead review ก่อนปลด dependencies งานเอกสารนี้ไม่ได้หมายถึงงานวิจัยเหล่านั้นเสร็จ
+- Core API และ frontend integration บน local/dev ได้รับยืนยันตาม [core implementation](core-implementation.md); SW-0036/0038 กำลังทำ contract/runtime proof และ SW-0039/0040 ตรวจ consumer. SlipOK, LINE, native login, production และ release ยังรอ gate เฉพาะงาน. Frontend demo SW-0026–0028 ไม่ขึ้นกับ Figma; SW-0025 cancelled. Ticket ready ไม่ใช่หลักฐานว่า worker เริ่มทำแล้ว
+- SW-0022/0023/0024 เป็น investigation tickets ที่ Tech Lead ตรวจรับแล้ว; runtime proof ใน SW-0038 และ issuer/actor integration ของ SW-0005 ยังคงต้องพิสูจน์ต่างหาก
 - SW-0022 + SW-0024 → SW-0003 → SW-0004 → SW-0005; SW-0023 → SW-0007/SW-0013; หลัง auth/schema ถูกตรวจรับแล้ว SW-0006, SW-0008 และ SW-0009 ทำขนานใน worktrees แยกได้
 - SW-0019 ออกแบบ 29 ตารางแล้ว; SW-0004 ใช้ final [database contract](../project/database.md) และยังรอ design/policy/runtime approval ก่อน migrations/tests ไม่ใช้ original worker W24h proposal แทน final replay-floor design
 - SW-0007 เลือก SlipOK แล้ว รอ credentials/งบ/recipient matching/retention evidence เมื่อเชื่อมของจริง; ส่วน mock ไม่ใช้ปิด provider acceptance
@@ -100,3 +102,13 @@ SW-0022/23/24 source research, SW-0033 backend delivery plan, SW-0034 frontend A
 User “ยืนยันแผน”; approved [core implementation](core-implementation.md). SW-0036 in_progress, downstream feature tickets await accepted contracts/runtime/schema. Run run_a401e29c745e; no worker launch claimed until actual receipt. Task-relevant approved checks enabled; external provider/native/release gates retained.
 
 SW-0038 approved risk-first bounded runtime proof starts independently from full domain OpenAPI36; owns API tooling/probe fixtures only, production entry no DB/fake-actor probe. Full foundation3 remains dependent on36+38. Native/provider gates unchanged.
+
+### Recovery checkpoint — 2026-10-13
+
+Orca Run `run_a401e29c745e` launched four actual Dispatches. SW-0036 proposal `0c88553` passed structural checks and was integrated at `780bbd1`; its author Dispatch `ctx_ac55c04f8d6d` succeeded and was released with captured transcript. Proposal acceptance remains pending SW-0039 and SW-0040 review corrections, including response schema composition, list/detail privacy, permission and payment state DTOs, route error mapping, refresh race semantics, and removal/expiry behavior.
+
+SW-0038 Dispatch `ctx_52fa55b57817` ended with `operator_close` before a worker_done signal. Its worktree contains uncommitted API files and a provisional report; the report incorrectly treats the synthetic Neon endpoint mapping as unavailable even though the Tech Lead supplied the authoritative branch-create receipt at `.git/ourhoomu-snapshots/core-implementation/branch-create.json`. Actual Neon transaction/RLS proof remains unrun, and Wrangler config files currently sit at repo root outside assigned ownership. Preserve the dirty worktree for a scoped retry; do not integrate it as passed.
+
+SW-0039 `ctx_56ff3f6b9f77` and SW-0040 `ctx_191090890cd8` have uncommitted review/DTO reports in their isolated worktrees. Their terminals reached a Codex usage limit before worker_done; no reviewer approval or final DTO acceptance is claimed. Lead copied their provisional reports and statuses to ignored `.git/ourhoomu-snapshots/core-implementation/worker-recovery/`. The current session re-bound the same Run coordinator from `term_64588939-5e2c-4ec0-a5d2-a34ed614b39e` to `term_4dbf544f-2dde-4549-9b6b-6f04bc5e326c` (consumer generation 2); no duplicate Run was created. Worker terminal resources marked `user_owned` remain preserved.
+
+Graft in the exact Lead worktree: **ACTIVE**, `graft check` OK against 26 indexed JS/TS files, 110 nodes and 293 edges; contract Markdown/YAML used raw-file fallback. No new token savings estimate claimed at this checkpoint. Integration target remains `local`; the production Neon branch and preexisting user dev branch were not written.

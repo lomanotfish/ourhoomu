@@ -1,6 +1,6 @@
 # OurHoomu checklist
 
-อัปเดต: 2026-10-12 · **ระยะปัจจุบัน: เริ่ม frontend Expo ตามคำอนุญาตล่าสุด; runtime acceptance ยัง pending**
+อัปเดต: 2026-10-13 · **ระยะปัจจุบัน: frontend Expo demo รวมและตรวจรับแล้ว; API/native/TestFlight acceptance ยัง pending**
 
 Tech Lead เท่านั้นอัปเดตหลังตรวจรับและรวมงาน ใส่ ticket/หลักฐานจริงทุกครั้ง [x] หมายถึงผลลัพธ์ในข้อนั้นเสร็จ ไม่ได้หมายความว่าฟีเจอร์แอพเสร็จ ดู [board](docs/team/board.md) และ [requirement acceptance](docs/team/requirements.md)
 
@@ -81,15 +81,17 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 | 2026-10-12 | SW-0002 | เอกสารรวม main/local ที่ f2782fa แล้ว; review/แก้ F1–F3, 146 local links/13 tickets/whitespace ผ่าน; reviewer released — [หลักฐาน](docs/team/tickets/SW-0002.md) |
 | 2026-10-12 | SW-0015 | Neon setup/deploy exit0, production/private slip ตรวจจริง; config/lockfile/secret exclusion/172 links ผ่าน; รวม main/local ที่ f333bf4 — [หลักฐาน](docs/team/tickets/SW-0015.md) |
 | 2026-10-12 | SW-0021 | MVP spec/backlog รวม `local` ที่ `749f43e`; 50 tracked Markdown files/289 links ผ่าน, ticket/dependency/status audit 23/23 ผ่าน; cleanup receipt — [หลักฐาน](docs/team/tickets/SW-0021.md) |
+| 2026-10-13 | SW-0026–0031 | Frontend local demo รวมที่ source `97eaa6e`; independent approve, typecheck/format/3 tests/19 assertions/SDK compatibility/web+iOS JS exports และ 320/393px smoke ผ่าน; release/cleanup พร้อม receipts — [หลักฐาน](docs/team/reports/SW-0027-integration.md) |
 
 ## วิธีอัปเดตเมื่อ agent ส่งงาน
 
-Tech Lead ตรวจ artifact กับ acceptance และ required checks → รวมเข้า target → ตรวจผลรวม → อัปเดต ticket/board/checklist พร้อม commit/report/คำสั่งผลจริง เก็บ blocker พร้อม owner/next action งานที่ไม่ผ่านคง unchecked ผู้ใช้อนุญาตเอกสารและ Neon setup/deploy เฉพาะรอบนี้ ยังไม่อนุญาตพัฒนาฟีเจอร์แอป
+Tech Lead ตรวจ artifact กับ acceptance และ required checks → รวมเข้า target → ตรวจผลรวม → อัปเดต ticket/board/checklist พร้อม commit/report/คำสั่งผลจริง เก็บ blocker พร้อม owner/next action งานที่ไม่ผ่านคง unchecked ผู้ใช้อนุญาต frontend เพิ่มโดยตรงแล้วตาม SW-0027; API/production integration ยังต้องผ่าน scope และ prerequisites ของ tickets เดิม
 
-## Frontend รอบที่อนุญาตล่าสุด — SW-0026–0028
+## Frontend รอบที่อนุญาตล่าสุด — SW-0026–0031
 
 - [x] SW-0026: Visual/motion/flow contract ใน repo โดยไม่รอ Figma — [contract](docs/project/frontend-design.md), [Lead acceptance](docs/team/tickets/SW-0026.md)
-- [ ] SW-0027: Expo mobile app ธีมน่ารัก, four tabs, demo bills/chores/house flows และ animation/reduced motion
-- [ ] SW-0028: Independent review, integrated checks และ cleanup
+- [x] SW-0027: Expo mobile app ธีมน่ารัก, four tabs, demo bills/chores/house flows และ animation/reduced motion — [รายงาน frontend](docs/team/reports/SW-0027-frontend.md)
+- [x] SW-0028: Independent review approve, integrated checks และ worker/source worktree cleanup — [ผลรวม](docs/team/reports/SW-0027-integration.md)
+- [x] SW-0029/30/31: Plain UI copy, reduced-motion held-press reset, 44pt filters และ empty-status rendering — [ผลรวม](docs/team/reports/SW-0027-integration.md)
 
 Frontend demo ไม่ใช้ปิดการตรวจ API/social login/SlipOK/LINE/retention/TestFlight ของ tickets เดิม.

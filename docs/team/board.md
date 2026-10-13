@@ -1,6 +1,6 @@
 # Team board — OurHoomu
 
-อัปเดต 2026-10-12 · Scope: เอกสาร MVP spec/backlog รวม SlipOK/LINE OA และ Neon setup/deploy เฉพาะ SW-0015 · Frontend implementation: อนุมัติ SW-0026–0028; API/production implementation ยัง pending
+อัปเดต 2026-10-13 · Frontend demo SW-0026–0031 รวมและตรวจรับแล้วบน `local`; API/production/native integration ยัง pending · Neon setup/deploy เดิมเฉพาะ SW-0015
 
 Tech Lead เป็นผู้ดูแลสถานะและ checklist แหล่งพฤติกรรมคือ [requirements](requirements.md) แหล่งคำตัดสินคือ [decisions](../project/decisions.md)
 
@@ -13,9 +13,9 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0006](tickets/SW-0006.md) | API บิล การหาร และงวดเงินสด | backend-engineer | SW-0004, SW-0005 | draft |
 | [SW-0007](tickets/SW-0007.md) | ตรวจสลิปภายนอกและ private storage | backend-engineer | SW-0004, SW-0005, SW-0006, SW-0023 | draft |
 | [SW-0008](tickets/SW-0008.md) | API เวรสามโหมดและกิจกรรมภายในแอป | backend-engineer | SW-0004, SW-0005 | draft |
-| [SW-0009](tickets/SW-0009.md) | แอพ login บ้าน และ navigation | frontend-engineer | SW-0003, SW-0005, SW-0025 | draft |
-| [SW-0010](tickets/SW-0010.md) | หน้าบิลและทยอยจ่าย | frontend-engineer | SW-0006, SW-0007, SW-0009, SW-0025 | draft |
-| [SW-0011](tickets/SW-0011.md) | หน้าเวรและ inbox ภายในแอป | frontend-engineer | SW-0008, SW-0009, SW-0025 | draft |
+| [SW-0009](tickets/SW-0009.md) | แอพ login บ้าน และ navigation ผ่าน API/native | frontend-engineer | SW-0003, SW-0005, SW-0026, SW-0027 | draft |
+| [SW-0010](tickets/SW-0010.md) | หน้าบิลและทยอยจ่ายผ่าน API/native | frontend-engineer | SW-0006, SW-0007, SW-0009, SW-0027 | draft |
+| [SW-0011](tickets/SW-0011.md) | หน้าเวรและ inbox ผ่าน API/native | frontend-engineer | SW-0008, SW-0009, SW-0027 | draft |
 | [SW-0012](tickets/SW-0012.md) | ตรวจรับ MVP และ security boundaries อย่างอิสระ | qa-engineer | SW-0007, SW-0010, SW-0011, SW-0013, SW-0018 | draft |
 | [SW-0013](tickets/SW-0013.md) | Retention ทุกประวัติและแผน restore | backend-engineer | SW-0004, SW-0006, SW-0007, SW-0008, SW-0023 | draft |
 | [SW-0014](tickets/SW-0014.md) | เตรียมและแจก TestFlight pilot | platform-engineer | SW-0012 | draft |
@@ -31,12 +31,11 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | draft |
 | [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | ผู้ใช้ให้เริ่ม front โดยไม่รอ Figma | cancelled |
 | [SW-0026](tickets/SW-0026.md) | Frontend visual/motion/flow contract ใน repo | uxui-designer | คำสั่ง frontend ล่าสุด | done |
-| [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + UX/spec เดิม; SW-0026 ร่วมออกแบบ | in_review |
-| [SW-0028](tickets/SW-0028.md) | Independent frontend review | code-reviewer | frozen SW-0027 artifact | in_progress |
-
-| [SW-0029](tickets/SW-0029.md) | Plain demo UI copy integration fix | tech-lead | frozen SW-0027 | in_progress |
-
-| [SW-0030](tickets/SW-0030.md) | Narrow reviewed motion/touch/copy follow-ups | tech-lead | SW-0028 approve | in_progress |
+| [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + SW-0026 | done เฉพาะ local demo |
+| [SW-0028](tickets/SW-0028.md) | Independent frontend review | code-reviewer | frozen SW-0027 artifact | done |
+| [SW-0029](tickets/SW-0029.md) | Plain demo UI copy integration fix | tech-lead | frozen SW-0027 | done |
+| [SW-0030](tickets/SW-0030.md) | Narrow reviewed motion/touch/copy follow-ups | tech-lead | SW-0028 approve | done |
+| [SW-0031](tickets/SW-0031.md) | Empty status text rendering fix | tech-lead | integrated SW-0027 | done |
 
 ## Dependency / dispatch gates
 
@@ -50,7 +49,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 - SW-0013 รอ domain implementations; SW-0012 ตรวจ pre-release integrated artifact (AC1a, AC2–AC7, AC10) หลัง FE/BE/retention/LINE พร้อม; SW-0014 ปิด AC1b จาก TestFlight จริงหลัง QA ผ่านและมี authorization ส่งภายนอก
 - Backlog เป็นระดับผลลัพธ์ที่วางไว้ Tech Lead แบ่ง ticket ใหญ่เป็น slices ก่อน dispatch ได้ โดยรักษา acceptance/dependencies และขอผู้ใช้เมื่อ scope เปลี่ยน
 
-## Checkpoint สำหรับ resume
+## Historical checkpoint — before frontend authorization
 
 - Last completed: SW-0021 รวม MVP spec/backlog ตาม stack ล่าสุดแล้วโดยไม่แก้ product schema
 - Integration target record: `local`; SW-0021 baseline `2c2b49e`, author tip `749f43e`, accepted at `82c3dbf`
@@ -65,19 +64,14 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 
 ประวัติ contributor guide ก่อนรอบนี้อยู่ใน commit 6312fa6 ไม่สร้าง ticket/runtime IDs ย้อนหลังขึ้นเอง
 
-## Frontend delivery checkpoint — 2026-10-12
+## Current frontend delivery checkpoint — 2026-10-13
 
-- Objective: runnable cute animated Expo frontend; demo adapter only until API tickets are ready.
+- Objective completed: cute animated Expo frontend with four tabs and local demo adapter. [Integration evidence](reports/SW-0027-integration.md), [frontend README](../../ourhoomu-front/README.md).
 - Integration target: current delivery branch `local`, baseline `fa82194fb9e537692f233cb841981f61269f0424`; `main` exists but does not contain the latest accepted project docs.
 - User working edit in `docs/team/agent-guide.md` preserved; it is outside this delivery ownership.
-- Orca executable `/usr/local/bin/orca`, Run `run_ad3b5396e327`; Lead workspace `/Users/afe/orca/workspaces/ourhoomu/sw-0027-front-lead`.
-- Graft frontend scope: NO_INDEXED_FILES, build succeeded (only neon.ts); `graft ask ... --in ourhoomu-front --source` returned nothing indexed.
-- Next: dispatch UX/frontend isolated workers, inspect frozen output, independent review, local merge, integrated checks and release/cleanup.
-
-- Active: SW-0026 `task_9054f1fb337f` / `ctx_4e6910965a66`; SW-0027 `task_f21d639e3447` / `ctx_94393ae74fb9`. Both actual worker-start receipts ready/input_accepted, separate top-level worktrees at `a7ec76b`.
-
-- SW-0026 accepted: `43cf37c` design/report plus Lead pending-only contract refinement; worker settled succeeded, released with captured transcript before acknowledgement. Frontend can read `docs/project/frontend-design.md`; design acceptance is not device/API acceptance.
-
-- SW-0027 frozen `c4e913c`, implementation worker settled/released; independent SW-0028 review next. Exact app worktree remains isolated and preserved; final native/API acceptance remains pending on existing tickets.
-
-- Active review SW-0028 `task_3bda20c234e6` / `ctx_812dafad5859`; Lead owns small SW-0029 copy-only follow-up in separate checkout; reviewer will inspect precise follow-up diff before acceptance.
+- Integrated source: `97eaa6eb8e4fa2515eab71c38ca0ed1cdc4234bd` on `local`; following commits are final docs/screenshots. Typecheck, format, three money tests/19 assertions, Expo compatibility, web/iOS JS exports and fresh 320/393px Chrome smoke pass.
+- Orca `/usr/local/bin/orca`, Run `run_ad3b5396e327`: SW-0026/27/28 all succeeded, released with captured transcripts before acknowledgement. No active or reclaimable worker. Four worker/source worktrees and branches removed after ancestry/clean-tree checks; Lead documentation worktree closes after these records are integrated. Receipts in the integration report and root `.git/ourhoomu-snapshots/sw-0027/`.
+- Graft ACTIVE: root/exact ticket scoped build and check OK, 22 files/95 nodes/253 edges; Lead tool estimates total 80,063 across nine figure-reporting queries. Initial NO_INDEXED_FILES is historical.
+- Preview intentionally running from root frontend: `http://localhost:8081`; start commands in frontend README. Root Neon config/dependencies unchanged. User dirty agent-guide and unknown-owner untracked root bun.lock preserved.
+- Independent review approved core/copy; Lead fixed narrow motion/44pt/copy and empty-status rendering. Native form-error announcement/focus, VoiceOver/Dynamic Type and device runtime remain pending; simctl unavailable. Dev web favicon 404 is cosmetic.
+- Next product integration remains SW-0009/10/11 with real backend contracts and native evidence; no Figma dependency, external push/deploy or TestFlight delivery is claimed.

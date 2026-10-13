@@ -28,5 +28,7 @@ Requirement เป็นแหล่งจริงของพฤติกร�
 
 ## Frontend ที่อนุญาตล่าสุด
 
+- ผู้ใช้อนุญาต frontend โดยตรงแล้วและไม่ต้องรอ Figma; local Expo demo รวมและตรวจรับเมื่อ 2026-10-13. API/native/TestFlight ยัง pending ตาม tickets เดิม.
 - [Visual และ motion contract](project/frontend-design.md) — SW-0026
 - [Frontend implementation](team/tickets/SW-0027.md) และ [independent review](team/tickets/SW-0028.md)
+- [ผลตรวจ frontend หลังรวมและ cleanup](team/reports/SW-0027-integration.md), [วิธีรัน](../ourhoomu-front/README.md)

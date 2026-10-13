@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "OurHoomu logical API",
-    "version": "0.2.0-proposal",
+    "version": "0.3.0-core-proposal",
     "description": "SW-0036 review proposal. Core approved for local/dev; x-status marks provider/native routes blocked until proof. No deployed API is asserted."
   },
   "servers": [
@@ -68,7 +68,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -78,27 +78,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Invalid, expired, reused or revoked credential/proof (unauthenticated); opaque and no house status.",
             "content": {
               "application/json": {
                 "schema": {
@@ -108,17 +88,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -128,7 +98,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -146,7 +116,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -168,7 +138,18 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "public-auth",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "409",
+            "429",
+            "503"
+          ]
+        }
       }
     },
     "/v1/auth/exchange": {
@@ -222,7 +203,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -232,27 +213,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Invalid, expired, reused or revoked credential/proof (unauthenticated); opaque and no house status.",
             "content": {
               "application/json": {
                 "schema": {
@@ -262,17 +223,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -282,7 +233,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -300,7 +251,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -322,7 +273,18 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "public-auth",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "409",
+            "429",
+            "503"
+          ]
+        }
       }
     },
     "/v1/auth/refresh": {
@@ -376,7 +338,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -386,7 +348,7 @@
             }
           },
           "401": {
-            "description": "Invalid, expired, reused or logged-out refresh credential; same opaque response for every case",
+            "description": "Invalid, expired, reused or revoked credential/proof (unauthenticated); opaque and no house status.",
             "content": {
               "application/json": {
                 "schema": {
@@ -396,7 +358,7 @@
             }
           },
           "409": {
-            "description": "Idempotency-Key reused with a different valid refresh request",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -406,7 +368,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -424,7 +386,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -458,6 +420,17 @@
           "differentReplay": "revoke family; opaque 401",
           "afterLogout": "opaque 401, including an exact old-key retry",
           "secrets": "hash stored credentials and encrypt bounded replay result; no raw logs"
+        },
+        "x-error-policy": {
+          "family": "public-auth",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "409",
+            "429",
+            "503"
+          ]
         }
       }
     },
@@ -512,7 +485,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -522,27 +495,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -552,17 +505,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -572,7 +515,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -590,7 +533,17 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "session-auth",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/me": {
@@ -630,58 +583,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -691,7 +594,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -708,6 +611,14 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "self-profile",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "401",
+            "429"
+          ]
         }
       },
       "delete": {
@@ -733,28 +644,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -764,7 +655,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -782,7 +673,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -805,7 +696,16 @@
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
         "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
-        "description": "Account deletion workflow is not yet defined or enabled; current runtime must fail closed with 503 feature_unavailable. A typed pending/blocked/completed response will be added only after the separate workflow and retention gates are approved."
+        "description": "Account deletion workflow is not yet defined or enabled; current runtime must fail closed with 503 feature_unavailable. A typed pending/blocked/completed response will be added only after the separate workflow and retention gates are approved.",
+        "x-error-policy": {
+          "family": "self-profile",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "401",
+            "429",
+            "503"
+          ]
+        }
       }
     },
     "/v1/houses": {
@@ -859,7 +759,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -869,27 +769,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -899,17 +779,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -919,7 +789,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -947,7 +817,17 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-collection",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "409",
+            "429"
+          ]
+        }
       },
       "get": {
         "operationId": "listHouses",
@@ -1014,7 +894,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1024,47 +904,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1074,7 +914,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1091,6 +931,15 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-collection",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "429"
+          ]
         }
       }
     },
@@ -1145,7 +994,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1155,17 +1004,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1175,27 +1014,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1205,7 +1024,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1222,6 +1041,16 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "429"
+          ]
         }
       },
       "patch": {
@@ -1286,7 +1115,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1296,7 +1125,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1306,7 +1135,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1316,7 +1145,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1326,17 +1155,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1346,7 +1165,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1375,7 +1194,19 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/members": {
@@ -1456,7 +1287,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1466,17 +1297,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1486,27 +1307,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1516,7 +1317,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1533,6 +1334,16 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "429"
+          ]
         }
       }
     },
@@ -1599,7 +1410,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1609,7 +1420,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1619,7 +1430,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1629,7 +1440,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1639,17 +1450,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1659,7 +1460,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1688,7 +1489,19 @@
           }
         },
         "x-idempotency": "One logical issuance per actor+route+key+body hash. Exact retry within 5 minutes returns the same token from encrypted short-lived replay result; after window same key returns 409 rather than minting a new invitation. Different body under same key returns 409. Token digest is the durable stored form.",
-        "x-invitation-privacy": "Persist token digest only; raw token appears only in createInvitation and its exact bounded retry. Never include token on revoke, accept errors, logs or later reads."
+        "x-invitation-privacy": "Persist token digest only; raw token appears only in createInvitation and its exact bounded retry. Never include token on revoke, accept errors, logs or later reads.",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/invitations/accept": {
@@ -1742,7 +1555,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1752,17 +1565,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1772,7 +1575,7 @@
             }
           },
           "404": {
-            "description": "Invalid, expired, consumed or revoked token: same unavailable response, without house existence disclosure",
+            "description": "Any supplied but unusable invitation token, including unknown, expired, consumed or revoked, returns the same opaque 404 invite_unavailable without house metadata; missing required token is 400.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1782,7 +1585,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1792,7 +1595,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1821,7 +1624,18 @@
           }
         },
         "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
-        "x-invitation-privacy": "Opaque 404 invite_unavailable for any unusable token; resolve house only after token digest and expiry checks. Verified principal required. Do not return token or house metadata on failure."
+        "x-invitation-privacy": "Opaque 404 invite_unavailable for any unusable token; resolve house only after token digest and expiry checks. Verified principal required. Do not return token or house metadata on failure.",
+        "x-error-policy": {
+          "family": "invitation-accept",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/invitations/{id}": {
@@ -1899,7 +1713,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1909,7 +1723,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1919,7 +1733,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -1929,7 +1743,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Inactive/removed membership, unknown or out-of-scope invitation: same hidden 404 not_found; invitation expiry does not reveal its existence.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1939,17 +1753,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1959,7 +1763,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1978,7 +1782,19 @@
           }
         },
         "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
-        "x-invitation-privacy": "Persist token digest only; raw token is returned once from createInvitation and never on revoke, accept errors, logs or later reads."
+        "x-invitation-privacy": "Persist token digest only; raw token is returned once from createInvitation and never on revoke, accept errors, logs or later reads.",
+        "x-error-policy": {
+          "family": "house-invitation",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/leave": {
@@ -2044,7 +1860,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2054,17 +1870,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2074,7 +1880,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2084,17 +1890,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2104,7 +1900,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2122,7 +1918,18 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/members/{id}": {
@@ -2200,7 +2007,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2210,7 +2017,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2220,7 +2027,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2230,7 +2037,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2240,17 +2047,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2260,7 +2057,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2278,7 +2075,19 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/me/recipient-accounts": {
@@ -2347,7 +2156,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2357,47 +2166,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2407,7 +2176,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2424,6 +2193,15 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "own-recipient-account",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "429"
+          ]
         }
       },
       "post": {
@@ -2476,7 +2254,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2486,27 +2264,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2516,17 +2274,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2536,7 +2284,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2564,7 +2312,17 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "own-recipient-account",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/me/recipient-accounts/{id}": {
@@ -2630,7 +2388,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2640,17 +2398,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2660,7 +2408,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2670,17 +2418,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2690,7 +2428,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2719,7 +2457,18 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "own-recipient-account",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/bills": {
@@ -2800,7 +2549,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2810,17 +2559,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2830,27 +2569,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2860,7 +2579,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2877,6 +2596,16 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "429"
+          ]
         }
       },
       "post": {
@@ -2941,7 +2670,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2951,17 +2680,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -2971,7 +2690,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2981,17 +2700,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3001,7 +2710,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3029,7 +2738,18 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/bills/{billId}": {
@@ -3095,7 +2815,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3105,17 +2825,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3125,17 +2835,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3145,7 +2845,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3155,7 +2855,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3172,6 +2872,17 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "410",
+            "429"
+          ]
         }
       },
       "patch": {
@@ -3248,7 +2959,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3258,7 +2969,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3268,7 +2979,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3278,7 +2989,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3288,7 +2999,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3298,7 +3009,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3308,7 +3019,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3337,7 +3048,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/bills/{billId}/recipient-accounts": {
@@ -3415,7 +3139,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3425,17 +3149,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3445,17 +3159,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3465,7 +3169,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3475,7 +3179,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3492,6 +3196,17 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "410",
+            "429"
+          ]
         }
       }
     },
@@ -3570,7 +3285,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3580,7 +3295,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3590,7 +3305,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3600,7 +3315,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3610,7 +3325,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3620,7 +3335,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3630,7 +3345,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3659,7 +3374,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/bills/{billId}/void": {
@@ -3737,7 +3465,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3747,7 +3475,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3757,7 +3485,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3767,7 +3495,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3777,7 +3505,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3787,7 +3515,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3797,7 +3525,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3826,7 +3554,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/bills/{billId}/payments": {
@@ -3904,7 +3645,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3914,7 +3655,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3924,7 +3665,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3934,7 +3675,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3944,7 +3685,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3954,7 +3695,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3964,7 +3705,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3993,7 +3734,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       },
       "get": {
         "operationId": "listPayments",
@@ -4084,7 +3838,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4094,17 +3848,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4114,17 +3858,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4134,7 +3868,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4144,7 +3878,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4161,6 +3895,17 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "410",
+            "429"
+          ]
         }
       }
     },
@@ -4227,7 +3972,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4237,7 +3982,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4247,7 +3992,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4257,7 +4002,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4267,7 +4012,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4277,7 +4022,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4287,7 +4032,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4305,7 +4050,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4326,7 +4071,21 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429",
+            "503"
+          ]
+        }
       }
     },
     "/v1/payments/{attemptId}/verify": {
@@ -4392,7 +4151,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4402,7 +4161,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4412,7 +4171,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4422,7 +4181,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4432,7 +4191,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4442,7 +4201,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4452,7 +4211,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4470,7 +4229,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4518,7 +4277,21 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429",
+            "503"
+          ]
+        }
       }
     },
     "/v1/payments/{attemptId}/reconcile": {
@@ -4584,7 +4357,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4594,7 +4367,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4604,7 +4377,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4614,7 +4387,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4624,7 +4397,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4634,7 +4407,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4644,7 +4417,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4662,7 +4435,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4710,7 +4483,21 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429",
+            "503"
+          ]
+        }
       }
     },
     "/v1/payments/{attemptId}/confirm-cash": {
@@ -4776,7 +4563,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4786,7 +4573,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4796,7 +4583,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4806,7 +4593,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4816,7 +4603,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4826,7 +4613,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4836,7 +4623,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4865,7 +4652,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/payments/{attemptId}/reject-cash": {
@@ -4931,7 +4731,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4941,7 +4741,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4951,7 +4751,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -4961,7 +4761,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4971,7 +4771,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4981,7 +4781,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4991,7 +4791,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5020,7 +4820,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/payments/{attemptId}/cancel": {
@@ -5086,7 +4899,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5096,7 +4909,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -5106,7 +4919,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -5116,7 +4929,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5126,7 +4939,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5136,7 +4949,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5146,7 +4959,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5175,7 +4988,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/payments/{attemptId}/slip": {
@@ -5236,7 +5062,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5246,17 +5072,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -5266,17 +5082,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5286,7 +5092,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5296,7 +5102,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5314,7 +5120,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5324,7 +5130,19 @@
             }
           }
         },
-        "x-gate-reason": "private-storage-runtime-pending"
+        "x-gate-reason": "private-storage-runtime-pending",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "410",
+            "429",
+            "503"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/chore-schedules": {
@@ -5405,7 +5223,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5415,17 +5233,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -5435,27 +5243,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5465,7 +5253,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5482,6 +5270,16 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "429"
+          ]
         }
       },
       "post": {
@@ -5546,7 +5344,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5556,17 +5354,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -5576,7 +5364,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5586,17 +5374,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5606,7 +5384,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5634,7 +5412,18 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/chore-schedules/preview": {
@@ -5700,7 +5489,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5710,17 +5499,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -5730,7 +5509,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5740,17 +5519,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5760,7 +5529,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5788,7 +5557,18 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/chore-schedules/{id}": {
@@ -5866,7 +5646,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5876,7 +5656,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -5886,7 +5666,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -5896,7 +5676,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5906,7 +5686,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5916,7 +5696,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5926,7 +5706,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5955,7 +5735,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/chores": {
@@ -6060,7 +5853,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6070,17 +5863,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6090,27 +5873,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6120,7 +5883,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6137,6 +5900,16 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "429"
+          ]
         }
       },
       "post": {
@@ -6201,7 +5974,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6211,17 +5984,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6231,7 +5994,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6241,17 +6004,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6261,7 +6014,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6289,7 +6042,18 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/chores/{id}": {
@@ -6367,7 +6131,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6377,7 +6141,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6387,7 +6151,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6397,7 +6161,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6407,7 +6171,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6417,7 +6181,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6427,7 +6191,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6456,7 +6220,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/chores/{id}/complete": {
@@ -6534,7 +6311,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6544,7 +6321,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6554,7 +6331,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6564,7 +6341,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6574,7 +6351,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6584,7 +6361,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6594,7 +6371,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6623,7 +6400,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/chores/{id}/reopen": {
@@ -6701,7 +6491,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6711,7 +6501,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6721,7 +6511,7 @@
             }
           },
           "403": {
-            "description": "Insufficient permission",
+            "description": "Active member is known to have in-scope access, but this action is forbidden (forbidden).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6731,7 +6521,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6741,7 +6531,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6751,7 +6541,7 @@
             }
           },
           "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Current active house member with proof of prior access to this child reached its access expiry (expired); never returned for removed members or cross-house IDs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6761,7 +6551,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6790,7 +6580,20 @@
           }
         },
         "x-expected-version": "required in JSON body; stale version returns 409 with current authorized resource version",
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-child",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "403",
+            "404",
+            "409",
+            "410",
+            "429"
+          ]
+        }
       }
     },
     "/v1/houses/{houseId}/dashboard": {
@@ -6844,7 +6647,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6854,17 +6657,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -6874,27 +6667,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6904,7 +6677,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6921,6 +6694,16 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "429"
+          ]
         }
       }
     },
@@ -7002,7 +6785,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7012,17 +6795,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -7032,27 +6805,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7062,7 +6815,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7079,6 +6832,16 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "429"
+          ]
         }
       }
     },
@@ -7145,7 +6908,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7155,17 +6918,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
+            "description": "Missing, invalid or revoked session or credential (unauthenticated).",
             "content": {
               "application/json": {
                 "schema": {
@@ -7175,7 +6928,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7185,17 +6938,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Authorized in-scope state, version or idempotency conflict; current projection only when still authorized.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7205,7 +6948,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7233,7 +6976,18 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-error-policy": {
+          "family": "house-resource",
+          "evaluationOrder": "Verify credential, then evaluate current active house membership before resolving house child or its expiry. Removed/inactive member and out-of-scope IDs are always hidden 404; 403 requires a known in-scope forbidden action; 410 requires current membership and prior child-access proof capped by parent retention.",
+          "statuses": [
+            "400",
+            "401",
+            "404",
+            "409",
+            "429"
+          ]
+        }
       }
     },
     "/v1/integrations/line/webhook": {
@@ -7270,7 +7024,7 @@
             }
           },
           "400": {
-            "description": "Invalid input",
+            "description": "Malformed or invalid request (validation_error); no resource existence disclosure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7280,47 +7034,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Invalid or absent LINE signature (unauthenticated); raw body is verified before parsing.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7330,7 +7044,7 @@
             }
           },
           "429": {
-            "description": "Rate limited",
+            "description": "Rate limited (rate_limited); Retry-After header supplied.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7348,7 +7062,7 @@
             }
           },
           "503": {
-            "description": "External/native gate is unavailable; no synthetic success",
+            "description": "Feature gate unavailable (feature_unavailable); no synthetic success.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7382,6 +7096,16 @@
               }
             }
           }
+        },
+        "x-error-policy": {
+          "family": "signed-webhook",
+          "evaluationOrder": "Verify the route credential before resolving data; only listed response statuses are applicable.",
+          "statuses": [
+            "400",
+            "401",
+            "429",
+            "503"
+          ]
         }
       }
     }
@@ -7546,7 +7270,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2026-10-13T00:05:00Z"
             ],
             "format": "date-time"
           },
@@ -7643,7 +7367,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2026-10-13T01:00:00Z"
             ],
             "format": "date-time"
           },
@@ -7800,7 +7524,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2027-10-12T00:00:00Z"
             ],
             "format": "date-time"
           }
@@ -8428,7 +8152,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2027-10-12T00:00:00Z"
             ],
             "format": "date-time"
           },
@@ -8602,7 +8326,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2026-10-13T00:01:00Z"
             ],
             "format": "date-time"
           },
@@ -8644,10 +8368,9 @@
           "mode": {
             "type": "string",
             "examples": [
-              "manual"
+              "rotation"
             ],
             "enum": [
-              "manual",
               "repeat",
               "rotation"
             ]
@@ -8663,7 +8386,8 @@
             "examples": [
               "2026-10-13"
             ],
-            "format": "date"
+            "format": "date",
+            "description": "Stable rotation ordinal anchor; must be no later than startDate and is not reset by regeneration."
           },
           "interval": {
             "type": "string",
@@ -8673,7 +8397,8 @@
             "enum": [
               "daily",
               "weekly"
-            ]
+            ],
+            "description": "Daily generates every local date; weekly generates only selected weekdays."
           },
           "assigneeMembershipIds": {
             "type": "array",
@@ -8683,15 +8408,109 @@
                 "550e8400-e29b-41d4-a716-446655440001"
               ],
               "format": "uuid"
-            }
+            },
+            "minItems": 1,
+            "uniqueItems": true,
+            "description": "Ordered active house membership IDs. Repeat requires exactly one; rotation advances one slot per eligible occurrence without skipping removed members or resetting on completion."
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "First eligible local date, inclusive.",
+            "examples": [
+              "2026-10-13"
+            ]
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Optional last eligible local date, inclusive; must be on or after startDate. Omit for an ongoing schedule.",
+            "examples": [
+              "2026-12-31"
+            ]
+          },
+          "weekdays": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 6
+            },
+            "uniqueItems": true,
+            "minItems": 0,
+            "maxItems": 7,
+            "description": "Canonical ascending weekdays, Sunday=0. Empty for daily; weekly requires at least one selected day.",
+            "examples": [
+              [
+                1,
+                3,
+                5
+              ]
+            ]
           }
         },
         "required": [
           "mode",
           "timezone",
           "anchorDate",
+          "startDate",
+          "interval",
+          "weekdays",
           "assigneeMembershipIds"
-        ]
+        ],
+        "description": "Recurring schedule rule. Manual one-off chores use ChoreCreate, not a schedule. Dates are house-local; weekday numbers use JavaScript/ISO-independent Sunday=0 through Saturday=6. Rotation follows eligible dates from anchorDate, never completion order.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "repeat"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "assigneeMembershipIds": {
+                  "minItems": 1,
+                  "maxItems": 1
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "interval": {
+                  "const": "daily"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "weekdays": {
+                  "maxItems": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "interval": {
+                  "const": "weekly"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "weekdays": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        ],
+        "x-date-order": "anchorDate <= startDate <= endDate when endDate exists; effectiveFrom patch cannot rewrite completed/past occurrences."
       },
       "ChoreScheduleCreate": {
         "type": "object",
@@ -8798,7 +8617,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2027-10-12T00:00:00Z"
             ],
             "format": "date-time"
           },
@@ -8959,7 +8778,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2027-10-12T00:00:00Z"
             ],
             "format": "date-time"
           },
@@ -9120,7 +8939,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2027-10-12T00:00:00Z"
             ],
             "format": "date-time"
           }
@@ -9256,7 +9075,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2027-10-12T00:00:00Z"
             ],
             "format": "date-time"
           },
@@ -9490,7 +9309,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2027-10-12T00:00:00Z"
             ],
             "format": "date-time"
           },
@@ -9616,7 +9435,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2027-10-12T00:00:00Z"
             ],
             "format": "date-time"
           },
@@ -9734,7 +9553,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2026-10-20T00:00:00Z"
             ],
             "format": "date-time"
           },
@@ -9788,7 +9607,7 @@
           "expiresAt": {
             "type": "string",
             "examples": [
-              "2026-10-13T00:00:00Z"
+              "2026-10-20T00:00:00Z"
             ],
             "format": "date-time"
           },

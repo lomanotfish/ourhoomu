@@ -67,3 +67,9 @@ Validation: `/tmp/sw0039-openapi-review-venv/bin/openapi-spec-validator docs/pro
 ## Lead preview response correction — revision 0.3.2-core-proposal
 
 Frontend consumer SW-0042 found `previewChoreSchedule` returned one persisted `Chore` instead of the unsaved date/assignee rows needed by the existing calendar flow. Lead replaced that response data with `ChoreSchedulePreview`, containing timezone and at most 14 unsaved preview rows for the approved 14-calendar-day window. It excludes persisted IDs/version/expiry, permits no matched dates, and performs no writes. Independent review and DTO regeneration must consume this revised frozen schema before final acceptance.
+
+## Backend type consumer — Lead, 2026-10-14
+
+Generated `ourhoomu-api/src/http/dto.ts` from the same accepted7756bcc OpenAPI bytes with openapi-typescript7.13.0, formatted using package-pinned Biome2.5.15. This is the backend wire-type source for upcoming module handlers; data repository internal records remain separate and require explicit viewer projection. No handwritten wire shape or frontend dependency introduced, and no production import/runtime route added. Fresh API frozen install, format, lint, typecheck and strict temporary discriminated-error/payment/aggregate/preview probe pass. Second generation plus package formatting is byte-identical. DTO-only code has no executable behavior, so no new runtime tests required. Exact Lead Graft rebuild/check passed after generation.
+
+One install command initially ran from the Lead root and created its own untracked Bun lock from the root npm lock; Lead removed only that newly created isolated artifact and reran installation in the API package. Root integration checkout user bun.lock and guide hashes remain unchanged; no tracked root dependency/config changes.

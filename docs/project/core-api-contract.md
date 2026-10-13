@@ -1,6 +1,6 @@
 # Core API module interface — SW-0036 proposal
 
-Revision: OpenAPI `0.3.1-core-proposal` in [openapi.yaml](openapi.yaml). The file is a logical transport contract for local/dev implementation, not evidence of a deployed API. Its 48 operations cover every route in [API contract v0.1](api-contract.md), including the externally gated LINE callback. `x-status: core-approved` means the user approved development of core behavior; it does not assert a handler exists. Other `x-status` values require fail-closed `503 feature_unavailable` until the named proof/credentials and implementation are accepted.
+Revision: accepted OpenAPI `0.3.2-core-proposal` in [openapi.yaml](openapi.yaml). The file is a logical transport contract for local/dev implementation, not evidence of a deployed API. Its 48 operations cover every route in [API contract v0.1](api-contract.md), including the externally gated LINE callback. `x-status: core-approved` means the user approved development of core behavior; it does not assert a handler exists. Other `x-status` values require fail-closed `503 feature_unavailable` until the named proof/credentials and implementation are accepted.
 
 ## Principal and session boundary
 

@@ -41,7 +41,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [ ] SW-0024: ตรึง Google/Apple session/Neon actor contract — [ticket](docs/team/tickets/SW-0024.md)
 - [ ] ยืนยัน database policy ที่ยังเสนอ รวม replay floor/late-transfer recovery, auth/driver/actor context และ LINE binding ก่อนสร้าง schema จริง
 
-- [ ] SW-0003: Monorepo/toolchain/CI และ local app/API รันได้
+- [x] SW-0003: API foundation/toolchain accepted; existing Expo demo retained. CI expansion not required; native startup proof remains SW-0009.
 - [ ] SW-0004: Schema/RLS/RPC, transaction และ generated contract ผ่าน
 - [ ] SW-0005: Google/Apple session ผ่าน API, บ้าน/คำเชิญ/บัญชีรับเงิน
 - [ ] SW-0009: iOS login/0-1-many houses/invite/navigation ต่อ API จริง

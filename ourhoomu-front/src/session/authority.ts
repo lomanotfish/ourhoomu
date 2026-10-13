@@ -40,6 +40,7 @@ export interface SessionAuthority {
 
 interface Flight {
   generation: number;
+  owner: symbol;
   promise: Promise<string | null>;
 }
 
@@ -83,15 +84,20 @@ export function createSessionAuthority(options: SessionAuthorityOptions): Sessio
     await options.onAuthenticatedCacheClear?.();
   };
 
-  const refresh = async (snapshot: Session, expectedGeneration: number): Promise<string | null> => {
+  const refresh = async (
+    snapshot: Session,
+    expectedGeneration: number,
+    owner: symbol,
+  ): Promise<string | null> => {
+    const ownsFlight = () => generation === expectedGeneration && flight?.owner === owner;
     let attempt = uncertainAttempt;
     if (attempt !== null && attempt.refreshToken !== snapshot.refreshToken) {
-      uncertainAttempt = null;
+      if (ownsFlight() && uncertainAttempt === attempt) uncertainAttempt = null;
       attempt = null;
     }
     if (attempt !== null && now() - attempt.startedAt > refreshReplayWindowMs) {
-      uncertainAttempt = null;
-      await clearIfCurrent(snapshot, expectedGeneration);
+      if (ownsFlight() && uncertainAttempt === attempt) uncertainAttempt = null;
+      await clearIfCurrent(snapshot, expectedGeneration, owner);
       return null;
     }
     if (attempt === null) {
@@ -117,62 +123,105 @@ export function createSessionAuthority(options: SessionAuthorityOptions): Sessio
     let response: Response;
     let uncertain = false;
     try {
-      response = await fetcher(url, init);
+      response = await dispatchRefreshFetch(fetcher, url, init, attempt, now);
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') throw error;
+      if (error instanceof RefreshReplayWindowExpired) {
+        await failClosedExpiredAttempt(snapshot, expectedGeneration, attempt, owner);
+        return null;
+      }
       try {
-        response = await retryRefreshFetch(fetcher, url, init);
+        response = await retryRefreshFetch(fetcher, url, init, attempt, now);
       } catch (retryError) {
+        if (retryError instanceof RefreshReplayWindowExpired) {
+          await failClosedExpiredAttempt(snapshot, expectedGeneration, attempt, owner);
+          return null;
+        }
         uncertain = true;
-        if (generation === expectedGeneration) uncertainAttempt = attempt;
+        retainAttemptIfCurrent(expectedGeneration, attempt, owner);
         throw retryError;
       }
     }
     if (response.status === 502 || response.status === 504) {
       uncertain = true;
       try {
-        response = await retryRefreshFetch(fetcher, url, init);
+        response = await retryRefreshFetch(fetcher, url, init, attempt, now);
       } catch (retryError) {
+        if (retryError instanceof RefreshReplayWindowExpired) {
+          await failClosedExpiredAttempt(snapshot, expectedGeneration, attempt, owner);
+          return null;
+        }
         uncertain = true;
-        if (generation === expectedGeneration) uncertainAttempt = attempt;
+        retainAttemptIfCurrent(expectedGeneration, attempt, owner);
         throw retryError;
       }
       if (response.status === 502 || response.status === 504) uncertain = true;
     }
 
     if (response.status === 401) {
-      uncertainAttempt = null;
-      await clearIfCurrent(snapshot, expectedGeneration);
+      if (ownsFlight() && uncertainAttempt === attempt) uncertainAttempt = null;
+      await clearIfCurrent(snapshot, expectedGeneration, owner);
       return null;
     }
     if (!response.ok) {
-      if ((uncertain || response.status >= 500) && generation === expectedGeneration)
-        uncertainAttempt = attempt;
+      if (uncertain || response.status >= 500)
+        retainAttemptIfCurrent(expectedGeneration, attempt, owner);
       throw await parseRefreshError(response);
     }
-    if (generation === expectedGeneration) uncertainAttempt = attempt;
+    retainAttemptIfCurrent(expectedGeneration, attempt, owner);
     const session = await parseRefreshSession(response);
 
     const saved = await serializeCredentialWrite(async () => {
-      if (generation !== expectedGeneration) return false;
+      if (!ownsFlight()) return false;
       const current = await options.credentials.load();
-      if (generation !== expectedGeneration || current?.refreshToken !== snapshot.refreshToken)
-        return false;
+      if (!ownsFlight() || current?.refreshToken !== snapshot.refreshToken) return false;
       await options.credentials.save(session);
+      if (!ownsFlight()) return false;
       knownSession = session;
       hasKnownSession = true;
-      return generation === expectedGeneration;
+      return ownsFlight();
     });
-    if (saved && uncertainAttempt === attempt) uncertainAttempt = null;
+    if (saved && ownsFlight() && uncertainAttempt === attempt) uncertainAttempt = null;
     return saved ? session.accessToken : null;
   };
 
-  const clearIfCurrent = async (snapshot: Session, expectedGeneration: number) => {
+  const retainAttemptIfCurrent = (
+    expectedGeneration: number,
+    attempt: RefreshAttempt,
+    owner: symbol,
+  ) => {
+    if (
+      generation === expectedGeneration &&
+      flight?.owner === owner &&
+      (uncertainAttempt === null || uncertainAttempt === attempt)
+    ) {
+      uncertainAttempt = attempt;
+    }
+  };
+
+  const failClosedExpiredAttempt = async (
+    snapshot: Session,
+    expectedGeneration: number,
+    attempt: RefreshAttempt,
+    owner: symbol,
+  ) => {
+    if (
+      generation !== expectedGeneration ||
+      flight?.owner !== owner ||
+      (uncertainAttempt !== null && uncertainAttempt !== attempt)
+    ) {
+      return;
+    }
+    uncertainAttempt = attempt;
+    await clearIfCurrent(snapshot, expectedGeneration, owner);
+  };
+
+  const clearIfCurrent = async (snapshot: Session, expectedGeneration: number, owner: symbol) => {
+    const ownsFlight = () => generation === expectedGeneration && flight?.owner === owner;
     const cleared = await serializeCredentialWrite(async () => {
-      if (generation !== expectedGeneration) return false;
+      if (!ownsFlight()) return false;
       const current = await options.credentials.load();
-      if (generation !== expectedGeneration || current?.refreshToken !== snapshot.refreshToken)
-        return false;
+      if (!ownsFlight() || current?.refreshToken !== snapshot.refreshToken) return false;
       generation += 1;
       flight = null;
       knownSession = null;
@@ -241,8 +290,9 @@ export function createSessionAuthority(options: SessionAuthorityOptions): Sessio
       let activeFlight = flight;
       if (activeFlight?.generation !== expectedGeneration) activeFlight = null;
       if (activeFlight === null) {
-        const promise = refresh(current, expectedGeneration);
-        activeFlight = { generation: expectedGeneration, promise };
+        const owner = Symbol('refresh-flight');
+        const promise = refresh(current, expectedGeneration, owner);
+        activeFlight = { generation: expectedGeneration, owner, promise };
         flight = activeFlight;
         void promise
           .finally(() => {
@@ -289,8 +339,28 @@ async function retryRefreshFetch(
   fetcher: FetchFunction,
   url: URL,
   init: RequestInit,
+  attempt: RefreshAttempt,
+  now: () => number,
 ): Promise<Response> {
+  return dispatchRefreshFetch(fetcher, url, init, attempt, now);
+}
+
+async function dispatchRefreshFetch(
+  fetcher: FetchFunction,
+  url: URL,
+  init: RequestInit,
+  attempt: RefreshAttempt,
+  now: () => number,
+): Promise<Response> {
+  if (now() - attempt.startedAt > refreshReplayWindowMs) throw new RefreshReplayWindowExpired();
   return fetcher(url, { ...init, headers: new Headers(init.headers), body: init.body });
+}
+
+class RefreshReplayWindowExpired extends Error {
+  constructor() {
+    super('Refresh replay window expired');
+    this.name = 'RefreshReplayWindowExpired';
+  }
 }
 
 async function parseRefreshSession(response: Response): Promise<Session> {

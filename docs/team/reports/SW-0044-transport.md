@@ -63,3 +63,27 @@ No API/native integration, provider, database, deployment, push, or production c
 ### Correction-pass Graft evidence
 
 **Graft: ACTIVE** in `/Users/afe/orca/workspaces/ourhoomu/sw-0044-front-transport` at baseline `f7dec000563b8995927832cfa65658d077497371`. `graft --version` returned `0.21.1`; `graft build --no-gitignore --no-ignore .` reported 43 supported files, 216 nodes, and 476 edges at the exact worktree path; `graft check .` reported the wiring graph in sync. Retrieval commands were `graft map .`, `graft grep 'createApiClient|createSessionAuthority|toApiError|parseRefreshSession' --in ourhoomu-front/src`, five `graft skeleton` calls for the assigned source/test files, and `graft callers createSessionAuthority --depth 2`. Graft's reported estimates sum to approximately **100,141 tokens saved across eight retrieval calls**; this is an index estimate, not a runtime or model-token measurement. Markdown project instructions/contracts were read directly because they are not indexed.
+
+## SW-0045 second required fix pass (2026-10-14)
+
+The immutable SW-0045 final report at `2bc18f3faac862bee29aaa12a0198664847f2c0a:docs/team/reports/SW-0045-transport-final.md` reported residual F1–F3 after its six original probes passed. This pass changes only `ourhoomu-front/src/session/authority.ts`, `ourhoomu-front/src/session/authority.test.ts`, and this report. Source/test commit: `efb9019bab10e18f7f7d64ffb1526343a61528f7` (`Guard refresh completion ownership`).
+
+- **F1:** Refresh completion now rechecks captured generation and exact flight ownership after the credential save await before publishing `knownSession` or clearing the retained attempt. Deferred-save regressions cover both logout and account replacement; the next integrated `/v1/me` request is rejected without a bearer after logout and sends B's bearer after replacement. The serialized store ends at null/B in both cases.
+- **F2:** Terminal 401 and uncertain-attempt updates require the matching generation, flight owner, and exact attempt before changing shared state. The held A-401/B-lost-response regression verifies B's subsequent refresh requests retain B's original key and exact body after A completes.
+- **F3:** A deadline check now runs immediately before every initial or retry refresh fetch, including retries after network errors and 502/504 responses. If the owned attempt expires in flight, the authority clears only that current session and returns null without dispatching another request. The injected-clock regression advances 300001 ms during the first failed fetch and observes one call and a cleared store.
+- The previous six corrections and existing same-family rotation behavior remain covered; no assertions were suppressed.
+
+Verification from `ourhoomu-front/`:
+
+- `bun install --frozen-lockfile` — passed; 612 installs checked, no changes.
+- `bun run typecheck` — passed.
+- `bun run format:check` — passed.
+- `bun test src/api/transport.test.ts src/session/authority.test.ts` — **34 passed, 0 failed, 134 assertions** (30 pre-existing tests plus four new cases).
+- `bun test` — **41 passed, 0 failed, 165 assertions** across four files.
+- `git diff --check` — passed. Generated DTOs, manifests and lockfiles compare unchanged with the pre-fix HEAD.
+
+The existing redirect test exercises Bun loopback behavior only; it does not establish native redirect or secure-storage behavior. Native conformance and actual API/provider/database effects remain separate gates. No native integration, provider, database, production, deployment or push operation was performed.
+
+**Graft: ACTIVE** in this assigned worktree. `graft --version` returned `0.21.1`; from `ourhoomu-front/`, `graft build --no-gitignore --no-ignore .` reported 32 supported files, 208 nodes and 461 edges at `ourhoomu-front/graft`, and `graft check .` passed. The optional deep tier is not built. Initial exact-worktree `graft map .` and `graft grep 'createSessionAuthority|retryRefreshFetch|uncertainAttempt|knownSession|replaceSession' --in ourhoomu-front/src` reported estimates of 88,225 and 6,665 tokens saved; the final focused retrieval reported 9,147. Total reported estimate: **104,037 tokens across three retrieval calls**; these are Graft estimates, not measured model-token or runtime reduction. Project Markdown and the frozen independent report were read directly because they are not indexed source.
+
+This worker's artifact is ready for the coordinator's fresh independent frozen review. No SW-0044 acceptance or integration status is claimed here.

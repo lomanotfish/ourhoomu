@@ -360,6 +360,144 @@ describe('session authority', () => {
     await expect(token).resolves.toBeNull();
   });
 
+  test.each(['logout', 'account replacement'] as const)(
+    'keeps a deferred refresh save from overriding %s in memory or the next API request',
+    async (transition) => {
+      const store = memoryStore();
+      const saveStarted = deferred<void>();
+      const finishSave = deferred<void>();
+      store.save = async (session) => {
+        if (session.accessToken === 'access-new') {
+          saveStarted.resolve();
+          await finishSave.promise;
+        }
+        store.value = session;
+      };
+      const authority = createSessionAuthority({
+        baseUrl: 'https://api.example.test',
+        credentials: store,
+        fetcher: async () => refreshSuccess(rotated),
+      });
+      const refreshing = authority.refreshAfterUnauthorized('access-old');
+      await saveStarted.promise;
+
+      const replacement: Session = {
+        ...original,
+        accessToken: 'access-b',
+        refreshToken: 'refresh-b',
+        userId: '550e8400-e29b-41d4-a716-446655440002',
+      };
+      const transitionPromise =
+        transition === 'logout' ? authority.logout() : authority.replaceSession(replacement);
+      finishSave.resolve();
+      await expect(refreshing).resolves.toBeNull();
+      await transitionPromise;
+
+      const requests: Request[] = [];
+      const client = createApiClient({
+        baseUrl: 'https://api.example.test',
+        session: authority,
+        fetcher: async (input, init) => {
+          requests.push(new Request(input, init));
+          return successResponse({ ok: true });
+        },
+      });
+      if (transition === 'logout') {
+        await expect(client.request('/v1/me')).rejects.toMatchObject({
+          name: 'SessionUnavailableError',
+        });
+        expect(requests).toHaveLength(0);
+      } else {
+        await expect(client.request('/v1/me')).resolves.toEqual({ ok: true });
+      }
+      expect(store.value).toEqual(transition === 'logout' ? null : replacement);
+      if (transition === 'account replacement')
+        expect(requests[0]?.headers.get('Authorization')).toBe('Bearer access-b');
+    },
+  );
+
+  test('an old account refresh 401 cannot erase the new account uncertain attempt', async () => {
+    const store = memoryStore();
+    const firstResponse = deferred<Response>();
+    const firstStarted = deferred<void>();
+    const requests: Request[] = [];
+    let call = 0;
+    const authority = createSessionAuthority({
+      baseUrl: 'https://api.example.test',
+      credentials: store,
+      createIdempotencyKey: (() => {
+        let next = 0;
+        return () => `refresh-key-${++next}`;
+      })(),
+      fetcher: async (input, init) => {
+        call += 1;
+        requests.push(new Request(input, init));
+        if (call === 1) {
+          firstStarted.resolve();
+          return firstResponse.promise;
+        }
+        throw new TypeError('lost response');
+      },
+    });
+
+    const oldRefresh = authority.refreshAfterUnauthorized('access-old');
+    await firstStarted.promise;
+    const replacement: Session = {
+      ...original,
+      accessToken: 'access-b',
+      refreshToken: 'refresh-b',
+      userId: '550e8400-e29b-41d4-a716-446655440002',
+    };
+    await authority.replaceSession(replacement);
+    await expect(authority.refreshAfterUnauthorized('access-b')).rejects.toThrow('lost response');
+    firstResponse.resolve(
+      Response.json(
+        {
+          error: { code: 'unauthenticated', message: 'Expired' },
+          requestId: '550e8400-e29b-41d4-a716-446655440031',
+        },
+        { status: 401 },
+      ),
+    );
+    await expect(oldRefresh).resolves.toBeNull();
+    await expect(authority.refreshAfterUnauthorized('access-b')).rejects.toThrow('lost response');
+
+    expect(requests.map((request) => request.headers.get('Idempotency-Key'))).toEqual([
+      'refresh-key-1',
+      'refresh-key-2',
+      'refresh-key-2',
+      'refresh-key-2',
+      'refresh-key-2',
+    ]);
+    expect(requests.slice(1).map((request) => request.url)).toEqual([
+      'https://api.example.test/v1/auth/refresh',
+      'https://api.example.test/v1/auth/refresh',
+      'https://api.example.test/v1/auth/refresh',
+      'https://api.example.test/v1/auth/refresh',
+    ]);
+    expect(await requests[1]!.clone().text()).toBe(await requests[4]!.clone().text());
+  });
+
+  test('does not retry an uncertain refresh after the replay window expires mid-flight', async () => {
+    const store = memoryStore();
+    let now = 1_000;
+    let calls = 0;
+    const authority = createSessionAuthority({
+      baseUrl: 'https://api.example.test',
+      credentials: store,
+      now: () => now,
+      fetcher: async () => {
+        calls += 1;
+        now += 5 * 60 * 1000 + 1;
+        throw new TypeError('lost response');
+      },
+    });
+
+    await expect(authority.refreshAfterUnauthorized('access-old')).resolves.toBeNull();
+    expect(calls).toBe(1);
+    expect(store.value).toBeNull();
+  });
+
   test('logout invoked after replacement wins over its delayed storage read', async () => {
     const store = memoryStore();
     const loaded = deferred<Session | null>();

@@ -385,7 +385,7 @@ export function Page({
           <Label>ย้อนกลับ</Label>
         </Tap>
       )}
-            {Boolean(title) && <Title style={{ marginBottom: 20 }}>{title}</Title>}
+      {Boolean(title) && <Title style={{ marginBottom: 20 }}>{title}</Title>}
       {children}
     </View>
   );

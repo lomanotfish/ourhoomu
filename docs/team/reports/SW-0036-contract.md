@@ -29,3 +29,7 @@ The reviewer identified that `listBills` returned full `Bill`, allowing a privat
 ## Lead state/action DTO correction — 2026-10-13
 
 The next narrow revision adds viewer-specific `BillActions`, `PaymentActions` and `ChoreActions`; method-discriminated cash/transfer payment summaries with distinct waiting states and safe decision/rejection metadata; chore completion/assignment fields; and attributed dashboard totals. `ErrorCode` is a closed core machine-code union for typed frontend branching. `openapi-spec-validator 0.7.2` and `openapi-typescript 7.13.0` pass; generated `PaymentSummary` is a TypeScript union of cash and transfer shapes, and `git diff --check` passes. Route-specific 401/403/404/410 mapping, exact refresh rotation retry semantics, membership removal/expiry privacy and invite/deletion workflow still block final acceptance.
+
+## Lead refresh race correction — 2026-10-13
+
+The public refresh route now advertises only applicable 400/401/409/429/503 outcomes. Its contract defines a five-minute exact replay result keyed by old credential digest, idempotency key and body hash; a serialized same-key retry gets the same pair while the family is active. Different reuse or replay after the window revokes the family with opaque 401, and logout wins over replay. Token digests and encrypted bounded replay storage are required. This is a contract decision, not issuer/session runtime proof. Remaining route authorization/privacy and invitation/deletion behavior still need review.

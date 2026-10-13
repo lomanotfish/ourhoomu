@@ -386,27 +386,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Invalid, expired, reused or logged-out refresh credential; same opaque response for every case",
             "content": {
               "application/json": {
                 "schema": {
@@ -416,17 +396,7 @@
             }
           },
           "409": {
-            "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
+            "description": "Idempotency-Key reused with a different valid refresh request",
             "content": {
               "application/json": {
                 "schema": {
@@ -476,7 +446,19 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "Linearize per refresh family under DB lock. Store old-token digest + Idempotency-Key + body hash and an encrypted result for at most 5 minutes. Exact retry within 5 minutes returns the same rotated pair only while family remains active; concurrent same-key calls converge. Reuse of old token with any other key/body or after replay window revokes family and returns opaque 401. Logout/revocation always wins over replay and returns 401. Never store or log raw credentials unencrypted.",
+        "x-refresh-rotation": {
+          "familyLock": "serialize by refresh family",
+          "exactReplayWindowSeconds": 300,
+          "exactReplayKey": [
+            "oldCredentialDigest",
+            "Idempotency-Key",
+            "bodyHash"
+          ],
+          "differentReplay": "revoke family; opaque 401",
+          "afterLogout": "opaque 401, including an exact old-key retry",
+          "secrets": "hash stored credentials and encrypt bounded replay result; no raw logs"
+        }
       }
     },
     "/v1/auth/logout": {

@@ -36,7 +36,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0029](tickets/SW-0029.md) | Plain demo UI copy integration fix | tech-lead | frozen SW-0027 | done |
 | [SW-0030](tickets/SW-0030.md) | Narrow reviewed motion/touch/copy follow-ups | tech-lead | SW-0028 approve | done |
 | [SW-0031](tickets/SW-0031.md) | Empty status text rendering fix | tech-lead | integrated SW-0027 | done |
-| [SW-0032](tickets/SW-0032.md) | Themed calendar selector on chore creation | frontend-engineer | User date-field feedback + integrated SW-0027 | ready |
+| [SW-0032](tickets/SW-0032.md) | Themed calendar selector on chore creation | frontend-engineer | User date-field feedback + integrated SW-0027 | in_progress |
 
 ## Dependency / dispatch gates
 

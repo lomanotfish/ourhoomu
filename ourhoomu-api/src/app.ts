@@ -6,8 +6,9 @@ export function createApp(config: AppConfig) {
   return new Elysia({ adapter: CloudflareAdapter })
     .onRequest(({ set }) => {
       set.headers['access-control-allow-origin'] = config.allowedOrigin;
-      set.headers['access-control-allow-methods'] = 'GET,POST,OPTIONS';
-      set.headers['access-control-allow-headers'] = 'authorization,content-type';
+      set.headers['access-control-allow-methods'] = 'GET,POST,PATCH,DELETE,OPTIONS';
+      set.headers['access-control-allow-headers'] = 'authorization,content-type,idempotency-key';
+      set.headers['access-control-expose-headers'] = 'retry-after,x-request-id';
       set.headers['access-control-max-age'] = '600';
     })
     .derive(({ set }) => {

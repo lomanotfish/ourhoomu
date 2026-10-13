@@ -31,4 +31,33 @@ describe('runtime envelope', () => {
       error: { code: 'not_found', message: 'Not found' },
     });
   });
+
+  it('allows the contract mutation methods and idempotency header in preflight', async () => {
+    const response = await app.fetch(
+      new Request('https://api.test/v1/houses/fixture', {
+        method: 'OPTIONS',
+        headers: {
+          origin: 'http://localhost:8081',
+          'access-control-request-method': 'PATCH',
+          'access-control-request-headers': 'authorization,content-type,idempotency-key',
+        },
+      }),
+    );
+    expect(response.status).toBe(204);
+    expect(response.headers.get('access-control-allow-origin')).toBe('http://localhost:8081');
+    const methods = response.headers.get('access-control-allow-methods')?.split(',');
+    for (const method of ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'])
+      expect(methods).toContain(method);
+    expect(response.headers.get('access-control-allow-headers')?.split(',')).toContain(
+      'idempotency-key',
+    );
+  });
+
+  it('exposes retry and request identifiers to the configured web frontend', async () => {
+    const response = await app.fetch(new Request('https://api.test/health'));
+    const exposed = response.headers.get('access-control-expose-headers')?.split(',') ?? [];
+    expect(exposed).toContain('retry-after');
+    expect(exposed).toContain('x-request-id');
+    expect(response.headers.get('access-control-allow-origin')).toBe('http://localhost:8081');
+  });
 });

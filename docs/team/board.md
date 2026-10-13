@@ -40,7 +40,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0033](tickets/SW-0033.md) | Backend delivery plan and frontend coordination | tech-lead | SW-0020, SW-0027, SW-0032 | done |
 | [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | done |
 | [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | done |
-| [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | draft |
+| [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -93,3 +93,7 @@ Planning reports SW-0022/23/24/0034 integrated; all4 Dispatches succeeded/releas
 ## Latest checkpoint — backend plan accepted
 
 SW-0022/23/24 source research, SW-0033 backend delivery plan, SW-0034 frontend API plan and SW-0035 independent review/recheck accepted. Six real Dispatches succeeded/released/captured/acknowledged. P1 native startup handoff fixeda3bc4a4 and final approve60e3292. SW-0036/37 and all product backend/integration tickets remain draft; user confirms concrete [backend plan](backend-plan.md) section2 under AGENTS.md before implementation. [Evidence](reports/SW-0033-backend-plan-delivery.md). No new product code/DB migration/deploy/provider message.
+
+## Core implementation active — user confirmed
+
+User “ยืนยันแผน”; approved [core implementation](core-implementation.md). SW-0036 in_progress, downstream feature tickets await accepted contracts/runtime/schema. Run run_a401e29c745e; no worker launch claimed until actual receipt. Task-relevant approved checks enabled; external provider/native/release gates retained.

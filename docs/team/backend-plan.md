@@ -1,6 +1,6 @@
 # Backend และ frontend integration — Implementation plan v0.2
 
-2026-10-13 · SW-0033 · **เสนอให้ตรวจและยืนยันก่อน product implementation**
+2026-10-13 · SW-0033 · **ผู้ใช้ยืนยัน core local/dev เมื่อ 2026-10-13; external/native/release gates คงตามแผน**
 
 > Engineer workers ใช้ supervised Orca ตาม AGENTS.md; Tech Lead dispatch ตาม readiness ของแต่ละ ticket และตรวจ/รวมงานเอง. รายการด้านล่างเป็นแผน ไม่ใช่โค้ดหรือ API ที่ deploy แล้ว.
 
@@ -234,3 +234,7 @@ Consumes expiry primitives from core, provider extensions and domain handlers. P
 รอบนี้ส่งมอบ planning/research เท่านั้น. Backend endpoints/schema/auth/slips/LINE/native ยังไม่ผ่าน application acceptance. Lead รวม research/FE reports และ independent plan review ลง local แล้วจะระบุ actual evidence ใน [SW-0033](tickets/SW-0033.md)/board/checklist.
 
 Next action: ผู้ใช้ตรวจ section2 และยืนยันแผน/ขอบเขต development. จากนั้น Lead ตรึง SW-0036 และเปิด platform/data/backend/frontend ตาม wave; LINE/SlipOK/native/production gates ปลดเฉพาะหลักฐาน/สิทธิ์ที่ตรงส่วน. ไม่มีการถาม permission เครื่องมือซ้ำหรือเปิดทุก role ทุก wave.
+
+## Implementation activation
+
+User confirmed plan; see [core implementation scope](core-implementation.md). SW-0036 contract ready; Lead dispatches and integrates accepted prerequisites before features. Historical proposal phrasing above is superseded for confirmed core choices only.

@@ -58,3 +58,7 @@
 ## Backend planning checkpoint — 2026-10-13
 
 User asked for backend task planning, frontend coordination and multiple agents; SW-0033 planning/source research and independent final review accepted on local. [Backend plan](../team/backend-plan.md) is concrete proposal for user review; D2–D12, cash self-confirm, auth/operational/external-copy choices remain unconfirmed. SW-0004 proposed core scope and SW-0037 provider/retention extensions preserve original full privacy/data criteria. SW-0003 API foundation native startup proof transferred to SW-0009-AC5, still pending; reviewer approved handoff. No implementation/migration/production/provider authorization inferred from planning success.
+
+## Confirmed core plan — 2026-10-13
+
+User “ยืนยันแผน” confirms [backend plan v0.2](../team/backend-plan.md) for core local/dev and retained provider/native/release gates. D2–D6,D8–D10,D12, D7 technical365d/deadline/access24h-earlier/child caps and creator-as-payer cash audit rule accepted for development. [Core scope/values](../team/core-implementation.md). Identity remains one session/actor interface with gated Managed/native compatibility proof; LINE destination/external copies/credentials and real provider/native/production acceptance remain unresolved where specified.

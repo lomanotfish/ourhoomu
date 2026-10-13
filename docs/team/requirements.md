@@ -76,3 +76,7 @@ Stack ยืนยันตาม R17 แล้ว ส่วนภาษา UI �
 ## Backend planning authorization — 2026-10-13
 
 ผู้ใช้ขอแผน backend ราย task การประสานกับ frontend และ agents หลายตัวตาม SW-0033. อนุญาต research/planning ผ่าน Orca ใน worktrees แยก; แผนและสัญญาที่ตรวจแล้วจะส่งให้ผู้ใช้ยืนยัน material product choices ก่อน product implementation ตาม AGENTS.md. การ deploy/migration production/ซื้อแพ็กเกจยังไม่ได้รับ authorization ใหม่.
+
+## Core implementation confirmed — 2026-10-13
+
+User explicitly confirmed “ยืนยันแผน” for reviewed backend plan v0.2 after Lead proposed core local/dev development with external/native/release gates retained. [Approved scope and operational values](core-implementation.md). Implementation and task-relevant checks in approved plan now authorized; isolated synthetic DB work permitted, production/provider purchase/messages/deploy still separately gated.

@@ -3,6 +3,8 @@ import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowDown, ArrowUp, CalendarDays, Check, RotateCw } from 'lucide-react-native';
 import { Button, Card, Field, Label, Page, Small, Tap } from '@/components/ui';
+import { ChoreDatePicker } from '@/components/chore-date-picker';
+import { parseChoreDate } from '@/components/chore-date';
 import { previewChores, useDemo } from '@/demo/repository';
 import { dateOffset } from '@/demo/seed';
 import type { ChoreMode } from '@/demo/types';
@@ -17,16 +19,6 @@ const weekdays = [
   { id: 5, label: 'ศ' },
   { id: 6, label: 'ส' },
 ];
-function validDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const date = new Date(`${value}T12:00:00`);
-  return (
-    !Number.isNaN(date.getTime()) &&
-    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` ===
-      value
-  );
-}
-
 export default function NewChore() {
   const router = useRouter();
   const { house, memberId, createChores } = useDemo();
@@ -40,9 +32,10 @@ export default function NewChore() {
     () => ({ title, emoji: '🧹', startDate: date, mode, assigneeIds: assignees, weekdays: days }),
     [title, date, mode, assignees, days],
   );
-  const preview = validDate(date) ? previewChores(input) : [];
+  const dateIsValid = Boolean(parseChoreDate(date));
+  const preview = dateIsValid ? previewChores(input) : [];
   const valid =
-    title.trim().length > 0 && validDate(date) && assignees.length > 0 && preview.length > 0;
+    title.trim().length > 0 && dateIsValid && assignees.length > 0 && preview.length > 0;
   const toggleAssignee = (id: string) =>
     setAssignees((current) =>
       current.includes(id) ? current.filter((x) => x !== id) : [...current, id],
@@ -114,12 +107,11 @@ export default function NewChore() {
             ))}
           </View>
         </View>
-        <Field
-          label={mode === 'manual' ? 'วันที่ทำ (YYYY-MM-DD)' : 'วันเริ่ม (YYYY-MM-DD)'}
+        <ChoreDatePicker
+          label={mode === 'manual' ? 'วันที่ทำ' : 'วันเริ่ม'}
           value={date}
-          onChangeText={setDate}
-          placeholder="2026-10-12"
-          error={submitted && !validDate(date) ? 'ใช้วันที่จริงในรูปแบบ YYYY-MM-DD' : undefined}
+          onChange={setDate}
+          error={submitted && !dateIsValid ? 'กรุณาเลือกวันที่' : undefined}
         />
         <View>
           <Label style={{ fontWeight: '700', marginBottom: 7 }}>

@@ -53,3 +53,5 @@ Household chores use `YYYY-MM-DD` in the house timezone. Preview is bounded to 1
 ## Error and visibility rules
 
 Responses use `{data,requestId}` or `{data,nextCursor,requestId}` and `{error:{code,message,fields?},requestId}`. Expected codes include `validation_error` (400), `unauthenticated` (401), `forbidden` (403), `not_found` (404), `version_conflict`/`idempotency_conflict`/`recipient_account_unavailable`/`insufficient_share` (409), `expired` (410), `rate_limited` (429), and `feature_unavailable` (503). 429 includes `Retry-After`. Neither 409 nor 503 discloses another household's account, transfer reference or provider detail. Payment `pending_verification` and `needs_attention` are explicit states, never a paid badge.
+
+The OpenAPI success response combines the envelope and operation data schema with `allOf`; the composed response closes unknown fields with `unevaluatedProperties: false` at the outer level. The shared envelope and data extension remain open within that composition so `requestId` and `nextCursor` are valid alongside typed `data`.

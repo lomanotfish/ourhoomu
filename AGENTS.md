@@ -4,10 +4,12 @@
 
 The user has authorized project design, documentation, a progress checklist,
 the specific Neon setup/deploy in SW-0015, and frontend scaffold/demo UI in
-SW-0026–SW-0028. The latest instruction permits an animated, cute-themed Expo
-mobile app without a Figma dependency. Read the current frontend ticket and
-requirements for its scope; backend, production data and release acceptance
-remain on their original tickets.
+SW-0026–SW-0028. The latest confirmation authorizes the reviewed core backend
+and frontend integration plan on local/dev, including its task-relevant checks.
+Read docs/team/core-implementation.md for approved scope, operational values and
+ownership. The cute Expo UI has no Figma dependency; SlipOK, LINE, native login,
+production operations and release retain their explicit evidence/authorization
+gates.
 Before starting new work, the Tech Lead must ask about material ambiguities,
 summarize the requirements and acceptance conditions, and wait for the user's
 explicit confirmation. Engineers route questions through the Tech Lead and

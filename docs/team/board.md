@@ -8,7 +8,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 |---|---|---|---|---|
 | [SW-0002](tickets/SW-0002.md) | Design และเอกสารสำหรับ agents | tech-lead | คำตอบผู้ใช้ครบแล้ว | done |
 | [SW-0003](tickets/SW-0003.md) | ตั้งค่า monorepo และ toolchain ที่รันได้ | platform-engineer | SW-0015, SW-0022, SW-0024, SW-0036 | done |
-| [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003, SW-0022, SW-0024, SW-0036 | ready |
+| [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003, SW-0022, SW-0024, SW-0036 | in_progress |
 | [SW-0005](tickets/SW-0005.md) | Google/Apple session และบ้านผ่าน API | backend-engineer | SW-0004, SW-0024, SW-0036 | draft |
 | [SW-0006](tickets/SW-0006.md) | API บิล การหาร และงวดเงินสด | backend-engineer | SW-0004, SW-0005, SW-0036 | draft |
 | [SW-0007](tickets/SW-0007.md) | ตรวจสลิปภายนอกและ private storage | backend-engineer | SW-0004, SW-0005, SW-0006, SW-0023, SW-0037 | draft |
@@ -47,7 +47,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (final approve) |
 | [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen7756bcc, SW-0034 | done |
 | [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | done |
-| [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | ready |
+| [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -146,3 +146,7 @@ SW-0042 original workerb8d95b2 and SW-0043 dirty quality/report were preserved a
 Graft ACTIVE exact Lead worktree rebuild/check38files150nodes355edges; contract docs raw fallback. Root user guide and bun.lock remain untouched. Current coordinator term_3477fed4-f980-4cc6-994c-81da695c46b2, generation3, existing Run unchanged.
 
 SW-0003 foundation and SW-0043 quality accepted on integratedlocal9c64a63 after fresh workerd/package checks. Capacity-blocked replacementctx_7a032043d77b stopped/released with original result preserved and independently checked by Lead. SW-0004 core data ready with precise synthetic branch/role ownership and accepted contract; actual worker launch follows receipt. Root user files untouched.
+
+SW-0004 actual Tasktask_4c7e3785d472/Dispatchctx_c2b63e80f1fd and SW-0044 Tasktask_794272f9ad7a/Dispatchctx_a4c5b0d71650 ready and observed implementing, isolated worktrees, bypass argv verified. Data worker created an unnecessary extra worktree; Lead directed it back to the assigned checkout and preserves extra until ownership/safety confirmed. No duplicate writer. Both report GraftACTIVE38/150/355.
+
+Cleanup: owned SW-0036-contract and SW-0043-api-quality worktrees requested removed through Orca with hooks after clean+ancestry+zero-terminal checks; reports/source already integrated. Production workerd listener18843 stopped (exact owned Wrangler processTERM, lsofempty). User-owned runtime/oldDTO worktrees retained. Root user edits unchanged.

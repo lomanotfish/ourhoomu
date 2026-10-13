@@ -40,12 +40,12 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0033](tickets/SW-0033.md) | Backend delivery plan and frontend coordination | tech-lead | SW-0020, SW-0027, SW-0032 | done |
 | [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | done |
 | [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | done |
-| [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | in_progress |
+| [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | done |
 | [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer + Lead recovery | SW-0022, SW-0024 | done |
-| [SW-0039](tickets/SW-0039.md) | Independent data/security contract review | data-engineer | Frozen SW-0036 proposal | done (changes_requested; follow-up pending) |
-| [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | in_progress |
+| [SW-0039](tickets/SW-0039.md) | Independent data/security contract review | data-engineer | Frozen SW-0036 proposal | done (approve) |
+| [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | cancelled (superseded by SW-0042) |
 | [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (final approve) |
-| [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen aa36bf3, SW-0034 | in_progress |
+| [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen7756bcc, SW-0034 | done |
 | [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
@@ -135,3 +135,11 @@ Runtime recheck `ctx_39365e06a845` completed with `d4c23de` changes_requested, r
 Final runtime reviewer `ctx_8bfd0389a911` approved `a648cce` in report `281d139`, released/captured before ack `delivery_2e73419f25e3`. Lead merged runtime and report into local `d9beb90`; fresh root frozen install, typecheck, 6 tests/15 assertions and actual production workerd health/hidden404/unknown404/CORS pass; server stopped. SW-0038 accepted as bounded runtime proof. Full SW-0003 still awaits final contract and package quality hooks. User-owned runtime/DTO terminals and their worktrees are preserved; no cleanup of user resources claimed. [Final review](reports/SW-0041-runtime-final.md).
 
 Current frozen contract `aa36bf3` (0.3.1-core-proposal) fixes typed version conflicts and exact dashboard aggregate strings. Author `ctx_1a146aad66fe` released/captured before ack `delivery_e0771d7cc31c`; final independent contract review `ctx_1c675b4a2290` is active. Frontend consumer SW-0042 Task `task_5bfe8618db4f` / Dispatch `ctx_23593b005671` generates matching DTOs in a new worktree; original user-owned SW-0040 checkout remains untouched. API quality slice SW-0043 Task `task_8d14cc2b1e0b` / Dispatch `ctx_52d54f62822c` is active separately. All three live process argv verified bypass permissions. Root Graft ACTIVE fresh build/check36files130nodes336edges; no new savings estimated by build/check.
+
+### Accepted contract and recovery checkpoint — 2026-10-14
+
+SW-0036 contract7756bcc accepted with independent SW-0039 finalapprovea55c81a and SW-0042 generated consumer/regeneration. API runtime already accepted. Contract naming0.3.2-core-proposal is retained to preserve reviewed bytes; this record supplies acceptance authority. Preview uses unsaved calendar rows and restricted GET403 semantics are explicit. No runtime implementation of those domain routes is claimed.
+
+SW-0042 original workerb8d95b2 and SW-0043 dirty quality/report were preserved after positively observed usage-limit final turns; both stopped/released (archive unavailable after stop). Lead recovered/generated DTOs in its isolated checkout and passed package/strict consumption checks. SW-0043 retry Tasktask_8d14cc2b1e0b / Dispatchctx_7a032043d77b now owns its existing quality worktree; actual launch ready/input accepted and argv bypass verified. Original user-owned SW-0040 remains fenced/preserved; ticket superseded, not accepted. SW-0003 acceptance waits reviewed quality integration. Next core milestone SW-0004 schema/atomic operations; production/provider/native gates unchanged.
+
+Graft ACTIVE exact Lead worktree rebuild/check38files150nodes355edges; contract docs raw fallback. Root user guide and bun.lock remain untouched. Current coordinator term_3477fed4-f980-4cc6-994c-81da695c46b2, generation3, existing Run unchanged.

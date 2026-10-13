@@ -517,7 +517,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Preview at most 14 household dates */
+    /**
+     * Preview at most 14 household dates
+     * @description Compute unsaved date/assignee rows in startDate through startDate+13 inclusive, capped by endDate. Empty matches valid. No persisted IDs, writes or version transitions.
+     */
     post: operations['previewChoreSchedule'];
     delete?: never;
     options?: never;
@@ -1777,6 +1780,26 @@ export interface components {
       fields?: {
         [key: string]: string;
       };
+    };
+    /** @description Computed unsaved schedule occurrence; no persisted ID/version/expiry */
+    ChorePreviewOccurrence: {
+      /**
+       * Format: date
+       * @example 2026-10-20
+       */
+      localDate: string;
+      /**
+       * Format: uuid
+       * @description Selected active assignee; null means unresolved assignment
+       * @example 550e8400-e29b-41d4-a716-446655440001
+       */
+      assigneeMembershipId: string | null;
+    };
+    /** @description Unsaved matching occurrences in the 14-calendar-day window startDate through startDate+13 inclusive, capped by endDate; no writes or cursor */
+    ChoreSchedulePreview: {
+      /** @example Asia/Bangkok */
+      timezone: string;
+      occurrences: components['schemas']['ChorePreviewOccurrence'][];
     };
   };
   responses: never;
@@ -3422,6 +3445,15 @@ export interface operations {
           'application/json': components['schemas']['ErrorEnvelope'];
         };
       };
+      /** @description Active member with known in-scope resource lacks required action authority; no private projection */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorEnvelope'];
+        };
+      };
       /** @description Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members. */
       404: {
         headers: {
@@ -4465,6 +4497,15 @@ export interface operations {
           'application/json': components['schemas']['ErrorEnvelope'];
         };
       };
+      /** @description Active member with known in-scope resource lacks required action authority; no private projection */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorEnvelope'];
+        };
+      };
       /** @description Unknown or out-of-scope resource, or no current active house membership (not_found); identical before and after child expiry for removed members. */
       404: {
         headers: {
@@ -4668,7 +4709,7 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['SuccessEnvelope'] & {
-            data: components['schemas']['Chore'];
+            data: components['schemas']['ChoreSchedulePreview'];
           };
         };
       };

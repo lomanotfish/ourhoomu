@@ -44,7 +44,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer + Lead recovery | SW-0022, SW-0024 | in_review |
 | [SW-0039](tickets/SW-0039.md) | Independent data/security contract review | data-engineer | Frozen SW-0036 proposal | in_progress |
 | [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | in_progress |
-| [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | ready |
+| [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -115,3 +115,5 @@ SW-0039 `ctx_56ff3f6b9f77` and SW-0040 `ctx_191090890cd8` have uncommitted revie
 Graft in the exact Lead worktree: **ACTIVE**, `graft check` OK against 26 indexed JS/TS files, 110 nodes and 293 edges; contract Markdown/YAML used raw-file fallback. No new token savings estimate claimed at this checkpoint. Integration target remains `local`; the production Neon branch and preexisting user dev branch were not written.
 
 Lead recovered the stopped SW-0038 work in its isolated worktree and froze commit `00c6583` for SW-0041 review. Actual local Wrangler/workerd and synthetic Neon proof passed two actor RLS, restricted role, rollback and context isolation; package typecheck, 3 unit tests and production bundle dry-run passed. Temporary `.dev.vars` was removed. Original Dispatch release returned `retained/user_takeover` with no process action, so its terminal is preserved. No SW-0038 acceptance or integration is claimed before independent review. Proof report `docs/team/reports/SW-0038-runtime-proof.md` is on the frozen branch.
+
+SW-0041 actual independent reviewer Dispatch `ctx_f0873b42d3bf`, Task `task_10b2e5a52650`, launched in a separate worktree at frozen `00c6583`; Orca receipt reported ready/input accepted and the live process argv confirmed `--dangerously-bypass-approvals-and-sandbox`. Reviewer has started exact-worktree Graft and is still working. The Lead's subsequent SW-0036 corrections include list-safe bill DTO, method-specific payment states/actions, refresh replay and invitation/member privacy; the proposal is not yet accepted as the final integration contract.

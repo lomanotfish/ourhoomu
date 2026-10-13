@@ -2,7 +2,8 @@ import { describe, expect, test } from 'bun:test';
 import { ApiHttpError, ApiProtocolError, OfflineMutationError } from './errors';
 import { createApiClient, type SessionTransport } from './client';
 
-const success = (data: unknown) => Response.json({ data, requestId: 'request-1' }, { status: 200 });
+const success = (data: unknown) =>
+  Response.json({ data, requestId: '550e8400-e29b-41d4-a716-446655440040' }, { status: 200 });
 
 const error = (
   status: number,
@@ -13,7 +14,7 @@ const error = (
   new Response(
     JSON.stringify({
       error: { code, message: 'Request rejected', ...extra },
-      requestId: 'request-error',
+      requestId: '550e8400-e29b-41d4-a716-446655440041',
     }),
     {
       status,
@@ -157,6 +158,7 @@ describe('API transport', () => {
       'Bearer access-1',
       'Bearer access-2',
     ]);
+    expect(seen.every((request) => request.redirect === 'error')).toBe(true);
   });
 
   test('does not replay an unkeyed mutation or recurse after a second 401', async () => {
@@ -208,7 +210,7 @@ describe('API transport', () => {
         expect(apiError.code).toBe(code);
         expect(apiError.currentVersion).toBe(status === 409 ? 3 : undefined);
         expect(apiError.retryAfter).toBe(retryAfter);
-        expect(apiError.requestId).toBe('request-error');
+        expect(apiError.requestId).toBe('550e8400-e29b-41d4-a716-446655440041');
       }
     }
   });
@@ -228,5 +230,41 @@ describe('API transport', () => {
         Response.json({ error: { code: 'version_conflict', message: 'stale' } }, { status: 409 }),
     });
     await expect(malformedError.request('/v1/me')).rejects.toBeInstanceOf(ApiProtocolError);
+  });
+
+  test('rejects missing, malformed, or extra error envelope properties', async () => {
+    for (const payload of [
+      { error: { code: 'forbidden', message: 'Denied' } },
+      {
+        error: { code: 'forbidden', message: 'Denied' },
+        requestId: 'not-a-uuid',
+      },
+      {
+        error: { code: 'forbidden', message: 'Denied', extra: true },
+        requestId: '550e8400-e29b-41d4-a716-446655440042',
+      },
+    ]) {
+      const client = createApiClient({
+        baseUrl: 'https://api.example.test',
+        session,
+        fetcher: async () => Response.json(payload, { status: 403 }),
+      });
+      await expect(client.request('/v1/me')).rejects.toBeInstanceOf(ApiProtocolError);
+    }
+  });
+
+  test('disables redirects on initial API requests', async () => {
+    let captured: Request | undefined;
+    const client = createApiClient({
+      baseUrl: 'https://api.example.test',
+      session,
+      fetcher: async (input, init) => {
+        captured = new Request(input, init);
+        return success({ ok: true });
+      },
+    });
+
+    await client.request('/v1/me');
+    expect(captured?.redirect).toBe('error');
   });
 });

@@ -63,10 +63,17 @@ export function isApiHttpError(error: unknown): error is ApiHttpError {
 
 export function parseErrorEnvelope(value: unknown): {
   error: ApiErrorBody;
-  requestId?: string;
+  requestId: string;
 } | null {
-  if (!isRecord(value) || !isRecord(value.error) || typeof value.error.code !== 'string')
+  if (
+    !isRecord(value) ||
+    !hasOnlyKeys(value, ['error', 'requestId']) ||
+    !isUuid(value.requestId) ||
+    !isRecord(value.error) ||
+    typeof value.error.code !== 'string'
+  )
     return null;
+  if (!hasOnlyKeys(value.error, ['code', 'message', 'fields', 'currentVersion'])) return null;
   if (typeof value.error.message !== 'string') return null;
 
   const code = value.error.code;
@@ -102,8 +109,19 @@ export function parseErrorEnvelope(value: unknown): {
 
   return {
     error: value.error as ApiErrorBody,
-    requestId: typeof value.requestId === 'string' ? value.requestId : undefined,
+    requestId: value.requestId,
   };
+}
+
+export function isUuid(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+  );
+}
+
+function hasOnlyKeys(value: Record<string, unknown>, allowed: string[]): boolean {
+  return Object.keys(value).every((key) => allowed.includes(key));
 }
 
 export function isRecord(value: unknown): value is Record<string, unknown> {

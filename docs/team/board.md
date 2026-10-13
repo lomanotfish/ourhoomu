@@ -49,6 +49,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | done |
 | [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | in_review |
 | [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | in_progress |
+| [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | draft |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates

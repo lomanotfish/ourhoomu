@@ -78,3 +78,7 @@ SW-0032 feedback accepted: cream/mint Thai calendar replaces chore date typing. 
 - Preview intentionally running from root frontend: `http://localhost:8081`; start commands in frontend README. Root Neon config/dependencies unchanged. User dirty agent-guide and unknown-owner untracked root bun.lock preserved.
 - Independent review approved core/copy; Lead fixed narrow motion/44pt/copy and empty-status rendering. Native form-error announcement/focus, VoiceOver/Dynamic Type and device runtime remain pending; simctl unavailable. Dev web favicon 404 is cosmetic.
 - Next product integration remains SW-0009/10/11 with real backend contracts and native evidence; no Figma dependency, external push/deploy or TestFlight delivery is claimed.
+
+## Backend planning wave — SW-0033
+
+User authorizes a concrete backend task plan, frontend coordination and multiple supervised Orca agents. SW-0022/23/24 research and SW-0034 frontend integration planning ready; SW-0033 in_progress; SW-0035 independent frozen-plan review draft. Product implementation remains gated by review/confirmation of plan and material decisions. Actual execution IDs follow receipts; no agent launch claimed by this entry alone.

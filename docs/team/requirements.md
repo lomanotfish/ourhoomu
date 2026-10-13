@@ -72,3 +72,7 @@ Stack ยืนยันตาม R17 แล้ว ส่วนภาษา UI �
 รับ/โอนเงินจริงผ่านแอป, payment gateway, wallet, การหักบัญชีธนาคาร, multi-currency, chat, APNs/Expo Push/local notifications ของแอพ iOS (LINE OA ยืนยันการจ่ายอยู่ในขอบเขตตาม R16), อ่านสลิปด้วย OCR แล้วอนุมัติแทน API และระบบทำงาน offline ที่แก้ยอดเงินได้ การหักส่วนผู้รับเงินเป็นการลงบัญชีค่าใช้จ่ายเท่านั้น
 
 [Board](board.md) · [Checklist](../../checklist.md)
+
+## Backend planning authorization — 2026-10-13
+
+ผู้ใช้ขอแผน backend ราย task การประสานกับ frontend และ agents หลายตัวตาม SW-0033. อนุญาต research/planning ผ่าน Orca ใน worktrees แยก; แผนและสัญญาที่ตรวจแล้วจะส่งให้ผู้ใช้ยืนยัน material product choices ก่อน product implementation ตาม AGENTS.md. การ deploy/migration production/ซื้อแพ็กเกจยังไม่ได้รับ authorization ใหม่.

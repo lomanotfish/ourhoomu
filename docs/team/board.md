@@ -7,28 +7,28 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | Ticket | ผลลัพธ์ | Owner role | Dependencies | Status |
 |---|---|---|---|---|
 | [SW-0002](tickets/SW-0002.md) | Design และเอกสารสำหรับ agents | tech-lead | คำตอบผู้ใช้ครบแล้ว | done |
-| [SW-0003](tickets/SW-0003.md) | ตั้งค่า monorepo และ toolchain ที่รันได้ | platform-engineer | SW-0015, SW-0022, SW-0024, design approval | draft |
-| [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003, SW-0022, SW-0024 | draft |
-| [SW-0005](tickets/SW-0005.md) | Google/Apple session และบ้านผ่าน API | backend-engineer | SW-0004, SW-0024 | draft |
-| [SW-0006](tickets/SW-0006.md) | API บิล การหาร และงวดเงินสด | backend-engineer | SW-0004, SW-0005 | draft |
-| [SW-0007](tickets/SW-0007.md) | ตรวจสลิปภายนอกและ private storage | backend-engineer | SW-0004, SW-0005, SW-0006, SW-0023 | draft |
-| [SW-0008](tickets/SW-0008.md) | API เวรสามโหมดและกิจกรรมภายในแอป | backend-engineer | SW-0004, SW-0005 | draft |
-| [SW-0009](tickets/SW-0009.md) | แอพ login บ้าน และ navigation ผ่าน API/native | frontend-engineer | SW-0003, SW-0005, SW-0026, SW-0027 | draft |
-| [SW-0010](tickets/SW-0010.md) | หน้าบิลและทยอยจ่ายผ่าน API/native | frontend-engineer | SW-0006, SW-0007, SW-0009, SW-0027 | draft |
-| [SW-0011](tickets/SW-0011.md) | หน้าเวรและ inbox ผ่าน API/native | frontend-engineer | SW-0008, SW-0009, SW-0027 | draft |
+| [SW-0003](tickets/SW-0003.md) | ตั้งค่า monorepo และ toolchain ที่รันได้ | platform-engineer | SW-0015, SW-0022, SW-0024, SW-0036 | draft |
+| [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003, SW-0022, SW-0024, SW-0036 | draft |
+| [SW-0005](tickets/SW-0005.md) | Google/Apple session และบ้านผ่าน API | backend-engineer | SW-0004, SW-0024, SW-0036 | draft |
+| [SW-0006](tickets/SW-0006.md) | API บิล การหาร และงวดเงินสด | backend-engineer | SW-0004, SW-0005, SW-0036 | draft |
+| [SW-0007](tickets/SW-0007.md) | ตรวจสลิปภายนอกและ private storage | backend-engineer | SW-0004, SW-0005, SW-0006, SW-0023, SW-0037 | draft |
+| [SW-0008](tickets/SW-0008.md) | API เวรสามโหมดและกิจกรรมภายในแอป | backend-engineer | SW-0004, SW-0005, SW-0036 | draft |
+| [SW-0009](tickets/SW-0009.md) | แอพ login บ้าน และ navigation ผ่าน API/native | frontend-engineer | SW-0003, SW-0005, SW-0026, SW-0027, SW-0036 | draft |
+| [SW-0010](tickets/SW-0010.md) | หน้าบิลและทยอยจ่ายผ่าน API/native | frontend-engineer | SW-0006, SW-0007, SW-0009, SW-0027, SW-0036 | draft |
+| [SW-0011](tickets/SW-0011.md) | หน้าเวรและ inbox ผ่าน API/native | frontend-engineer | SW-0008, SW-0009, SW-0027, SW-0036 | draft |
 | [SW-0012](tickets/SW-0012.md) | ตรวจรับ MVP และ security boundaries อย่างอิสระ | qa-engineer | SW-0007, SW-0010, SW-0011, SW-0013, SW-0018 | draft |
-| [SW-0013](tickets/SW-0013.md) | Retention ทุกประวัติและแผน restore | backend-engineer | SW-0004, SW-0006, SW-0007, SW-0008, SW-0023 | draft |
+| [SW-0013](tickets/SW-0013.md) | Retention ทุกประวัติและแผน restore | backend-engineer | SW-0004, SW-0006, SW-0007, SW-0008, SW-0023, SW-0037 | draft |
 | [SW-0014](tickets/SW-0014.md) | เตรียมและแจก TestFlight pilot | platform-engineer | SW-0012 | draft |
 | [SW-0015](tickets/SW-0015.md) | Neon CLI/skills/MCP/link/private slip policy/deploy | tech-lead | คำสั่งผู้ใช้ระบุ target/config แล้ว | done |
 | [SW-0016](tickets/SW-0016.md) | เปลี่ยน provider ที่เลือกเป็น SlipOK ในเอกสาร | tech-lead | คำสั่งผู้ใช้เลือก SlipOK | done |
 | [SW-0017](tickets/SW-0017.md) | ออกแบบ LINE OA แจ้งยืนยันการจ่าย | tech-lead | คำสั่งเพิ่มช่องทาง; ผู้รับยัง pending | done เฉพาะเอกสาร |
-| [SW-0018](tickets/SW-0018.md) | LINE OA webhook/binding/outbox/push | backend-engineer | SW-0005, SW-0006, SW-0007, SW-0017 | draft |
+| [SW-0018](tickets/SW-0018.md) | LINE OA webhook/binding/outbox/push | backend-engineer | SW-0005, SW-0006, SW-0007, SW-0017, SW-0037 | draft |
 | [SW-0019](tickets/SW-0019.md) | Database ERD/data dictionary/constraints/transactions | data-engineer + Tech Lead review | คำสั่งออกแบบ database; ไม่ใช่ migration | done เฉพาะแบบ |
 | [SW-0020](tickets/SW-0020.md) | ยืนยัน Elysia/Drizzle/Cloudflare Free และ Expo/React Native/Bun tooling | tech-lead | คำสั่งเลือก stack ล่าสุด | done เฉพาะเอกสาร |
 | [SW-0021](tickets/SW-0021.md) | รวม MVP spec และตรวจ backlog | tech-lead | SW-0020 และคำสั่งผู้ใช้ | done เฉพาะเอกสาร |
-| [SW-0022](tickets/SW-0022.md) | Elysia Workers / Drizzle Neon transaction feasibility | research-engineer | SW-0020 | draft |
-| [SW-0023](tickets/SW-0023.md) | Free tier scheduler / retention feasibility | research-engineer | SW-0020 | draft |
-| [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | draft |
+| [SW-0022](tickets/SW-0022.md) | Elysia Workers / Drizzle Neon transaction feasibility | research-engineer | SW-0020 | in_review |
+| [SW-0023](tickets/SW-0023.md) | Free tier scheduler / retention feasibility | research-engineer | SW-0020 | in_review |
+| [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | in_review |
 | [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | ผู้ใช้ให้เริ่ม front โดยไม่รอ Figma | cancelled |
 | [SW-0026](tickets/SW-0026.md) | Frontend visual/motion/flow contract ใน repo | uxui-designer | คำสั่ง frontend ล่าสุด | done |
 | [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + SW-0026 | done เฉพาะ local demo |
@@ -37,6 +37,11 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0030](tickets/SW-0030.md) | Narrow reviewed motion/touch/copy follow-ups | tech-lead | SW-0028 approve | done |
 | [SW-0031](tickets/SW-0031.md) | Empty status text rendering fix | tech-lead | integrated SW-0027 | done |
 | [SW-0032](tickets/SW-0032.md) | Themed calendar selector on chore creation | frontend-engineer | User date-field feedback + integrated SW-0027 | done |
+| [SW-0033](tickets/SW-0033.md) | Backend delivery plan and frontend coordination | tech-lead | SW-0020, SW-0027, SW-0032 | in_progress |
+| [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | in_review |
+| [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | ready |
+| [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | draft |
+| [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
 
@@ -82,3 +87,5 @@ SW-0032 feedback accepted: cream/mint Thai calendar replaces chore date typing. 
 ## Backend planning wave — SW-0033
 
 User authorizes a concrete backend task plan, frontend coordination and multiple supervised Orca agents. SW-0022/23/24 research and SW-0034 frontend integration planning ready; SW-0033 in_progress; SW-0035 independent frozen-plan review draft. Product implementation remains gated by review/confirmation of plan and material decisions. Actual execution IDs follow receipts; no agent launch claimed by this entry alone.
+
+Planning reports SW-0022/23/24/0034 integrated; all4 Dispatches succeeded/released/captured/acknowledged. Backend plan and SW-0036 contract / SW-0037 data-extension decomposition proposed; SW-0035 reviews frozen artifact next. Native Apple and external-copy retention evidence remain explicit gates; no application implementation accepted. [Backend plan](backend-plan.md).

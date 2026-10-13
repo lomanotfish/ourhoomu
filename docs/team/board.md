@@ -41,9 +41,10 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | done |
 | [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | done |
 | [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | in_progress |
-| [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer | SW-0022, SW-0024 | in_progress |
+| [SW-0038](tickets/SW-0038.md) | Elysia/Neon runtime proof slice | platform-engineer + Lead recovery | SW-0022, SW-0024 | in_review |
 | [SW-0039](tickets/SW-0039.md) | Independent data/security contract review | data-engineer | Frozen SW-0036 proposal | in_progress |
 | [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | in_progress |
+| [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | ready |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -112,3 +113,5 @@ SW-0038 Dispatch `ctx_52fa55b57817` ended with `operator_close` before a worker_
 SW-0039 `ctx_56ff3f6b9f77` and SW-0040 `ctx_191090890cd8` have uncommitted review/DTO reports in their isolated worktrees. Their terminals reached a Codex usage limit before worker_done; no reviewer approval or final DTO acceptance is claimed. Lead copied their provisional reports and statuses to ignored `.git/ourhoomu-snapshots/core-implementation/worker-recovery/`. The current session re-bound the same Run coordinator from `term_64588939-5e2c-4ec0-a5d2-a34ed614b39e` to `term_4dbf544f-2dde-4549-9b6b-6f04bc5e326c` (consumer generation 2); no duplicate Run was created. Worker terminal resources marked `user_owned` remain preserved.
 
 Graft in the exact Lead worktree: **ACTIVE**, `graft check` OK against 26 indexed JS/TS files, 110 nodes and 293 edges; contract Markdown/YAML used raw-file fallback. No new token savings estimate claimed at this checkpoint. Integration target remains `local`; the production Neon branch and preexisting user dev branch were not written.
+
+Lead recovered the stopped SW-0038 work in its isolated worktree and froze commit `00c6583` for SW-0041 review. Actual local Wrangler/workerd and synthetic Neon proof passed two actor RLS, restricted role, rollback and context isolation; package typecheck, 3 unit tests and production bundle dry-run passed. Temporary `.dev.vars` was removed. Original Dispatch release returned `retained/user_takeover` with no process action, so its terminal is preserved. No SW-0038 acceptance or integration is claimed before independent review. Proof report `docs/team/reports/SW-0038-runtime-proof.md` is on the frozen branch.

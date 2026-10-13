@@ -96,3 +96,9 @@ Tech Lead ตรวจ artifact กับ acceptance และ required checks �
 - [x] SW-0032: ปฏิทินธีมมิ้นต์/ครีมแทนช่องวันที่ทำ; keyboard/ARIA, 320/393/1079px และสร้างเวรครบสามโหมดผ่านบน `local` ที่ `6dfce71`; 7 tests/31 assertions, typecheck/format และ web/iOS JS exports ผ่าน — [หลักฐาน](docs/team/reports/SW-0032-chore-date.md)
 
 Frontend demo ไม่ใช้ปิดการตรวจ API/social login/SlipOK/LINE/retention/TestFlight ของ tickets เดิม.
+
+## Backend planning — 2026-10-13
+
+- [x] SW-0033 backend tasks/dependencies/ownership/API-to-frontend handoffs prepared; research22/23/24, FE plan34 and independent35 review accepted, final approve60e3292 after fixa3bc4a4. [Plan](docs/team/backend-plan.md) / [delivery evidence](docs/team/reports/SW-0033-backend-plan-delivery.md).
+- [ ] User reviews material choices and confirms implementation/development target; SW-0036 freezes contracts next, SW-0037 owns provider/retention data extensions.
+- [ ] Actual backend/API/native/provider/retention/release acceptance remains pending in original tickets; research and mock do not close those criteria.

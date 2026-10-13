@@ -54,3 +54,7 @@
 | มี Apple Developer / Expo / Google OAuth credentials พร้อมหรือยัง | ผู้ใช้จัดเตรียมใน secret store ตอน release; Neon CLI login/setup สำเร็จแล้ว ไม่ใส่ keys ในเอกสาร | ทดสอบ social login จริงและ TestFlight |
 
 ผู้ใช้ยืนยันแบบหลังอ่านแล้ว ให้ Tech Lead ลงวัน/ข้อความยืนยันและ revision ที่อนุมัติที่นี่ ปรับ requirement/criteria ที่ได้รับผล ก่อนเปลี่ยน ticket จาก draft เป็น ready
+
+## Backend planning checkpoint — 2026-10-13
+
+User asked for backend task planning, frontend coordination and multiple agents; SW-0033 planning/source research and independent final review accepted on local. [Backend plan](../team/backend-plan.md) is concrete proposal for user review; D2–D12, cash self-confirm, auth/operational/external-copy choices remain unconfirmed. SW-0004 proposed core scope and SW-0037 provider/retention extensions preserve original full privacy/data criteria. SW-0003 API foundation native startup proof transferred to SW-0009-AC5, still pending; reviewer approved handoff. No implementation/migration/production/provider authorization inferred from planning success.

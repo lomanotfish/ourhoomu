@@ -26,9 +26,9 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0019](tickets/SW-0019.md) | Database ERD/data dictionary/constraints/transactions | data-engineer + Tech Lead review | คำสั่งออกแบบ database; ไม่ใช่ migration | done เฉพาะแบบ |
 | [SW-0020](tickets/SW-0020.md) | ยืนยัน Elysia/Drizzle/Cloudflare Free และ Expo/React Native/Bun tooling | tech-lead | คำสั่งเลือก stack ล่าสุด | done เฉพาะเอกสาร |
 | [SW-0021](tickets/SW-0021.md) | รวม MVP spec และตรวจ backlog | tech-lead | SW-0020 และคำสั่งผู้ใช้ | done เฉพาะเอกสาร |
-| [SW-0022](tickets/SW-0022.md) | Elysia Workers / Drizzle Neon transaction feasibility | research-engineer | SW-0020 | in_review |
-| [SW-0023](tickets/SW-0023.md) | Free tier scheduler / retention feasibility | research-engineer | SW-0020 | in_review |
-| [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | in_review |
+| [SW-0022](tickets/SW-0022.md) | Elysia Workers / Drizzle Neon transaction feasibility | research-engineer | SW-0020 | done |
+| [SW-0023](tickets/SW-0023.md) | Free tier scheduler / retention feasibility | research-engineer | SW-0020 | done |
+| [SW-0024](tickets/SW-0024.md) | Google Apple session / Neon actor contract | research-engineer | SW-0020 | done |
 | [SW-0025](tickets/SW-0025.md) | UX/UI ทุก flow ของ iOS MVP ใน Figma | uxui-designer | ผู้ใช้ให้เริ่ม front โดยไม่รอ Figma | cancelled |
 | [SW-0026](tickets/SW-0026.md) | Frontend visual/motion/flow contract ใน repo | uxui-designer | คำสั่ง frontend ล่าสุด | done |
 | [SW-0027](tickets/SW-0027.md) | Expo mobile frontend ธีมน่ารัก พร้อม demo flows/animation | frontend-engineer | คำสั่งล่าสุด + SW-0026 | done เฉพาะ local demo |
@@ -37,9 +37,9 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0030](tickets/SW-0030.md) | Narrow reviewed motion/touch/copy follow-ups | tech-lead | SW-0028 approve | done |
 | [SW-0031](tickets/SW-0031.md) | Empty status text rendering fix | tech-lead | integrated SW-0027 | done |
 | [SW-0032](tickets/SW-0032.md) | Themed calendar selector on chore creation | frontend-engineer | User date-field feedback + integrated SW-0027 | done |
-| [SW-0033](tickets/SW-0033.md) | Backend delivery plan and frontend coordination | tech-lead | SW-0020, SW-0027, SW-0032 | in_progress |
-| [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | in_review |
-| [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | ready |
+| [SW-0033](tickets/SW-0033.md) | Backend delivery plan and frontend coordination | tech-lead | SW-0020, SW-0027, SW-0032 | done |
+| [SW-0034](tickets/SW-0034.md) | Frontend API integration implementation plan | frontend-engineer | SW-0027, SW-0032 | done |
+| [SW-0035](tickets/SW-0035.md) | Independent backend and frontend delivery plan review | code-reviewer | SW-0022, SW-0023, SW-0024, SW-0034 | done |
 | [SW-0036](tickets/SW-0036.md) | Freeze API DTO actor and operational contract | tech-lead | SW-0022, SW-0023, SW-0024, SW-0034 | draft |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
@@ -84,8 +84,12 @@ SW-0032 feedback accepted: cream/mint Thai calendar replaces chore date typing. 
 - Independent review approved core/copy; Lead fixed narrow motion/44pt/copy and empty-status rendering. Native form-error announcement/focus, VoiceOver/Dynamic Type and device runtime remain pending; simctl unavailable. Dev web favicon 404 is cosmetic.
 - Next product integration remains SW-0009/10/11 with real backend contracts and native evidence; no Figma dependency, external push/deploy or TestFlight delivery is claimed.
 
-## Backend planning wave — SW-0033
+## Backend planning wave — SW-0033 (accepted planning only)
 
 User authorizes a concrete backend task plan, frontend coordination and multiple supervised Orca agents. SW-0022/23/24 research and SW-0034 frontend integration planning ready; SW-0033 in_progress; SW-0035 independent frozen-plan review draft. Product implementation remains gated by review/confirmation of plan and material decisions. Actual execution IDs follow receipts; no agent launch claimed by this entry alone.
 
 Planning reports SW-0022/23/24/0034 integrated; all4 Dispatches succeeded/released/captured/acknowledged. Backend plan and SW-0036 contract / SW-0037 data-extension decomposition proposed; SW-0035 reviews frozen artifact next. Native Apple and external-copy retention evidence remain explicit gates; no application implementation accepted. [Backend plan](backend-plan.md).
+
+## Latest checkpoint — backend plan accepted
+
+SW-0022/23/24 source research, SW-0033 backend delivery plan, SW-0034 frontend API plan and SW-0035 independent review/recheck accepted. Six real Dispatches succeeded/released/captured/acknowledged. P1 native startup handoff fixeda3bc4a4 and final approve60e3292. SW-0036/37 and all product backend/integration tickets remain draft; user confirms concrete [backend plan](backend-plan.md) section2 under AGENTS.md before implementation. [Evidence](reports/SW-0033-backend-plan-delivery.md). No new product code/DB migration/deploy/provider message.

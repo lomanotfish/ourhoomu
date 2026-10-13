@@ -32,3 +32,7 @@ Requirement เป็นแหล่งจริงของพฤติกร�
 - [Visual และ motion contract](project/frontend-design.md) — SW-0026
 - [Frontend implementation](team/tickets/SW-0027.md) และ [independent review](team/tickets/SW-0028.md)
 - [ผลตรวจ frontend หลังรวมและ cleanup](team/reports/SW-0027-integration.md), [วิธีรัน](../ourhoomu-front/README.md)
+
+## Backend delivery planning
+
+[Backend task plan and frontend coordination](team/backend-plan.md) · [Multi-agent research/review delivery](team/reports/SW-0033-backend-plan-delivery.md). Product implementation follows user review of the concrete plan and material decisions; no backend deployed yet.

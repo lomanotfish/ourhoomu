@@ -7480,10 +7480,7 @@
         "additionalProperties": false,
         "properties": {
           "code": {
-            "type": "string",
-            "examples": [
-              "version_conflict"
-            ]
+            "$ref": "#/components/schemas/ErrorCode"
           },
           "message": {
             "type": "string",
@@ -8551,6 +8548,9 @@
             "examples": [
               "🏡"
             ]
+          },
+          "actions": {
+            "$ref": "#/components/schemas/BillActions"
           }
         },
         "required": [
@@ -8566,7 +8566,8 @@
           "shares",
           "createdAt",
           "expiresAt",
-          "dueDate"
+          "dueDate",
+          "actions"
         ],
         "x-field-visibility": {
           "recipientAccountPrivate": "present only for live recipient or payer with outstanding share; absent for all others including creator/owner by default",
@@ -8650,95 +8651,15 @@
         ]
       },
       "PaymentSummary": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "examples": [
-              "550e8400-e29b-41d4-a716-446655440001"
-            ],
-            "format": "uuid"
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CashPaymentSummary"
           },
-          "billId": {
-            "type": "string",
-            "examples": [
-              "550e8400-e29b-41d4-a716-446655440001"
-            ],
-            "format": "uuid"
-          },
-          "payerMembershipId": {
-            "type": "string",
-            "examples": [
-              "550e8400-e29b-41d4-a716-446655440001"
-            ],
-            "format": "uuid"
-          },
-          "method": {
-            "type": "string",
-            "examples": [
-              "cash"
-            ],
-            "enum": [
-              "cash",
-              "transfer"
-            ]
-          },
-          "amountSatang": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 900000000000,
-            "examples": [
-              4000
-            ]
-          },
-          "status": {
-            "type": "string",
-            "examples": [
-              "pending"
-            ],
-            "enum": [
-              "pending",
-              "pending_verification",
-              "confirmed",
-              "rejected",
-              "cancelled",
-              "needs_attention"
-            ]
-          },
-          "version": {
-            "type": "integer",
-            "minimum": 1,
-            "examples": [
-              1
-            ]
-          },
-          "createdAt": {
-            "type": "string",
-            "examples": [
-              "2026-10-13T00:00:00Z"
-            ],
-            "format": "date-time"
-          },
-          "expiresAt": {
-            "type": "string",
-            "examples": [
-              "2026-10-13T00:00:00Z"
-            ],
-            "format": "date-time"
+          {
+            "$ref": "#/components/schemas/TransferPaymentSummary"
           }
-        },
-        "required": [
-          "id",
-          "billId",
-          "payerMembershipId",
-          "method",
-          "amountSatang",
-          "status",
-          "version",
-          "createdAt",
-          "expiresAt"
-        ]
+        ],
+        "description": "Method-discriminated payment state; pending never reduces confirmed debt"
       },
       "UploadRequest": {
         "type": "object",
@@ -9121,13 +9042,12 @@
           "status": {
             "type": "string",
             "examples": [
-              "open"
+              "pending"
             ],
             "enum": [
-              "open",
+              "pending",
               "completed",
-              "cancelled",
-              "unassigned"
+              "cancelled"
             ]
           },
           "version": {
@@ -9151,6 +9071,33 @@
             "examples": [
               "🧹"
             ]
+          },
+          "assignmentState": {
+            "type": "string",
+            "enum": [
+              "assigned",
+              "unassigned"
+            ],
+            "description": "Unassigned is an assignment state, not completion status"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "description": "Present after completion until reopen"
+          },
+          "completedByMembershipId": {
+            "type": "string",
+            "format": "uuid",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "description": "Present after completion until reopen"
+          },
+          "actions": {
+            "$ref": "#/components/schemas/ChoreActions"
           }
         },
         "required": [
@@ -9160,7 +9107,9 @@
           "localDate",
           "status",
           "version",
-          "expiresAt"
+          "expiresAt",
+          "assignmentState",
+          "actions"
         ]
       },
       "Dashboard": {
@@ -9180,7 +9129,8 @@
             "maximum": 900000000000,
             "examples": [
               20000
-            ]
+            ],
+            "description": "Confirmed remaining debt owed by the current viewer in this house; pending reservations do not reduce it"
           },
           "pendingPayments": {
             "type": "array",
@@ -9193,13 +9143,42 @@
             "items": {
               "$ref": "#/components/schemas/Chore"
             }
+          },
+          "owedToMeSatang": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 900000000000,
+            "description": "Confirmed remaining repayment owed to the current viewer as recipient",
+            "examples": [
+              0
+            ]
+          },
+          "pendingSatang": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 900000000000,
+            "description": "Current viewer pending payment requests, shown separately from outstanding",
+            "examples": [
+              0
+            ]
+          },
+          "cashAwaitingDecisionCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Cash attempts awaiting this viewer as bill creator",
+            "examples": [
+              0
+            ]
           }
         },
         "required": [
           "asOf",
           "outstandingSatang",
           "pendingPayments",
-          "todayChores"
+          "todayChores",
+          "owedToMeSatang",
+          "pendingSatang",
+          "cashAwaitingDecisionCount"
         ]
       },
       "Activity": {
@@ -9408,6 +9387,9 @@
             "examples": [
               0
             ]
+          },
+          "actions": {
+            "$ref": "#/components/schemas/BillActions"
           }
         },
         "required": [
@@ -9425,8 +9407,418 @@
           "expiresAt",
           "confirmedSatang",
           "outstandingSatang",
-          "pendingSatang"
+          "pendingSatang",
+          "actions"
         ]
+      },
+      "BillActions": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Fresh server-derived permissions for this viewer; client display flags are not authorization.",
+        "properties": {
+          "canEditDraft": {
+            "type": "boolean",
+            "description": "Active draft creator",
+            "examples": [
+              false
+            ]
+          },
+          "canPublish": {
+            "type": "boolean",
+            "description": "Active draft creator with publish prerequisites",
+            "examples": [
+              false
+            ]
+          },
+          "canVoid": {
+            "type": "boolean",
+            "description": "Bill creator before confirmed installment",
+            "examples": [
+              false
+            ]
+          },
+          "canCreatePayment": {
+            "type": "boolean",
+            "description": "Active payer with positive available share",
+            "examples": [
+              false
+            ]
+          },
+          "canViewRecipientAccount": {
+            "type": "boolean",
+            "description": "Recipient or active payer with outstanding share",
+            "examples": [
+              false
+            ]
+          }
+        },
+        "required": [
+          "canEditDraft",
+          "canPublish",
+          "canVoid",
+          "canCreatePayment",
+          "canViewRecipientAccount"
+        ]
+      },
+      "PaymentActions": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Fresh server-derived viewer actions; each mutation still rechecks authority.",
+        "properties": {
+          "canCancel": {
+            "type": "boolean",
+            "description": "Payer can cancel while still pending",
+            "examples": [
+              false
+            ]
+          },
+          "canConfirmCash": {
+            "type": "boolean",
+            "description": "Bill creator can confirm this cash attempt",
+            "examples": [
+              false
+            ]
+          },
+          "canRejectCash": {
+            "type": "boolean",
+            "description": "Bill creator can reject this cash attempt",
+            "examples": [
+              false
+            ]
+          },
+          "canUploadSlip": {
+            "type": "boolean",
+            "description": "Transfer payer can provide an upload",
+            "examples": [
+              false
+            ]
+          },
+          "canVerifySlip": {
+            "type": "boolean",
+            "description": "Transfer payer can request gated verification",
+            "examples": [
+              false
+            ]
+          },
+          "canReconcile": {
+            "type": "boolean",
+            "description": "Authorized actor may retry an unresolved transfer",
+            "examples": [
+              false
+            ]
+          },
+          "canReadSlip": {
+            "type": "boolean",
+            "description": "Current uploader or recipient may read private slip",
+            "examples": [
+              false
+            ]
+          }
+        },
+        "required": [
+          "canCancel",
+          "canConfirmCash",
+          "canRejectCash",
+          "canUploadSlip",
+          "canVerifySlip",
+          "canReconcile",
+          "canReadSlip"
+        ]
+      },
+      "CashPaymentSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "billId": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "payerMembershipId": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "method": {
+            "type": "string",
+            "const": "cash"
+          },
+          "amountSatang": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 900000000000,
+            "examples": [
+              4000
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "awaiting_confirmation",
+              "confirmed",
+              "rejected",
+              "cancelled"
+            ],
+            "examples": [
+              "awaiting_confirmation"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "examples": [
+              1
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "format": "date-time"
+          },
+          "actions": {
+            "$ref": "#/components/schemas/PaymentActions"
+          },
+          "reservationExpiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "description": "Active reservation deadline, capped by parent expiry; absent after release"
+          },
+          "confirmedAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "description": "Present only after confirmed credit"
+          },
+          "decisionByMembershipId": {
+            "type": "string",
+            "format": "uuid",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "description": "Creator who decided; present after confirmation or rejection"
+          },
+          "decidedAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "description": "Present after creator decision"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "description": "Creator-provided rejection reason visible to authorized participants"
+          }
+        },
+        "required": [
+          "id",
+          "billId",
+          "payerMembershipId",
+          "method",
+          "amountSatang",
+          "status",
+          "version",
+          "createdAt",
+          "expiresAt",
+          "actions"
+        ]
+      },
+      "TransferPaymentSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "billId": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "payerMembershipId": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "method": {
+            "type": "string",
+            "const": "transfer"
+          },
+          "amountSatang": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 900000000000,
+            "examples": [
+              4000
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "awaiting_upload",
+              "verifying",
+              "pending_verification",
+              "needs_attention",
+              "confirmed",
+              "rejected",
+              "cancelled"
+            ],
+            "examples": [
+              "awaiting_upload"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "examples": [
+              1
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "format": "date-time"
+          },
+          "actions": {
+            "$ref": "#/components/schemas/PaymentActions"
+          },
+          "reservationExpiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "description": "Active reservation deadline, capped by parent expiry; absent after release"
+          },
+          "confirmedAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "description": "Present only after confirmed credit"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "description": "Safe user-facing mismatch reason; no raw provider response"
+          }
+        },
+        "required": [
+          "id",
+          "billId",
+          "payerMembershipId",
+          "method",
+          "amountSatang",
+          "status",
+          "version",
+          "createdAt",
+          "expiresAt",
+          "actions"
+        ]
+      },
+      "ChoreActions": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Fresh viewer actions for this occurrence.",
+        "properties": {
+          "canComplete": {
+            "type": "boolean",
+            "description": "Current assignee may complete pending occurrence",
+            "examples": [
+              false
+            ]
+          },
+          "canReopen": {
+            "type": "boolean",
+            "description": "Current assignee may reopen own completion",
+            "examples": [
+              false
+            ]
+          },
+          "canEditAssignment": {
+            "type": "boolean",
+            "description": "Schedule creator or house owner may update future assignment",
+            "examples": [
+              false
+            ]
+          },
+          "canCancel": {
+            "type": "boolean",
+            "description": "Schedule creator or house owner may cancel eligible occurrence",
+            "examples": [
+              false
+            ]
+          }
+        },
+        "required": [
+          "canComplete",
+          "canReopen",
+          "canEditAssignment",
+          "canCancel"
+        ]
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "validation_error",
+          "unauthenticated",
+          "forbidden",
+          "not_found",
+          "expired",
+          "version_conflict",
+          "idempotency_conflict",
+          "recipient_account_unavailable",
+          "insufficient_share",
+          "rate_limited",
+          "feature_unavailable",
+          "internal_error",
+          "invite_unavailable",
+          "recent_auth_required",
+          "account_deletion_blocked"
+        ],
+        "description": "Versioned core machine code; provider extensions require a contract revision"
       }
     }
   },

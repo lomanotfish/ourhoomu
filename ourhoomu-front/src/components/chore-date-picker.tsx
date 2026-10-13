@@ -61,6 +61,7 @@ export function ChoreDatePicker({
         accessibilityLabel={`${label} ${formatThaiDate(value)}`}
         accessibilityHint="เปิดหรือปิดปฏิทินเพื่อเลือกวัน"
         accessibilityState={{ expanded: open }}
+        aria-expanded={open}
         style={{
           minHeight: 62,
           borderRadius: radius.input,
@@ -156,7 +157,7 @@ export function ChoreDatePicker({
                       <Tap
                         onPress={() => choose(key)}
                         selected={isSelected}
-                        accessibilityLabel={`เลือกวันที่ ${formatThaiDate(key)}${isToday ? ' วันนี้' : ''}`}
+                        accessibilityLabel={`เลือกวันที่ ${formatThaiDate(key)}${isToday ? ' วันนี้' : ''}${isSelected ? ' เลือกแล้ว' : ''}`}
                         style={{
                           minHeight: 44,
                           alignItems: 'center',

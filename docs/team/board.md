@@ -47,8 +47,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (final approve) |
 | [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen7756bcc, SW-0034 | done |
 | [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | done |
-| [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | in_progress |
-| [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | draft |
+| [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | in_review |
+| [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -151,3 +151,7 @@ SW-0003 foundation and SW-0043 quality accepted on integratedlocal9c64a63 after 
 SW-0004 actual Tasktask_4c7e3785d472/Dispatchctx_c2b63e80f1fd and SW-0044 Tasktask_794272f9ad7a/Dispatchctx_a4c5b0d71650 ready and observed implementing, isolated worktrees, bypass argv verified. Data worker created an unnecessary extra worktree; Lead directed it back to the assigned checkout and preserves extra until ownership/safety confirmed. No duplicate writer. Both report GraftACTIVE38/150/355.
 
 Cleanup: owned SW-0036-contract and SW-0043-api-quality worktrees requested removed through Orca with hooks after clean+ancestry+zero-terminal checks; reports/source already integrated. Production workerd listener18843 stopped (exact owned Wrangler processTERM, lsofempty). User-owned runtime/oldDTO worktrees retained. Root user edits unchanged.
+
+SW-0044 frozenf7dec000 succeeded/released/captured; independent SW-0045 Tasktask_d53ad0d4043b/Dispatchctx_f1fef56c238c now reviews source read-only in separate worktree. No transport integration accepted yet. Data worker consumed workspace correction and copied owned draft to assigned checkout; extra remains preserved. Orca now marks the live data terminal user_owned/user_takeover, so retain its resources; no stopping/cleanup authorized from that status. Core data acceptance remains pending.
+
+Cleanup verified: SW-0036-contract, SW-0043-api-quality and SW-0039-contract-review paths/catalog/ownedbranches absent after Orca hooks. SW-0039 original review history merged unchanged into local to prove ancestry; all reports stay tracked.

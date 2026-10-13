@@ -1640,7 +1640,7 @@
                       "type": "object",
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/Invitation"
+                          "$ref": "#/components/schemas/InvitationIssued"
                         }
                       },
                       "required": [
@@ -1742,7 +1742,8 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "One logical issuance per actor+route+key+body hash. Exact retry within 5 minutes returns the same token from encrypted short-lived replay result; after window same key returns 409 rather than minting a new invitation. Different body under same key returns 409. Token digest is the durable stored form.",
+        "x-invitation-privacy": "Persist token digest only; raw token appears only in createInvitation and its exact bounded retry. Never include token on revoke, accept errors, logs or later reads."
       }
     },
     "/v1/invitations/accept": {
@@ -1826,7 +1827,7 @@
             }
           },
           "404": {
-            "description": "Unavailable or outside scope",
+            "description": "Invalid, expired, consumed or revoked token: same unavailable response, without house existence disclosure",
             "content": {
               "application/json": {
                 "schema": {
@@ -1837,16 +1838,6 @@
           },
           "409": {
             "description": "Conflict, stale version or idempotency mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelope"
-                }
-              }
-            }
-          },
-          "410": {
-            "description": "Previously accessible resource expired",
             "content": {
               "application/json": {
                 "schema": {
@@ -1884,7 +1875,8 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-invitation-privacy": "Opaque 404 invite_unavailable for any unusable token; resolve house only after token digest and expiry checks. Verified principal required. Do not return token or house metadata on failure."
       }
     },
     "/v1/houses/{houseId}/invitations/{id}": {
@@ -1948,7 +1940,7 @@
                       "type": "object",
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/Invitation"
+                          "$ref": "#/components/schemas/InvitationMetadata"
                         }
                       },
                       "required": [
@@ -2040,7 +2032,8 @@
             }
           }
         },
-        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409"
+        "x-idempotency": "required; scoped to actor, route and body hash; replay returns original resource; conflicting body returns 409",
+        "x-invitation-privacy": "Persist token digest only; raw token is returned once from createInvitation and never on revoke, accept errors, logs or later reads."
       }
     },
     "/v1/houses/{houseId}/leave": {
@@ -7885,13 +7878,6 @@
             ],
             "format": "uuid"
           },
-          "userId": {
-            "type": "string",
-            "examples": [
-              "550e8400-e29b-41d4-a716-446655440001"
-            ],
-            "format": "uuid"
-          },
           "displayName": {
             "type": "string",
             "examples": [
@@ -7910,15 +7896,32 @@
           },
           "active": {
             "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Membership revision for cache invalidation",
+            "examples": [
+              1
+            ]
+          },
+          "removedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Present in leave/remove mutation response; no later history access",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ]
           }
         },
         "required": [
           "id",
-          "userId",
           "displayName",
           "role",
-          "active"
-        ]
+          "active",
+          "version"
+        ],
+        "description": "House-scoped membership DTO; no global user identifier. Leave/remove returns active=false, incremented version and removedAt."
       },
       "InvitationCreate": {
         "type": "object",
@@ -7935,37 +7938,6 @@
         },
         "required": [
           "expiresInSeconds"
-        ]
-      },
-      "Invitation": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "examples": [
-              "550e8400-e29b-41d4-a716-446655440001"
-            ],
-            "format": "uuid"
-          },
-          "token": {
-            "type": "string",
-            "examples": [
-              "one-time-secret"
-            ]
-          },
-          "expiresAt": {
-            "type": "string",
-            "examples": [
-              "2026-10-13T00:00:00Z"
-            ],
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "token",
-          "expiresAt"
         ]
       },
       "InvitationAccept": {
@@ -9801,6 +9773,121 @@
           "account_deletion_blocked"
         ],
         "description": "Versioned core machine code; provider extensions require a contract revision"
+      },
+      "InvitationMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Safe invitation metadata; never contains the raw token",
+        "properties": {
+          "id": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "expiresAt": {
+            "type": "string",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "format": "date-time"
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked",
+              "consumed",
+              "expired"
+            ],
+            "examples": [
+              "active"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "expiresAt",
+          "houseId",
+          "status",
+          "createdAt"
+        ]
+      },
+      "InvitationIssued": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One logical invitation issuance: raw token in create response and exact same-key retry within 5 minutes only; digest-only durable persistence, never echoed on revoke/list/error/log.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "format": "uuid"
+          },
+          "expiresAt": {
+            "type": "string",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ],
+            "format": "date-time"
+          },
+          "houseId": {
+            "type": "string",
+            "format": "uuid",
+            "examples": [
+              "550e8400-e29b-41d4-a716-446655440001"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "revoked",
+              "consumed",
+              "expired"
+            ],
+            "examples": [
+              "active"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "examples": [
+              "2026-10-13T00:00:00Z"
+            ]
+          },
+          "token": {
+            "type": "string",
+            "examples": [
+              "one-time-secret"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "expiresAt",
+          "houseId",
+          "status",
+          "createdAt",
+          "token"
+        ]
       }
     }
   },

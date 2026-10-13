@@ -33,3 +33,7 @@ The next narrow revision adds viewer-specific `BillActions`, `PaymentActions` an
 ## Lead refresh race correction — 2026-10-13
 
 The public refresh route now advertises only applicable 400/401/409/429/503 outcomes. Its contract defines a five-minute exact replay result keyed by old credential digest, idempotency key and body hash; a serialized same-key retry gets the same pair while the family is active. Different reuse or replay after the window revokes the family with opaque 401, and logout wins over replay. Token digests and encrypted bounded replay storage are required. This is a contract decision, not issuer/session runtime proof. Remaining route authorization/privacy and invitation/deletion behavior still need review.
+
+## Lead membership and invitation privacy correction — 2026-10-13
+
+House-scoped `Member` no longer exposes global `userId`, and now carries a version plus optional removal timestamp. Leave/remove returns a tombstone only in its authorized mutation response; subsequent reads check active membership first and hide the house/child with 404 even after expiry. Active members may get 410 only for a child formerly accessible to them before its parent cap. Invitation create now returns `InvitationIssued` with a one-time token; revoke returns token-free `InvitationMetadata`. Accept maps invalid/expired/consumed/revoked tokens to the same opaque 404 `invite_unavailable`. These are transport/privacy rules, not runtime enforcement proof. Account deletion and remaining route-specific status matrix still block freeze.

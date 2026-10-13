@@ -21,14 +21,14 @@ export default new Elysia({ adapter: CloudflareAdapter })
   })
   .options('*', ({ set }) => {
     set.status = 204;
-    return null;
+    return new Response(null, { status: 204 });
   })
   .get('/health', ({ request }) => ({ data: { status: 'ok' }, requestId: responseId(request) }))
   .post('/runtime/validate', async ({ request, set }) => {
       const requestId = responseId(request);
       if (!request.headers.get('authorization')) {
         set.status = 401;
-        return { error: { code: 'unauthorized', message: 'Authentication required' }, requestId };
+        return { error: { code: 'unauthenticated', message: 'Authentication required' }, requestId };
       }
       let parsed: unknown;
       try { parsed = await request.json(); } catch {
@@ -51,7 +51,7 @@ export default new Elysia({ adapter: CloudflareAdapter })
       }
       if (request.headers.get('authorization') !== 'Bearer runtime-fixture-only') {
         set.status = 401;
-        return { error: { code: 'unauthorized', message: 'Authentication required' }, requestId };
+        return { error: { code: 'unauthenticated', message: 'Authentication required' }, requestId };
       }
       const actor = params.actor === 'a' ? runtimeEnv.TEST_ACTOR_A : params.actor === 'b' ? runtimeEnv.TEST_ACTOR_B : undefined;
       if (!actor) {
@@ -80,18 +80,22 @@ export default new Elysia({ adapter: CloudflareAdapter })
         };
       } catch (error) {
         set.status = 500;
-        return { error: { code: 'probe_failed', message: error instanceof Error ? error.message : 'Probe failed' }, requestId };
+        return { error: { code: 'probe_failed', message: 'Probe failed' }, requestId };
       } finally {
         await pool.end();
       }
     })
   .onError(({ code, error, request, set }) => {
     const requestId = responseId(request);
+    if (code === 'NOT_FOUND') {
+      set.status = 404;
+      return { error: { code: 'not_found', message: 'Not found' }, requestId };
+    }
     if (code === 'VALIDATION' || code === 'PARSE' || (error && typeof error === 'object' && 'status' in error && error.status === 422)) {
       set.status = 400;
       return { error: { code: 'validation_error', message: 'Request validation failed' }, requestId };
     }
     set.status = 500;
-    return { error: { code: 'internal_error', message: error instanceof Error ? error.message : 'Internal error' }, requestId };
+    return { error: { code: 'internal_error', message: 'Internal server error' }, requestId };
   })
   .compile() as unknown as { fetch(request: Request, env: RuntimeEnv): Promise<Response> };

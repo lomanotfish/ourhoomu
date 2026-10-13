@@ -1,9 +1,10 @@
 # OurHoomu API
 
 This package is the Elysia API foundation for Cloudflare Workers. The bounded
-SW-0038 runtime proof includes only health and a small request validation
-route; product routes, session authentication and database schema belong to
-their accepted tickets.
+SW-0038 runtime proof exposes only health from the production entry. Request
+validation and Neon actor probes exist in the separate test-only entry;
+product routes, session authentication and database schema belong to their
+accepted tickets.
 
 ## Requirements
 
@@ -26,8 +27,8 @@ Start the production entry locally in Wrangler/workerd:
 bun run dev
 ```
 
-Run the bounded no-database request matrix while Wrangler is running in a
-second terminal:
+Run the production request matrix while Wrangler is running in a second
+terminal. It checks that proof routes are hidden with 404:
 
 ```sh
 bun run check:runtime
@@ -54,6 +55,7 @@ While Wrangler is running, use another terminal in this directory with the
 same path variables:
 
 ```sh
+bun run check:fixture-runtime
 bun run check:neon-runtime
 ```
 

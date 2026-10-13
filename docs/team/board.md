@@ -7,8 +7,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | Ticket | ผลลัพธ์ | Owner role | Dependencies | Status |
 |---|---|---|---|---|
 | [SW-0002](tickets/SW-0002.md) | Design และเอกสารสำหรับ agents | tech-lead | คำตอบผู้ใช้ครบแล้ว | done |
-| [SW-0003](tickets/SW-0003.md) | ตั้งค่า monorepo และ toolchain ที่รันได้ | platform-engineer | SW-0015, SW-0022, SW-0024, SW-0036 | draft |
-| [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003, SW-0022, SW-0024, SW-0036 | draft |
+| [SW-0003](tickets/SW-0003.md) | ตั้งค่า monorepo และ toolchain ที่รันได้ | platform-engineer | SW-0015, SW-0022, SW-0024, SW-0036 | done |
+| [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003, SW-0022, SW-0024, SW-0036 | ready |
 | [SW-0005](tickets/SW-0005.md) | Google/Apple session และบ้านผ่าน API | backend-engineer | SW-0004, SW-0024, SW-0036 | draft |
 | [SW-0006](tickets/SW-0006.md) | API บิล การหาร และงวดเงินสด | backend-engineer | SW-0004, SW-0005, SW-0036 | draft |
 | [SW-0007](tickets/SW-0007.md) | ตรวจสลิปภายนอกและ private storage | backend-engineer | SW-0004, SW-0005, SW-0006, SW-0023, SW-0037 | draft |
@@ -46,7 +46,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0040](tickets/SW-0040.md) | Generated frontend DTO and contract seam review | frontend-engineer | Frozen SW-0036 proposal, SW-0034 | cancelled (superseded by SW-0042) |
 | [SW-0041](tickets/SW-0041.md) | Independent Workers/Neon runtime review | code-reviewer | Frozen SW-0038 commit | done (final approve) |
 | [SW-0042](tickets/SW-0042.md) | Revised frontend contract DTO consumer | frontend-engineer | Frozen7756bcc, SW-0034 | done |
-| [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | in_progress |
+| [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | done |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -143,3 +143,5 @@ SW-0036 contract7756bcc accepted with independent SW-0039 finalapprovea55c81a an
 SW-0042 original workerb8d95b2 and SW-0043 dirty quality/report were preserved after positively observed usage-limit final turns; both stopped/released (archive unavailable after stop). Lead recovered/generated DTOs in its isolated checkout and passed package/strict consumption checks. SW-0043 retry Tasktask_8d14cc2b1e0b / Dispatchctx_7a032043d77b now owns its existing quality worktree; actual launch ready/input accepted and argv bypass verified. Original user-owned SW-0040 remains fenced/preserved; ticket superseded, not accepted. SW-0003 acceptance waits reviewed quality integration. Next core milestone SW-0004 schema/atomic operations; production/provider/native gates unchanged.
 
 Graft ACTIVE exact Lead worktree rebuild/check38files150nodes355edges; contract docs raw fallback. Root user guide and bun.lock remain untouched. Current coordinator term_3477fed4-f980-4cc6-994c-81da695c46b2, generation3, existing Run unchanged.
+
+SW-0003 foundation and SW-0043 quality accepted on integratedlocal9c64a63 after fresh workerd/package checks. Capacity-blocked replacementctx_7a032043d77b stopped/released with original result preserved and independently checked by Lead. SW-0004 core data ready with precise synthetic branch/role ownership and accepted contract; actual worker launch follows receipt. Root user files untouched.

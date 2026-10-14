@@ -1,5 +1,16 @@
 # Approved core implementation — 2026-10-13
 
+## Continued delivery and Playwright — 2026-10-15
+
+User requests continuing the existing project to completion and mandates
+Playwright for test automation. Browser flows and HTTP acceptance use Playwright
+Test with real local servers; database/transaction and focused unit tests remain
+necessary alongside it. SW-0047 establishes the suite, followed by API-backed
+flow coverage as handlers are integrated. Demo, synthetic identity, live issuer,
+native device and provider evidence must remain distinguishable. Existing
+production/provider/native/release authorization and credential gates persist.
+Core work continues without another scope-confirmation prompt.
+
 User explicitly confirmed “ยืนยันแผน” after the concrete backend plan v0.2 and request to start core on local/dev with SlipOK, LINE and release gates retained. Source plan: [backend-plan](backend-plan.md); accepted baseline b02e4719ec0319f522539d8886b65d29c7a5c613; target local.
 
 ## Confirmed scope

@@ -49,7 +49,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | done |
 | [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | done |
 | [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | done (approve) |
-| [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | draft |
+| [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | in_progress |
+| [SW-0047](tickets/SW-0047.md) | Playwright browser/API acceptance suite | qa-engineer | SW-0027, SW-0032, SW-0003, SW-0044 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -168,3 +169,26 @@ SW-0003 narrow CORS integration follow-up by Lead: contracted PATCH/DELETE/Idemp
 SW-0045 frozen recheck2bc18f3 originalsix scenarios pass butthree residual deferred-save/old401/newattempt/deadline races remain. Report preserved/released/captured beforeackdelivery_1cd1b9b48f48. SW-0044 second fix Tasktask_44561200cf57/Dispatchctx_015b9ab98e13 ready/inputaccepted in exclusive original checkout, effectivegpt-6-luna; no transport acceptance/merge yet. Data pooled RLS/cash/invite/owner/chore race matrix nowpasses; final expanded repro and review stillpending.
 
 SW-0044 portable transport/session accepted after independent0124f53 approval, integratedlocalcb0b17c. Fresh root frozeninstall/typecheck/format/full41tests165assertions pass. Allnine findings closed, no real API/native login claim. Final reviewer released/captured/acked. SW-0009 actual house/session/secure-store/UI integration stillpending; data final rehearsal/report pending independentSW-0046.
+
+
+### Continued delivery and Playwright — 2026-10-15
+
+User authorizes continuing approved core scope and mandates Playwright. Run
+`run_a401e29c745e` rebound to current Lead terminal
+`term_63bb359e-10be-48c8-ac3b-6995ebee7021`, generation4. Target `local`,
+baseline `3d8d631`; existing isolated Lead checkout fast-forwarded before edits.
+
+SW-0047 actual Task `task_fcf9d980a17a`, Dispatch `ctx_77ba26d51060`,
+worktree `sw-0047-playwright`: ready/input_accepted/turn observed. QA owns
+Playwright/config/manifest/tests/report only. Frozen approved app/runtime provide
+the first demo and real-workerd suite; actual domain UI/API tests follow handlers.
+
+SW-0046 original reviewer screen positively showed usage-limit final turn without
+worker_done; no source/report changes. Stopped/released `ctx_e4594e8884e0`; archive
+unavailable after stop, existing transcript inspected. Retry same Task, Dispatch
+`ctx_44b8f468e1e5`, exact frozen worktree/e62d1ad: ready/input_accepted/turn observed.
+No data acceptance claimed. New processes use default model and live bypass argv;
+TeamAI role TOML files are currently absent, so inline role scope is authoritative.
+
+Graft ACTIVE Lead exact worktree, `graft map`:44files191symbols510edges. Docs/config
+use raw fallback. Native/provider/production/release gates persist.

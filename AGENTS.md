@@ -70,6 +70,15 @@ existing conventions; root Neon tooling is separate.
 
 ## Testing Guidelines
 
+Use Playwright Test for browser flows and HTTP API acceptance, as requested by
+the user on 2026-10-15. Follow SW-0047 and the frontend testing README for setup
+and commands. Run against dedicated local servers and record the tested SHA,
+results and evidence. Label demo and synthetic identity tests explicitly;
+API-backed acceptance requires real handlers and the isolated synthetic DB.
+Keep focused unit and database race/authorization tests alongside Playwright.
+Native Google/Apple, provider and TestFlight acceptance require their own real
+environment evidence.
+
 Frontend checks are defined by its package scripts and README. Root CI and
 coverage thresholds are not established. For documentation changes, inspect Markdown rendering, verify referenced paths and commands, and run `git diff --check`.
 

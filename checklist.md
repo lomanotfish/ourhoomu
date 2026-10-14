@@ -1,6 +1,6 @@
 # OurHoomu checklist
 
-อัปเดต: 2026-10-13 · **ระยะปัจจุบัน: frontend Expo demo รวมและตรวจรับแล้ว; API/native/TestFlight acceptance ยัง pending**
+อัปเดต: 2026-10-15 · **ระยะปัจจุบัน: core local/dev ได้รับอนุมัติ; API foundation/contract/transport ตรวจรับแล้ว; database อยู่ระหว่างตรวจ และกำลังเพิ่ม Playwright**
 
 Tech Lead เท่านั้นอัปเดตหลังตรวจรับและรวมงาน ใส่ ticket/หลักฐานจริงทุกครั้ง [x] หมายถึงผลลัพธ์ในข้อนั้นเสร็จ ไม่ได้หมายความว่าฟีเจอร์แอพเสร็จ ดู [board](docs/team/board.md) และ [requirement acceptance](docs/team/requirements.md)
 
@@ -31,15 +31,15 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 - [x] ปรับ active design จาก Supabase เป็น Neon — [ADR-0002](docs/adr/0002-neon.md), [setup report](docs/project/neon-setup.md)
 - [x] ตรวจ root config/dependencies/secrets และรวมงาน — [SW-0015](docs/team/tickets/SW-0015.md)
 
-### Application foundation ที่ยังรออนุมัติ
+### Application foundation ที่อนุมัติแล้วสำหรับ local/dev
 
 - [x] SW-0019: ออกแบบ PostgreSQL 29 ตาราง พร้อม ERD/data dictionary/constraints/indexes/transactions/retention และตรวจรวมเอกสาร — [database](docs/project/database.md)
 - [x] SW-0020: บันทึก stack Elysia/Cloudflare Workers Free + Drizzle/PostgreSQL + React Native/Expo/Bun tooling — [ticket](docs/team/tickets/SW-0020.md); local `9349182`, 208 ลิงก์ภายในผ่าน
 - [x] SW-0021: รวม MVP spec/backlog และตรวจ links/dependency graph หลังรวม — integrated `local` ที่ `749f43e`; 289 local links, 23-ticket dependency/status audit และ cleanup receipt — [spec](docs/project/spec.md), [ticket](docs/team/tickets/SW-0021.md)
 - SW-0025 cancelled: ผู้ใช้ให้เริ่ม frontend โดยไม่รอ Figma; partial artifact เก็บเป็นประวัติ — [ticket](docs/team/tickets/SW-0025.md)
-- [ ] SW-0022: ตรวจ Elysia Workers/Drizzle Neon transaction feasibility — [ticket](docs/team/tickets/SW-0022.md)
-- [ ] SW-0024: ตรึง Google/Apple session/Neon actor contract — [ticket](docs/team/tickets/SW-0024.md)
-- [ ] ยืนยัน database policy ที่ยังเสนอ รวม replay floor/late-transfer recovery, auth/driver/actor context และ LINE binding ก่อนสร้าง schema จริง
+- [x] SW-0022: ตรวจ Elysia Workers/Drizzle Neon transaction feasibility — [ticket](docs/team/tickets/SW-0022.md)
+- [x] SW-0024: วิจัย Google/Apple session/Neon actor contract (live native proof ยัง pending) — [ticket](docs/team/tickets/SW-0024.md)
+- [x] ยืนยัน core local/dev policy และค่าปฏิบัติการตาม [core scope](docs/team/core-implementation.md); provider replay precision/LINE binding/live issuer คง gate เฉพาะงาน
 
 - [x] SW-0003: API foundation/toolchain accepted; existing Expo demo retained. CI expansion not required; native startup proof remains SW-0009.
 - [ ] SW-0004: Schema/RLS/RPC, transaction และ generated contract ผ่าน
@@ -69,7 +69,7 @@ Tech Lead เท่านั้นอัปเดตหลังตรวจร�
 ## 4. Retention, acceptance และ pilot
 
 - [ ] SW-0013: ลบประวัติทุกประเภทตาม created_at รวม files/child/cache/logs/provider/backup และ restore จริง
-- [ ] SW-0023: ตรวจ Free tier scheduler/retention feasibility ก่อน SW-0007/0013 — [ticket](docs/team/tickets/SW-0023.md)
+- [x] SW-0023: ตรวจ Free tier scheduler/retention feasibility ก่อน SW-0007/0013 — [ticket](docs/team/tickets/SW-0023.md)
 - [ ] SW-0012: Independent pre-release QA/security AC1a และ AC2–AC7 บน integrated SHA ผ่าน; AC1b รอ TestFlight
 - [ ] SW-0014: Apple/Expo/Google credentials และอนุญาต upload ภายนอกพร้อม
 - [ ] SW-0014: ปิด AC1b ด้วย TestFlight build/review/ติดตั้งและ smoke จริง พร้อมแผนอัปเดตก่อน 90 วัน
@@ -107,3 +107,14 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [x] SW-0042: DTOs generated from accepted0.3.2 contract; strict TypeScript/format/reproducibility checks pass. Real API integration remains pending.
 
 - [x] SW-0044: portable typed client and session race boundary accepted; 41 full tests/165 assertions and independent review pass. Actual API/native integration remains SW-0009 pending.
+
+
+## Continued delivery — 2026-10-15
+
+- [x] SW-0036/0039: accepted OpenAPI7756bcc and independent contract review; SW-0042 generated frontend DTO consumer — [board](docs/team/board.md).
+- [x] SW-0038/0041/0043: Workers/Neon runtime proof and API quality hooks accepted; live issuer/provider/native acceptance remains separate.
+- [x] SW-0044/0045: typed frontend transport/session authority integrated and independently approved. Fresh local frontend41tests165assertions, API8tests26assertions, typecheck/format/API lint pass on dc0e908.
+- [ ] SW-0004/0046: core schema, restricted roles and atomic operations await independent review/integration.
+- [ ] SW-0047: Playwright actual demo browser and local workerd API suite; QA implementing, no passing suite claimed yet.
+- [ ] SW-0005/0006/0008 and SW-0009/0010sliceA/0011: actual core handlers and UI/API integration.
+- [ ] Live Google/Apple/native, SlipOK, LINE, full retention and TestFlight gates require their original evidence/credentials/authorization.

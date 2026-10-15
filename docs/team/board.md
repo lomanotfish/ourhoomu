@@ -341,3 +341,5 @@ SW-0056 done; SW-0057 independent review findings R1/R2 resolved by non-author L
 
 ## Consolidation priority — 2026-10-15
 [SW-0058](tickets/SW-0058.md) in_progress from local843f457; all existing committed branches staged in isolated sw-0058-consolidate. SW-0052 core security review resumes independently on frozen d01aba2 before core acceptance. Dirty legacy drafts and user guide preserved; SW-0055 has no implementation to integrate.
+
+SW-0058 in_review: staged full histories incl SW-0052 approve5b6d540; all branch tips ancestor of integration, core21/session4/races20 pass independently on consolidated source. Worker15forced+120unit+24E2E/Drizzle pass; original13dirtyfiles unchanged. Local integration pending.

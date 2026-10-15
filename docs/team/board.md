@@ -316,3 +316,13 @@ Accepted SW48/source+two reviewers and SW51/source+reviewer worktrees passed cle
 merged/no-process/generated-only-artifact preflight and were removed through Orca
 with run-hooks. Receipts retained in ignored core-implementation. Source49/52 and
 unfinished55 worktrees preserved; original user-owned source4 terminal untouched.
+
+Lead post-interruption verification completed on frozen d01aba2 in retained
+sw-0052-session-review: core21, session4 and deterministic races20 all exit0,
+sequential actual guarded DB runs, no reset. Logs in ignored core-implementation/
+usage-interruption/lead-*.log. This supports the resumed independent reviewer;
+no independent verdict or integration of data core claimed.
+Accepted component cleanup confirmed all five paths and owned branches absent;
+Orca removal receipts retained. Portable root frontend negative18 probes passed
+after cleanup. Lead graft check OK308nodes; ACTIVE, observed savings estimate
+161550 across seven figure-reporting retrieval calls this continuation.

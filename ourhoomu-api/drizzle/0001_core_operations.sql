@@ -92,8 +92,9 @@ BEGIN
  IF p IS NULL OR jsonb_typeof(p)<>'object' OR k !~ '^[0-9a-f]{64}$' OR bh !~ '^[0-9a-f]{64}$' THEN PERFORM core.fail('validation_error'); END IF;
  e:=n+interval '24 hours'; d:=e+interval '24 hours';
  IF op IN ('house.create','account.create','account.update','account.archive','session.revoke') THEN
-  -- User lock gives non-house commands one fixed scope, before idempotency.
-  PERFORM 1 FROM core.users WHERE id=uid FOR UPDATE;
+  -- Serialize non-house commands without blocking session insertion's FK KEY
+  -- SHARE on this user (rotation takes family root before inserting a generation).
+  PERFORM 1 FROM core.users WHERE id=uid FOR NO KEY UPDATE;
   h:=NULL;
  ELSIF op='invite.accept' THEN
   SELECT * INTO inv FROM core.house_invitations WHERE token_digest=p->>'tokenDigest';
@@ -108,6 +109,18 @@ BEGIN
   m:=core.require_member(h);
   SELECT role INTO role_name FROM core.house_memberships WHERE house_id=h AND id=m;
  END IF;
+ -- User/house scope locks precede session authority; never retain the initial actor
+ -- across those waits. All revocation/rotation paths lock this same family root
+ -- exclusively before touching any generation. SHARE pins authority through
+ -- replay and the entire remaining write/commit interval, including later waits
+ -- (e.g. bill.publish's recipient account), without serializing ordinary commands.
+ -- Logout takes UPDATE immediately, avoiding a shared-to-exclusive upgrade.
+ IF op='session.revoke' THEN
+  PERFORM 1 FROM core.sessions WHERE family_id=(SELECT family_id FROM core.sessions WHERE id=nullif(current_setting('ourhoomu.session_id',true),'')::uuid) ORDER BY generation,id LIMIT 1 FOR UPDATE;
+ ELSE
+  PERFORM 1 FROM core.sessions WHERE family_id=(SELECT family_id FROM core.sessions WHERE id=nullif(current_setting('ourhoomu.session_id',true),'')::uuid) ORDER BY generation,id LIMIT 1 FOR SHARE;
+ END IF;
+ IF core.actor() IS DISTINCT FROM uid THEN PERFORM core.fail('unauthenticated'); END IF;
 
  -- Scope and authority checks precede replay; resource locators never authorize a viewer.
  IF op IN ('bill.update','bill.publish','bill.void','payment.reserve') THEN

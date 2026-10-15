@@ -120,6 +120,7 @@ restricted pooled app/verifier URLs to that private file; it never reuses
 bun scripts/db/migrate.ts up
 bun scripts/db/check.ts
 bun scripts/db/check-sessions.ts
+bun scripts/db/check-session-races.ts
 ```
 
 `up` requires an empty `core` schema. The disposable synthetic rehearsal is:
@@ -129,6 +130,7 @@ bun scripts/db/migrate.ts rollback
 bun scripts/db/migrate.ts up
 bun scripts/db/check.ts
 bun scripts/db/check-sessions.ts
+bun scripts/db/check-session-races.ts
 ```
 
 Rollback drops **only `core`** on this exact authorized synthetic target. It
@@ -171,7 +173,21 @@ feature handler tickets. Opaque payment routes use `resolvePaymentHouse` / `paym
 internal parent resolution with fresh membership, followed by command authority
 checks under the house lock. No product route is registered by this milestone.
 
-Money mutations lock house → bill → ordered shares/attempts → idempotency and
+Commands take their user/house scope lock before locking the immutable
+session-family root, then recheck the actor before replay or mutation. The shared
+family lock lasts until transaction end, including later account waits during
+publish. Verifier revoke/rotate/reuse and app logout take that root exclusively;
+logout takes it exclusively from the start to avoid a lock upgrade. This lets
+revocation commit during an earlier scope wait and reject the waiting command,
+or wait for an already authorized command transaction to finish. The bounded
+`check-session-races.ts` suite observes actual backend blocking edges and covers
+both orders, child waits, replay and a rotated family. Run it only in the Lead's
+exclusive synthetic database window; fixtures and deliberate revocations persist,
+while pending mutation probes roll back.
+The user scope uses `FOR NO KEY UPDATE`: it still serializes account commands,
+while permitting session rotation's foreign-key `KEY SHARE` on that user.
+
+Money mutations lock house → session-family root → bill → ordered shares/attempts → idempotency and
 immutable credit/activity. Non-history locators last 24 hours; history locators
 last through parent access expiry, capped at their own 364 days. Invitation
 issuance retains its semantic key for the full seven-day invitation lifetime;

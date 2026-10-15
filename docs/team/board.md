@@ -51,6 +51,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | done (approve) |
 | [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | in_progress |
 | [SW-0047](tickets/SW-0047.md) | Playwright browser/API acceptance suite | qa-engineer | SW-0027, SW-0032, SW-0003, SW-0044 | in_progress |
+| [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -192,3 +193,19 @@ TeamAI role TOML files are currently absent, so inline role scope is authoritati
 
 Graft ACTIVE Lead exact worktree, `graft map`:44files191symbols510edges. Docs/config
 use raw fallback. Native/provider/production/release gates persist.
+
+
+### Resume after interrupted coordinator — 2026-10-15
+
+Same Run rebound to attested current terminal `term_c6930bf4-ac9f-4b71-9151-2726254bd40c`,
+generation5; old-handle consuming check correctly fenced with effectsApplied=false.
+Existing QA/reviewer Dispatches preserved; fresh transcripts and fleet show live.
+SW-0046 has core21/session4 passing evidence and continues independent catalog/parity
+review. SW-0047 recovered Chromium download and Expo IPv6 readiness; actual browser
+run underway, not yet accepted.
+
+SW-0048 independent issuer component of SW-0005 starts from accepted interface only,
+no DB/routes/live login/IdP change: Task `task_dc092bb98d1a`, Dispatch
+`ctx_daf75059291a`, isolated `sw-0048-issuer`, requested/effective `gpt-6-luna`,
+ready/input_accepted/turn observed; bypass argv verified. Scope in ticket. Full
+SW-0005 still waits data acceptance. Three active workers, one writer per worktree.

@@ -338,3 +338,6 @@ SW-0056 in_review: correctionsce113b4 accepted by non-author Lead recheck; SW-00
 
 ## Turborepo migration accepted — 2026-10-15
 SW-0056 done; SW-0057 independent review findings R1/R2 resolved by non-author Lead recheck. Integrated local8416702 passes fresh frozen install,15 forced tasks/116 unit tests,24 E2E and web/iOS JS/Workers dry-run builds. One Bun lock and packages/contracts shared DTO are active. Details: [integration](reports/SW-0056-integration.md). User agent-guide preserved, old root lock archived. Three Dispatches released/captured/acked; owned worktree cleanup receipts are in .git/ourhoomu-snapshots/sw-0056/. No production/native/provider/release acceptance expanded; unfinished backend tickets remain unchanged.
+
+## Consolidation priority — 2026-10-15
+[SW-0058](tickets/SW-0058.md) in_progress from local843f457; all existing committed branches staged in isolated sw-0058-consolidate. SW-0052 core security review resumes independently on frozen d01aba2 before core acceptance. Dirty legacy drafts and user guide preserved; SW-0055 has no implementation to integrate.

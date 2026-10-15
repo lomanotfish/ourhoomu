@@ -83,3 +83,6 @@ User explicitly confirmed “ยืนยันแผน” for reviewed backend
 
 ## Turborepo migration confirmed — 2026-10-15
 User prioritizes Turborepo migration with Bun workspaces and packages/ for genuinely shared types, schemas and functions. Keep app directories and behavior; no production migration/deploy. See [SW-0056](tickets/SW-0056.md).
+
+## Branch consolidation — confirmed 2026-10-15
+User requests all existing work consolidated into local. Preserve dirty drafts/user edits and newer Turborepo; finish required core security acceptance before integrating data. This is integration of existing work, not authorization for new product features or deployment. See [SW-0058](tickets/SW-0058.md).

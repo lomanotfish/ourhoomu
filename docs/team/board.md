@@ -335,3 +335,6 @@ SW-0056 in_review: source6a14757/report2fb56a5, worker succeeded/released/captur
 SW-0056 back in_progress after SW-0057 review d28e840: R1 Expo dotenv behavior/cache-input correction and R2 contributor setup docs. Shared contract accepted; correction owner platform-engineer.
 
 SW-0056 in_review: correctionsce113b4 accepted by non-author Lead recheck; SW-0057 done with original review + recorded R1/R2 resolution. All three workers released/captured/acked; local integration pending.
+
+## Turborepo migration accepted — 2026-10-15
+SW-0056 done; SW-0057 independent review findings R1/R2 resolved by non-author Lead recheck. Integrated local8416702 passes fresh frozen install,15 forced tasks/116 unit tests,24 E2E and web/iOS JS/Workers dry-run builds. One Bun lock and packages/contracts shared DTO are active. Details: [integration](reports/SW-0056-integration.md). User agent-guide preserved, old root lock archived. Three Dispatches released/captured/acked; owned worktree cleanup receipts are in .git/ourhoomu-snapshots/sw-0056/. No production/native/provider/release acceptance expanded; unfinished backend tickets remain unchanged.

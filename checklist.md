@@ -123,3 +123,10 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [x] SW-0048/0050: strict signed issuer component independently approved and integrated; live/native login remains pending.
 - [x] SW-0051/0053: typed house repository/pagination independently approved and integrated; actual API-backed UI remains pending.
 - [ ] SW-0054: house timezone mutation parity before real house API integration.
+
+## Turborepo and shared packages — SW-0056 (2026-10-15)
+- [x] Bun workspaces, one root lock, pinned Turbo/runtime, shared contracts and reproducible generation.
+- [x] Root task graph, separate exports, safe noncached probes, shared-source and dotenv cache invalidation.
+- [x] Independent review and focused corrections accepted; fresh integrated15 tasks/116 unit tests and24 E2E pass.
+- [x] Setup docs updated and local integration accepted; user changes preserved and owned lifecycle evidence retained.
+Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This tooling acceptance does not close original product/native/provider/TestFlight tickets.

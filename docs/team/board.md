@@ -49,9 +49,11 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | done |
 | [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | done |
 | [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | done (approve) |
-| [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | in_progress |
-| [SW-0047](tickets/SW-0047.md) | Playwright browser/API acceptance suite | qa-engineer | SW-0027, SW-0032, SW-0003, SW-0044 | in_progress |
-| [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | in_progress |
+| [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | in_review (changes_requested) |
+| [SW-0047](tickets/SW-0047.md) | Playwright browser/API acceptance suite | qa-engineer | SW-0027, SW-0032, SW-0003, SW-0044 | done |
+| [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | in_review |
+| [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | in_progress |
+| [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -209,3 +211,32 @@ no DB/routes/live login/IdP change: Task `task_dc092bb98d1a`, Dispatch
 `ctx_daf75059291a`, isolated `sw-0048-issuer`, requested/effective `gpt-6-luna`,
 ready/input_accepted/turn observed; bypass argv verified. Scope in ticket. Full
 SW-0005 still waits data acceptance. Three active workers, one writer per worktree.
+
+### Verified continuation checkpoint — 2026-10-15
+
+SW-0047 accepted after Lead diff review and integration merge ffea7e4. Fresh
+frozen install, frontend typecheck/typecheck:e2e/format and 41 unit tests passed.
+Integrated Playwright: 24 expected, zero skipped/unexpected/flaky, 25.49 seconds;
+actual Chromium mobile/desktop demo plus actual workerd HTTP. No listeners on
+18047/18048/18049 after teardown. Durable machine results in ignored root
+core-implementation/SW-0047-integrated-results.json; worker screenshots/traces
+in /Users/afe/orca/artifacts/ourhoomu/SW-0047-playwright/. Demo does not establish
+real identity/backend/native acceptance. Worker succeeded/released/captured/acked.
+
+SW-0046 report b9906e5 preserved/cherry-picked as 8cc0158: changes_requested,
+revoked session can write after waiting for user lock. The worker's final model
+refusal prevented commit/worker_done; Lead saved report and final-screen evidence,
+stopped exact ctx_44b8f468e1e5 and released it (archive unavailable, own saved
+screen retained). Do not count that Dispatch as succeeded. SW-0004 not accepted.
+SW-0049 now Task task_973191302cd9 / Dispatch ctx_a00f4ce284d2, isolated
+sw-0049-session-race from b9906e5; ready/input_accepted/turn observed. Default
+model inherited; worker must verify launch permissions and Graft. Exclusive
+synthetic-core mutation window assigned; production untouched.
+
+SW-0048 source0b8f45e/reporta638077 settled/released/captured/acked, awaiting
+independent SW-0050 task_87d7f078bb47 / ctx_ba62d7ec8d0e in
+sw-0050-issuer-review. Issuer verifier is an independent component; full SW-0005
+session/house handlers and live/native identity acceptance remain pending.
+Coordinator term_c6930bf4-ac9f-4b71-9151-2726254bd40c, consumer generation5.
+Lead Graft ACTIVE: map48files194symbols522edges; reported134172 tokens saved
+for this checkpoint map (tool estimate).

@@ -1,6 +1,6 @@
 # OurHoomu checklist
 
-อัปเดต: 2026-10-15 · **ระยะปัจจุบัน: core local/dev ได้รับอนุมัติ; API foundation/contract/transport ตรวจรับแล้ว; database อยู่ระหว่างตรวจ และกำลังเพิ่ม Playwright**
+อัปเดต: 2026-10-15 · **ระยะปัจจุบัน: core local/dev ได้รับอนุมัติ; API foundation/contract/transport ตรวจรับแล้ว; database อยู่ระหว่างแก้ผล review; Playwright demo/workerd ผ่านแล้ว**
 
 Tech Lead เท่านั้นอัปเดตหลังตรวจรับและรวมงาน ใส่ ticket/หลักฐานจริงทุกครั้ง [x] หมายถึงผลลัพธ์ในข้อนั้นเสร็จ ไม่ได้หมายความว่าฟีเจอร์แอพเสร็จ ดู [board](docs/team/board.md) และ [requirement acceptance](docs/team/requirements.md)
 
@@ -115,6 +115,6 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [x] SW-0038/0041/0043: Workers/Neon runtime proof and API quality hooks accepted; live issuer/provider/native acceptance remains separate.
 - [x] SW-0044/0045: typed frontend transport/session authority integrated and independently approved. Fresh local frontend41tests165assertions, API8tests26assertions, typecheck/format/API lint pass on dc0e908.
 - [ ] SW-0004/0046: core schema, restricted roles and atomic operations await independent review/integration.
-- [ ] SW-0047: Playwright actual demo browser and local workerd API suite; QA implementing, no passing suite claimed yet.
+- [x] SW-0047: Playwright actual demo browser and local workerd API suite integrated; 24/24 pass, zero skip/flaky. Real feature/native gates remain pending.
 - [ ] SW-0005/0006/0008 and SW-0009/0010sliceA/0011: actual core handlers and UI/API integration.
 - [ ] Live Google/Apple/native, SlipOK, LINE, full retention and TestFlight gates require their original evidence/credentials/authorization.

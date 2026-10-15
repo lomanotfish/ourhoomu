@@ -74,6 +74,115 @@ describe('issuer adapter', () => {
     });
   });
 
+  it.each([
+    ['extra audience', { aud: [audience, 'untrusted-client'] }],
+    [
+      'extra audience and presenter',
+      { aud: [audience, 'untrusted-client'], azp: 'untrusted-client' },
+    ],
+    ['numeric audience member', { aud: [audience, 123] }],
+    ['empty audience member', { aud: [audience, ''] }],
+    ['null audience member', { aud: [audience, null] }],
+    ['nested audience member', { aud: [audience, [audience]] }],
+    ['object audience member', { aud: [audience, {}] }],
+    ['duplicate audience', { aud: [audience, audience] }],
+    ['empty audience', { aud: '' }],
+    ['empty audience array', { aud: [] }],
+    ['missing audience', { aud: undefined }],
+    ['numeric audience', { aud: 123 }],
+    ['null audience', { aud: null }],
+    ['object audience', { aud: {} }],
+    ['presenter without policy', { azp: 'native-presenter' }],
+    ['audience presenter without policy', { azp: audience }],
+    ['null presenter without policy', { azp: null }],
+  ])('rejects signed %s', async (_case, claims) => {
+    const signingKey = await key('key-1');
+    await expect(
+      verify(
+        adapter(async () => ({ keys: [signingKey.jwk] })),
+        await token(signingKey.pair.privateKey, claims),
+      ),
+    ).rejects.toBeInstanceOf(IssuerVerificationError);
+  });
+
+  it.each(
+    ['', null, 123, [], ['native-presenter'], {}, 'untrusted-client', audience].map((azp) => ({
+      azp,
+    })),
+  )('rejects malformed or untrusted presenter %j with explicit policy', async ({ azp }) => {
+    const signingKey = await key('key-1');
+    const instance = adapter(async () => ({ keys: [signingKey.jwk] }), {
+      trustedPresenters: ['native-presenter'],
+    });
+    await expect(
+      verify(instance, await token(signingKey.pair.privateKey, { azp })),
+    ).rejects.toBeInstanceOf(IssuerVerificationError);
+  });
+
+  it.each([
+    { aud: [audience] },
+    { aud: audience, azp: 'native-presenter' },
+    { aud: [audience], azp: 'native-presenter' },
+  ])('accepts exact audience and explicitly trusted presenter when present: %j', async (claims) => {
+    const signingKey = await key('key-1');
+    const instance = adapter(async () => ({ keys: [signingKey.jwk] }), {
+      trustedPresenters: ['native-presenter'],
+    });
+    expect(await verify(instance, await token(signingKey.pair.privateKey, claims))).toEqual({
+      issuer,
+      subject: 'subject-123',
+      authTime: new Date((now - 30) * 1000).toISOString(),
+    });
+  });
+
+  it('accepts singleton audience without presenter policy', async () => {
+    const signingKey = await key('key-1');
+    expect(
+      await verify(
+        adapter(async () => ({ keys: [signingKey.jwk] })),
+        await token(signingKey.pair.privateKey, { aud: [audience] }),
+      ),
+    ).toHaveProperty('subject', 'subject-123');
+  });
+
+  it.each(
+    [null, 'native-presenter', [123], [''], [null], [{}]].map((trustedPresenters) => ({
+      trustedPresenters,
+    })),
+  )(
+    'rejects malformed trusted presenter policy %j before fetching',
+    async ({ trustedPresenters }) => {
+      let fetched = false;
+      const instance = adapter(
+        async () => {
+          fetched = true;
+          return { keys: [] };
+        },
+        { trustedPresenters },
+      );
+      await expect(verify(instance, 'secret-token')).rejects.toBeInstanceOf(
+        IssuerVerificationError,
+      );
+      expect(fetched).toBe(false);
+    },
+  );
+
+  it('rejects extra audiences even with an explicitly trusted presenter', async () => {
+    const signingKey = await key('key-1');
+    const instance = adapter(async () => ({ keys: [signingKey.jwk] }), {
+      trustedPresenters: ['native-presenter'],
+    });
+    await expect(
+      verify(
+        instance,
+        await token(signingKey.pair.privateKey, {
+          aud: [audience, 'native-presenter'],
+          azp: 'native-presenter',
+        }),
+      ),
+    ).rejects.toBeInstanceOf(IssuerVerificationError);
+  });
+
   it('rejects a token signed by an unknown key', async () => {
     const signingKey = await key('wrong-key');
     const idToken = await token(signingKey.pair.privateKey, {}, 'key-1');

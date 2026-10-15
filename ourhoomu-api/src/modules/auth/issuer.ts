@@ -7,6 +7,7 @@ type TrustedIssuerConfig = Readonly<{
   audience: string;
   jwksUrl: string;
   algorithms: readonly string[];
+  trustedPresenters?: readonly string[];
 }>;
 
 type IssuerAdapterOptions = Readonly<{
@@ -45,7 +46,10 @@ function validConfig(config: TrustedIssuerConfig | undefined): config is Trusted
     !config.jwksUrl ||
     !Array.isArray(config.algorithms) ||
     config.algorithms.length === 0 ||
-    config.algorithms.some((algorithm) => typeof algorithm !== 'string' || !algorithm)
+    config.algorithms.some((algorithm) => typeof algorithm !== 'string' || !algorithm) ||
+    (config.trustedPresenters !== undefined &&
+      (!Array.isArray(config.trustedPresenters) ||
+        config.trustedPresenters.some((presenter) => typeof presenter !== 'string' || !presenter)))
   )
     return false;
   try {
@@ -53,6 +57,21 @@ function validConfig(config: TrustedIssuerConfig | undefined): config is Trusted
     return url.protocol === 'https:' && !url.username && !url.password && !url.hash;
   } catch {
     return false;
+  }
+}
+
+function validateAudienceAndPresenter(payload: JWTPayload, config: TrustedIssuerConfig): void {
+  const audience = Array.isArray(payload.aud)
+    ? payload.aud.length === 1 && payload.aud[0] === config.audience
+    : payload.aud === config.audience;
+  if (
+    !audience ||
+    (Object.hasOwn(payload, 'azp') &&
+      (typeof payload.azp !== 'string' ||
+        !payload.azp ||
+        !config.trustedPresenters?.includes(payload.azp)))
+  ) {
+    throw new IssuerVerificationError();
   }
 }
 
@@ -104,6 +123,7 @@ export function createIssuerAdapter(options: IssuerAdapterOptions) {
           currentDate: new Date(now()),
           clockTolerance: 60,
         });
+        validateAudienceAndPresenter(payload, config);
         return requiredClaims(payload, input.expectedNonce, Math.floor(now() / 1000));
       } catch {
         throw new IssuerVerificationError();

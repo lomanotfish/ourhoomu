@@ -2,5 +2,38 @@
   "dependencies": {
     "@neon/config": "^1.8.6",
     "@neon/env": "^1.5.3"
+  },
+  "name": "ourhoomu",
+  "private": true,
+  "packageManager": "bun@1.4.3",
+  "engines": {
+    "bun": "1.4.3",
+    "node": "24.15.0"
+  },
+  "workspaces": [
+    "ourhoomu-front",
+    "ourhoomu-api",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "turbo": "2.11.8"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:front": "turbo run dev --filter=ourhoomu-front",
+    "dev:api": "turbo run dev --filter=@ourhoomu/api",
+    "graph": "turbo run typecheck --dry=json",
+    "typecheck": "turbo run typecheck typecheck:e2e",
+    "test": "turbo run test",
+    "format:check": "turbo run format:check",
+    "lint": "turbo run lint",
+    "check:contracts": "turbo run check:generated",
+    "generate:contracts": "bun run --cwd packages/contracts generate",
+    "build": "turbo run export:web export:ios build:worker",
+    "export:web": "turbo run export:web",
+    "export:ios": "turbo run export:ios",
+    "build:worker": "turbo run build:worker",
+    "check:runtime": "turbo run check:runtime --filter=@ourhoomu/api",
+    "test:e2e": "turbo run test:e2e --filter=ourhoomu-front"
   }
 }

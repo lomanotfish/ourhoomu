@@ -8,15 +8,16 @@ accepted tickets.
 
 ## Requirements
 
-- Bun 1.4.3 or later
-- Node.js 22 or later for the pinned TypeScript toolchain
+- Bun 1.4.3 (root workspace pin)
+- Node.js 24.15.0 (root workspace pin)
 
 ## Setup and checks
 
-From this directory:
+Install once from the repository root with `bun install --frozen-lockfile`.
+The root workspace uses isolated dependencies and retains API TypeScript 7.0.2.
+Then, from this directory:
 
 ```sh
-bun install --frozen-lockfile
 bun run format:check
 bun run lint
 bun run typecheck
@@ -33,8 +34,9 @@ production or fixture import graph. These commands exclude generated files,
 locks, SQL, Markdown, Wrangler/TypeScript runtime configuration and the
 root/frontend packages.
 
-Tests use Bun's test runner in `tests/*.test.ts`; the existing six tests
-cover the health/error envelope, hidden production fixture routes and secure
+Tests use Bun's test runner in the explicit `runtime.test.ts`,
+`runtime-target.test.ts` and `tests/auth/` paths; executable DB fixtures are
+excluded from ordinary `test`. The local unit tests cover the health/error envelope, hidden production fixture routes and secure
 synthetic database URL guard. TypeScript also checks test-only fixtures, but
 Wrangler's production entry remains `src/index.ts`.
 
@@ -85,7 +87,7 @@ the Lead's ignored audit store; never add it to Git.
 The local dry-run bundle can be checked with:
 
 ```sh
-bunx wrangler deploy --dry-run --config wrangler.jsonc --outdir /tmp/ourhoomu-api-dryrun
+bun run build:worker
 ```
 
 Neon schema migrations and product data remain owned by the data-engineer
@@ -93,3 +95,11 @@ ticket. The API must derive authority from verified server sessions; callers
 cannot supply actor IDs as authority. See [the API contract](../docs/project/api-contract.md),
 [domain model](../docs/project/domain.md), [database design](../docs/project/database.md),
 and [ADR-0002](../docs/adr/0002-neon.md).
+
+
+Shared wire DTO types come from `@ourhoomu/contracts`, with the existing
+`src/http/dto.ts` compatibility path preserved. The frozen schema remains
+`docs/project/openapi.yaml`; run `bun run generate:contracts` at the root.
+Drizzle schemas, SQL and runtime validation stay server-only. Root `build`
+includes a local dry-run bundle in `dist/worker/`, never a deploy. Runtime and
+DB proof commands remain explicit/noncached and keep their authorization gates.

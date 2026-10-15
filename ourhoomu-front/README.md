@@ -16,11 +16,14 @@ React Native + Expo Router app สำหรับ iOS และ web preview. ต
 
 เลือก Expo SDK 57 stable จาก [Expo SDK matrix](https://docs.expo.dev/versions/latest/) และ npm `latest` ณ วันที่ข้างต้น ใช้ `bun expo install` เลือกเวอร์ชัน native modules ที่ Expo รองรับ และ `bun expo install --check` ยืนยัน dependency compatibility. Node.js ยังจำเป็นตาม [Expo Bun guide](https://docs.expo.dev/guides/using-bun/). ฟอนต์ `assets/fonts/NotoSansThai.ttf` bundle สำหรับใช้งาน offline ภายใต้ [SIL Open Font License](assets/fonts/OFL.txt).
 
-## รันในโฟลเดอร์นี้
+## Workspace setup
+
+Install once from the repository root with `bun install --frozen-lockfile`
+using Bun 1.4.3 and Node.js 24.15.0. The isolated workspace retains frontend
+TypeScript 6.0.3. Then run app scripts from this directory:
 
 ```sh
 cd ourhoomu-front
-bun install --frozen-lockfile
 bun run start          # Expo dev server; กด i สำหรับ iOS Simulator หรือ w สำหรับ web
 bun run ios            # ต้องมี Xcode และ iOS Simulator
 bun run web            # web preview
@@ -28,11 +31,22 @@ bun run typecheck
 bun run test           # invariant ของเงินตัวอย่าง
 bun run format:check   # Prettier check
 bun expo install --check
-bun run export:web     # สร้าง dist/ สำหรับ browser
+bun run export:web     # สร้าง dist/web/ สำหรับ browser
 bun run export:ios     # ตรวจ/ส่งออก iOS JavaScript bundle ไม่ใช่ native build
 ```
 
-`bun.lock` อยู่ในแพ็กเกจนี้เท่านั้น Root `package.json`/`package-lock.json` ยังคงเป็นของ Neon tooling และไม่ต้องรัน `npm install` ที่ root สำหรับ frontend. `node_modules/`, `.expo/`, `dist/` และไฟล์ชนิดที่ Expo สร้าง `expo-env.d.ts` ถูก ignore.
+One root `bun.lock` installs both apps and `packages/*`; root Neon tooling is
+retained in the same workspace. App/root old lockfiles are superseded. Generated
+`node_modules/`, `.expo/`, `dist/`, `.turbo/` and `expo-env.d.ts` stay ignored.
+Web exports go to `dist/web/`, iOS JavaScript exports to `dist/ios/`, so the tasks
+can run independently. Exports disable dotenv loading; supply public build values
+explicitly as `EXPO_PUBLIC_*` environment variables (Turbo hashes them). Keep
+secrets out of public environment variables and exported bundles.
+
+The existing `src/api/dto.ts` is a compatibility type re-export from
+`@ourhoomu/contracts`. See [contracts](../packages/contracts/README.md) for the
+frozen OpenAPI schema and generation. Expo SDK 57's default Metro monorepo
+support is used without custom watch folders or resolver overrides.
 
 ## ลอง flow
 
@@ -47,14 +61,11 @@ Google/Apple session, recipient accounts, invitation tokens, payment confirmatio
 ## Playwright browser and HTTP acceptance
 
 Playwright Test is pinned to `1.64.1` (official npm registry checked 2026-10-15).
-Use Node.js 24 and Bun 1.4.3 with the existing Expo dependencies. Install both
-packages from their locks, then install Playwright's bundled Chromium:
+Use Node.js 24 and Bun 1.4.3 with the existing Expo dependencies. Install the workspace from its root lock, then install Playwright's bundled Chromium:
 
 ```sh
-cd ourhoomu-api
 bun install --frozen-lockfile
-cd ../ourhoomu-front
-bun install --frozen-lockfile
+cd ourhoomu-front
 bun run test:e2e:install
 bun run typecheck
 bun run typecheck:e2e

@@ -16,13 +16,16 @@
     "check:fixture-runtime": "bun scripts/runtime-check.ts --fixture",
     "prepare:neon-runtime": "bun tests/fixtures/prepare-neon-runtime.ts",
     "check:neon-runtime": "bun tests/fixtures/check-neon-runtime.ts",
-    "test": "bun test tests"
+    "test": "bun test ./tests/runtime.test.ts ./tests/runtime-target.test.ts ./tests/auth",
+    "build:worker": "WRANGLER_SEND_METRICS=false node node_modules/wrangler/bin/wrangler.js deploy --dry-run --config wrangler.jsonc --outdir dist/worker"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.2.0",
     "drizzle-orm": "0.45.4",
     "elysia": "1.4.30",
-    "jose": "6.2.10"
+    "jose": "6.2.10",
+    "@ourhoomu/contracts": "workspace:*",
+    "@sinclair/typebox": "0.34.52"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",

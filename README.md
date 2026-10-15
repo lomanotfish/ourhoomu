@@ -20,14 +20,52 @@ Stack ที่ผู้ใช้เลือก: **React Native + Expo**, **Ely
 
 ตรวจ plan/usage ของ Neon ใน Console ก่อนเปิด pilot; การ link/deploy สำเร็จไม่ได้รับรองค่าใช้จ่ายรวมเป็นศูนย์ ส่วน Apple Developer Program สำหรับ TestFlight $99/ปี และ API ตรวจสลิปเป็นต้นทุนแยก ดู [hosting](docs/project/operations.md) และ [เปรียบเทียบ API](docs/project/slip-providers.md)
 
-## การตรวจ repo ในระยะออกแบบ
+## Workspace setup and checks
+
+Use **Bun 1.4.3** and **Node.js 24.15.0**, pinned in `packageManager`,
+`engines`, `.bun-version` and `.node-version`. Install once from this directory:
 
 ```sh
-git status --short
-git diff --check
-git ls-files
+bun install --frozen-lockfile
+bun run graph               # JSON task/dependency graph
+bun run typecheck           # both apps, E2E types and shared contracts
+bun run test                # local unit tests only; excludes DB fixture scripts
+bun run format:check
+bun run lint                # existing API Biome lint
+bun run check:contracts     # frozen OpenAPI -> generated DTO reproducibility
+bun run build               # web + iOS JS exports and Workers dry-run
+bun run dev:front           # persistent Expo dev server
+bun run dev:api             # persistent local Wrangler dev server
 ```
 
-Root package.json/package-lock.json มีเฉพาะ Neon config tooling ที่ CLI ติดตั้ง ใช้ `npm ci` เพื่อติดตั้งตาม lockfile. Frontend เป็นแพ็กเกจแยกพร้อม `bun.lock`: เข้า `ourhoomu-front/` แล้วรัน `bun install --frozen-lockfile`, `bun run web` หรือ `bun run ios`, `bun run typecheck`, `bun run test`, `bun run export:web` และ `bun run export:ios`. ดูข้อกำหนด runtime และขอบเขตเดโมใน [frontend README](ourhoomu-front/README.md); คำสั่ง Neon อยู่ใน [Neon setup](docs/project/neon-setup.md).
+The private Bun workspaces keep app paths unchanged: `ourhoomu-front/`,
+`ourhoomu-api/`, and `packages/*`. One root `bun.lock` replaces the root npm
+lock and app Bun locks. `bunfig.toml` uses isolated installs to retain each
+package's TypeScript version and peer dependency boundary. Root Neon config
+dependencies remain available; `npm ci` and per-app installs are superseded.
+`skills-lock.json` is unrelated. See [shared contracts](packages/contracts/README.md)
+for the authoritative schema, generation and future shared-function boundary.
 
-API runtime foundation ใช้ Bun 1.4.3 ขึ้นไปและ Node.js 22 ขึ้นไป: เข้า `ourhoomu-api/` แล้วรัน `bun install --frozen-lockfile`, `bun run dev`, `bun run format:check`, `bun run lint`, `bun run typecheck` และ `bun run test`. ขณะ Wrangler รัน ใช้ `bun run check:runtime` ในอีก terminal เพื่อตรวจ health และ route isolation. Build ใช้ `bunx wrangler deploy --dry-run --config wrangler.jsonc --outdir /tmp/ourhoomu-api-dryrun`. มีเฉพาะ health; domain endpoints กำลังพัฒนาตาม contract. วิธีพิสูจน์ Neon กับข้อมูลสังเคราะห์อยู่ใน [API README](ourhoomu-api/README.md).
+Turbo 2.11.8 is installed locally. Web and iOS output to separate
+`ourhoomu-front/dist/web/` and `dist/ios/`; Workers dry-run outputs to
+`ourhoomu-api/dist/worker/`. Expo exports disable dotenv loading, accept only
+explicit public `EXPO_PUBLIC_*` build inputs, and hash those values plus
+`NODE_ENV`. Never put secrets in public variables or build outputs. Turbo
+uses strict environment mode and local caching; no remote cache is configured.
+Ignored `.env*`, `.dev.vars`, dependencies and generated artifacts are not task
+source inputs. Toolchain configuration and the frozen schema affect cache keys.
+
+Development, formatting writes, generation, E2E and runtime/DB/provider probes
+are noncached. Ordinary `test` never runs a DB fixture or provider operation.
+With the API dev server running, `bun run check:runtime` checks the local
+production entry without a database (`RUNTIME_BASE_URL` can select a dedicated
+local port). E2E is explicit: `bun run --cwd ourhoomu-front test:e2e:install`,
+then `bun run test:e2e`; see [frontend testing](ourhoomu-front/README.md).
+Neon setup and synthetic DB operations retain their existing authorization gates
+and dedicated commands in [API setup](ourhoomu-api/README.md) and
+[Neon setup](docs/project/neon-setup.md). No ordinary task deploys a Worker.
+
+The [migration report](docs/team/reports/SW-0056-turborepo.md) records baseline,
+verification, cache evidence, limits and rollback. iOS export proves only the
+JavaScript bundle; native login, device/TestFlight and live provider acceptance
+remain separate.

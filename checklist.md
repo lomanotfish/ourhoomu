@@ -118,3 +118,8 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [x] SW-0047: Playwright actual demo browser and local workerd API suite integrated; 24/24 pass, zero skip/flaky. Real feature/native gates remain pending.
 - [ ] SW-0005/0006/0008 and SW-0009/0010sliceA/0011: actual core handlers and UI/API integration.
 - [ ] Live Google/Apple/native, SlipOK, LINE, full retention and TestFlight gates require their original evidence/credentials/authorization.
+
+- [ ] SW-0049/0052: session lock-wait revocation correction and independent review.
+- [ ] SW-0048/0050: strict signed issuer audience/presenter component awaits recheck.
+- [ ] SW-0051/0053: typed house repository/pagination component awaits independent review.
+- [ ] SW-0054: house timezone mutation parity before real house API integration.

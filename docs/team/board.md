@@ -56,7 +56,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | in_review (changes_requested) |
 | [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | in_review |
 | [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | draft |
-| [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | ready |
+| [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | in_progress |
+| [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | draft |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -262,3 +263,30 @@ SW-0048 correction actual Task task_1753f49f6467 / ctx_6e71a51f056b; new
 terminal in released source checkout a638077, ready/input_accepted/turn observed.
 Reject extra aud; azp requires explicit trusted presenter policy. This safe
 component default does not configure live clients or expand provider scope.
+
+### Frozen component review checkpoint — 2026-10-15
+
+SW-0051 source26c009d/report388f21ff:53tests383assertions, types/format pass;
+report preserved in ignored core-implementation/SW-0051, worker released/captured
+then acked. Independent SW-0053 Task task_e501cae37413 / ctx_a20074b7fccd,
+sw-0053-house-review from388f21ff, ready/input_accepted/turn observed. No live UI
+integration claim from fixture repository tests.
+
+SW-0048 fix17281b7/report21f6a32: signed26fail red then63unit green and13
+actual workerd probes; report preserved in ignored core-implementation/SW-0048.
+Correction worker released/captured then acked. Independent SW-0050 recheck
+Task task_cffc1626674a / ctx_6ac52c3dc58d in sw-0050-issuer-recheck from21f6a32,
+ready/input_accepted/turn observed. No acceptance before review disposition.
+
+Lead independently observed actual bypass argv and exact cwd for49PID68662,
+51PID75033,48fixPID82987. Default configured models inherited; no guess from
+absent role profiles. Lead Graft exact issuer/source51/data49 queries ACTIVE;
+observed retrieval estimate subtotal156775 this continuation (six savings lines),
+not measured billing savings.
+
+SW-0049 remains in_progress: family gate initially exposed account/root lock
+inversion and user-row FK inversion during rotation; owner added deterministic
+regressions and revised ordering. Provisional green results do not stand in for
+final migrated artifact and independent SW-0052 review. Exclusive DB window kept.
+SW-0054 tracks separately found house.update timezone omission; original contract
+requires owner timezone edit. Session fix acceptance cannot close this parity gap.

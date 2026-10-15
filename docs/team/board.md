@@ -354,3 +354,5 @@ User requests completing remaining tasks; approved core local/dev continues on R
 - SW-0054: `task_ddc31ea54620` / `ctx_702a67df8da1`, `sw-0054-timezone`, ready/input_accepted/turn observed; no completion claimed.
 - SW-0055: `task_700bd38a3ebc` / `ctx_534580e14583`, `sw-0055-secure-v2`, ready/input_accepted/turn observed; no completion claimed.
 - SW-0005: `task_6b34d2b62c5c` / `ctx_8cb8a8c1c064`, `sw-0005-core-api`, ready/input_accepted/turn observed; no completion claimed.
+
+SW-0059 draft captures data projections/invite TTL gaps required by SW-0005; data writer starts only after accepted timezone prerequisite and exclusive DB window assignment. Account deletion remains unavailable until reviewed destructive data/reauth implementation; not full SW-0005 acceptance.

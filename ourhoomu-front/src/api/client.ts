@@ -44,8 +44,15 @@ interface SuccessEnvelope<T> {
   requestId: string;
 }
 
+export interface ApiPage<TItem> {
+  data: TItem[];
+  nextCursor: string | null;
+  requestId: string;
+}
+
 export interface ApiClient {
   request<TData>(path: string, options?: ApiRequestOptions): Promise<TData>;
+  requestPage<TItem>(path: string, options?: ApiRequestOptions): Promise<ApiPage<TItem>>;
 }
 
 export function createApiClient(options: ApiClientOptions): ApiClient {
@@ -53,64 +60,87 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
   const fetcher = options.fetcher ?? (fetch as FetchFunction);
   const isOnline = options.isOnline ?? (() => true);
 
+  async function dispatch(path: string, requestOptions: ApiRequestOptions): Promise<Response> {
+    const method = (requestOptions.method ?? 'GET').toUpperCase();
+    const authenticated = requestOptions.authenticated !== false;
+    const url = resolvePath(baseUrl, path);
+    if (requestOptions.body !== undefined) assertNoClientActor(requestOptions.body);
+    const body =
+      requestOptions.body === undefined ? undefined : JSON.stringify(requestOptions.body);
+    const mutation = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+
+    if (mutation && !(await isOnline())) throw new OfflineMutationError(method);
+    if (requestOptions.signal?.aborted) throw abortError();
+
+    const headers = new Headers({ Accept: 'application/json' });
+    if (body !== undefined) headers.set('Content-Type', 'application/json');
+    if (requestOptions.idempotencyKey !== undefined) {
+      headers.set('Idempotency-Key', requestOptions.idempotencyKey);
+    }
+
+    let accessToken: string | null = null;
+    const sessionRevision = options.session.getSessionRevision?.();
+    if (authenticated) {
+      accessToken = await options.session.getAccessToken();
+      if (requestOptions.signal?.aborted) throw abortError();
+      if (accessToken === null) throw new SessionUnavailableError();
+      headers.set('Authorization', `Bearer ${accessToken}`);
+    }
+
+    const init: RequestInit = {
+      method,
+      headers,
+      body,
+      signal: requestOptions.signal,
+      redirect: 'error',
+    };
+    let response = await fetcher(url, init);
+
+    if (
+      response.status === 401 &&
+      authenticated &&
+      accessToken !== null &&
+      (!mutation || requestOptions.idempotencyKey !== undefined) &&
+      !requestOptions.signal?.aborted
+    ) {
+      const refreshedToken = await options.session.refreshAfterUnauthorized(
+        accessToken,
+        requestOptions.signal,
+        sessionRevision,
+      );
+      if (refreshedToken !== null && !requestOptions.signal?.aborted) {
+        const replayHeaders = new Headers(headers);
+        replayHeaders.set('Authorization', `Bearer ${refreshedToken}`);
+        response = await fetcher(url, { ...init, headers: replayHeaders, redirect: 'error' });
+      }
+    }
+
+    if (!response.ok) throw await toApiError(response);
+    return response;
+  }
+
   return {
     async request<TData>(path: string, requestOptions: ApiRequestOptions = {}): Promise<TData> {
-      const method = (requestOptions.method ?? 'GET').toUpperCase();
-      const authenticated = requestOptions.authenticated !== false;
-      const url = resolvePath(baseUrl, path);
-      if (requestOptions.body !== undefined) assertNoClientActor(requestOptions.body);
-      const body =
-        requestOptions.body === undefined ? undefined : JSON.stringify(requestOptions.body);
-      const mutation = !['GET', 'HEAD', 'OPTIONS'].includes(method);
-
-      if (mutation && !(await isOnline())) throw new OfflineMutationError(method);
-      if (requestOptions.signal?.aborted) throw abortError();
-
-      const headers = new Headers({ Accept: 'application/json' });
-      if (body !== undefined) headers.set('Content-Type', 'application/json');
-      if (requestOptions.idempotencyKey !== undefined) {
-        headers.set('Idempotency-Key', requestOptions.idempotencyKey);
-      }
-
-      let accessToken: string | null = null;
-      const sessionRevision = options.session.getSessionRevision?.();
-      if (authenticated) {
-        accessToken = await options.session.getAccessToken();
-        if (requestOptions.signal?.aborted) throw abortError();
-        if (accessToken === null) throw new SessionUnavailableError();
-        headers.set('Authorization', `Bearer ${accessToken}`);
-      }
-
-      const init: RequestInit = {
-        method,
-        headers,
-        body,
-        signal: requestOptions.signal,
-        redirect: 'error',
-      };
-      let response = await fetcher(url, init);
-
+      return (await toSuccess<TData>(await dispatch(path, requestOptions))).data;
+    },
+    async requestPage<TItem>(
+      path: string,
+      requestOptions: ApiRequestOptions = {},
+    ): Promise<ApiPage<TItem>> {
+      const response = await dispatch(path, requestOptions);
+      const envelope = await toSuccess<unknown>(response);
       if (
-        response.status === 401 &&
-        authenticated &&
-        accessToken !== null &&
-        (!mutation || requestOptions.idempotencyKey !== undefined) &&
-        !requestOptions.signal?.aborted
+        !Array.isArray(envelope.data) ||
+        !('nextCursor' in envelope) ||
+        (envelope.nextCursor !== null && typeof envelope.nextCursor !== 'string') ||
+        Object.keys(envelope).some((key) => !['data', 'nextCursor', 'requestId'].includes(key))
       ) {
-        const refreshedToken = await options.session.refreshAfterUnauthorized(
-          accessToken,
-          requestOptions.signal,
-          sessionRevision,
+        throw new ApiProtocolError(
+          'API success response did not match list envelope',
+          response.status,
         );
-        if (refreshedToken !== null && !requestOptions.signal?.aborted) {
-          const replayHeaders = new Headers(headers);
-          replayHeaders.set('Authorization', `Bearer ${refreshedToken}`);
-          response = await fetcher(url, { ...init, headers: replayHeaders, redirect: 'error' });
-        }
       }
-
-      if (!response.ok) throw await toApiError(response);
-      return (await toSuccess<TData>(response)).data;
+      return envelope as ApiPage<TItem>;
     },
   };
 }

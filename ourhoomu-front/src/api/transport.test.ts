@@ -268,3 +268,123 @@ describe('API transport', () => {
     expect(captured?.redirect).toBe('error');
   });
 });
+
+describe('paged API transport', () => {
+  test('preserves list envelope metadata and data-only compatibility', async () => {
+    const payload = {
+      data: [{ id: 'fixture' }],
+      nextCursor: 'opaque+/=?',
+      requestId: '550e8400-e29b-41d4-a716-446655440040',
+    };
+    const client = createApiClient({
+      baseUrl: 'https://api.example.test',
+      session,
+      fetcher: async () => Response.json(payload),
+    });
+    expect(await client.requestPage<{ id: string }>('/v1/houses')).toEqual(payload);
+    expect(await client.request<{ id: string }[]>('/v1/houses')).toEqual(payload.data);
+    const end = createApiClient({
+      baseUrl: 'https://api.example.test',
+      session,
+      fetcher: async () => Response.json({ ...payload, data: [], nextCursor: null }),
+    });
+    expect((await end.requestPage('/v1/houses')).nextCursor).toBeNull();
+  });
+
+  test('rejects malformed list envelopes', async () => {
+    for (const payload of [
+      { data: [], requestId: '550e8400-e29b-41d4-a716-446655440040' },
+      { data: {}, nextCursor: null, requestId: '550e8400-e29b-41d4-a716-446655440040' },
+      { data: [], nextCursor: 123, requestId: '550e8400-e29b-41d4-a716-446655440040' },
+      { data: [], nextCursor: null, requestId: 'invalid' },
+      {
+        data: [],
+        nextCursor: null,
+        requestId: '550e8400-e29b-41d4-a716-446655440040',
+        extra: true,
+      },
+    ]) {
+      const client = createApiClient({
+        baseUrl: 'https://api.example.test',
+        session,
+        fetcher: async () => Response.json(payload),
+      });
+      await expect(client.requestPage('/v1/houses')).rejects.toBeInstanceOf(ApiProtocolError);
+    }
+  });
+
+  test('paged calls share keyed 401 replay and typed errors', async () => {
+    const requests: Request[] = [];
+    const payload = {
+      data: [],
+      nextCursor: null,
+      requestId: '550e8400-e29b-41d4-a716-446655440040',
+    };
+    const client = createApiClient({
+      baseUrl: 'https://api.example.test',
+      session,
+      fetcher: async (input, init) => {
+        requests.push(new Request(input, init));
+        return requests.length === 1 ? error(401, 'unauthenticated') : Response.json(payload);
+      },
+    });
+    expect(
+      await client.requestPage('/v1/houses', {
+        method: 'POST',
+        body: { name: 'fixture' },
+        idempotencyKey: 'stable-key',
+      }),
+    ).toEqual(payload);
+    expect(requests).toHaveLength(2);
+    for (const request of requests) {
+      expect(request.headers.get('Idempotency-Key')).toBe('stable-key');
+      expect(await request.json()).toEqual({ name: 'fixture' });
+    }
+    expect(requests[0]!.headers.get('Authorization')).toBe('Bearer access-1');
+    expect(requests[1]!.headers.get('Authorization')).toBe('Bearer access-2');
+    const forbidden = createApiClient({
+      baseUrl: 'https://api.example.test',
+      session,
+      fetcher: async () => error(403, 'forbidden'),
+    });
+    await expect(forbidden.requestPage('/v1/houses')).rejects.toMatchObject({
+      status: 403,
+      code: 'forbidden',
+    });
+  });
+});
+
+test('paged requests retain offline, abort and unkeyed unauthorized safeguards', async () => {
+  let calls = 0;
+  const offline = createApiClient({
+    baseUrl: 'https://api.example.test',
+    session,
+    isOnline: () => false,
+    fetcher: async () => {
+      calls++;
+      return success([]);
+    },
+  });
+  await expect(
+    offline.requestPage('/v1/houses', { method: 'POST', idempotencyKey: 'stable' }),
+  ).rejects.toBeInstanceOf(OfflineMutationError);
+  expect(calls).toBe(0);
+  const aborted = new AbortController();
+  aborted.abort();
+  await expect(offline.requestPage('/v1/houses', { signal: aborted.signal })).rejects.toMatchObject(
+    { name: 'AbortError' },
+  );
+  expect(calls).toBe(0);
+  const unauthorized = createApiClient({
+    baseUrl: 'https://api.example.test',
+    session,
+    fetcher: async () => {
+      calls++;
+      return error(401, 'unauthenticated');
+    },
+  });
+  await expect(unauthorized.requestPage('/v1/houses', { method: 'POST' })).rejects.toMatchObject({
+    status: 401,
+  });
+  expect(calls).toBe(1);
+});

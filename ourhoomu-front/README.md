@@ -116,3 +116,40 @@ HTML is in ignored `playwright-report/`, JSON in `test-results/results.json`.
 Use `bun run test:e2e:report` or `bunx playwright show-trace <path-to-trace.zip>`.
 Copy evidence you need before another run replaces these directories. Commit
 only config/tests/docs/locks, never generated reports or browser state.
+
+## Native session credential component (SW-0055)
+
+`src/session/native-secure-credentials.ts` exports
+`createNativeSecureCredentialStore()`, a `CredentialStore` for the existing
+session authority. It lazily loads exact `expo-secure-store@57.0.4`, selected
+from Expo 57.0.28's bundled module metadata. Install with the root frozen lock;
+check this package with `bun expo install expo-secure-store --check` from here.
+The component is available for future native integration; the demo does not
+create or persist authenticated sessions.
+
+One `ourhoomu.session` key in service `app.ourhoomu.session` holds a version-1
+JSON bundle containing both tokens, user UUID and expiry. iOS uses
+`WHEN_UNLOCKED_THIS_DEVICE_ONLY` with `requireAuthentication: false`. There is
+no biometric prompt, shared access group, plaintext fallback or second session
+cache. The authority retains ownership of write ordering and refresh/logout
+races. Expired access credentials remain loadable for the authority to refresh.
+
+Malformed or unsupported bundles return `null` after deleting only the owned
+key. Native unavailability and read/write/delete failures reject with
+`CredentialStorageError` and a fixed message, without native error causes or
+stored values. Failed deletion never reports a successful clear. Invalid saves
+reject before changing persisted credentials.
+
+[Expo SecureStore documentation](https://docs.expo.dev/versions/latest/sdk/securestore/)
+explains platform persistence, payload limits and accessibility. Keychain data
+may survive iOS reinstall; the backend remains responsible for session validity
+and revocation. Native size/locked-device errors are propagated; records are
+never split across keys. No app config change is included. A future native
+integration must verify its build and backup configuration, particularly Android
+Auto Backup exclusions, before claiming platform acceptance.
+
+Run `bun test ./src/session/` for Bun unit tests, including injected fake
+storage/native-module ports and existing authority race tests. They do not
+prove real keychain encryption, restart/reinstall/backup or locked-device
+behavior. Web/iOS JavaScript exports and Chromium demo tests likewise do not
+prove a device build, VoiceOver/Dynamic Type or real Google/Apple login.

@@ -57,7 +57,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | done |
 | [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | done |
 | [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | done (approve) |
-| [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | in_progress |
+| [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | done |
 | [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
@@ -360,3 +360,5 @@ SW-0059 draft captures data projections/invite TTL gaps required by SW-0005; dat
 SW-0054 in_review at e6bdf8a (source2a14613); worker released/captured/acked. SW-0060 independent timezone security/migration review owns exclusive guarded DB window. No timezone local integration until approved.
 
 SW-0055 in_review sourcee0e58e7/report0018ef4, released/captured/acked. SW-0061 independent secure-storage review Tasktask_c7c2f428cc14/Dispatchctx_2a56857545c1 ready/input_accepted observed, no acceptance yet. SW-0060 Tasktask_83df4682c0f7/Dispatchctx_6417e500064f reviews frozen timezone with exclusive DB window.
+
+SW-0054/SW-0060 done and integrated local9c04e73 after independent approve and candidate13forced tasks+timezone10. SW-0059 ready; SW-0055 returned in_progress for required native deletion verification finding from SW-0061; no storage integration yet.

@@ -30,19 +30,20 @@ and Graft reporting. Workers ask the Lead and never open a second coordinator.
 
 ## Project Structure & Module Organization
 
-`ourhoomu` is a monorepo with design documents, Neon tooling and frontend work
-under SW-0027. Its project files include:
+`ourhoomu` is a Bun workspace monorepo with Expo frontend, Workers API, shared
+contracts, design documents and Neon tooling. Its project files include:
 
 - `README.md`: the project name; expand it with setup and usage instructions as development begins.
 - `LICENSE`: the Apache 2.0 license.
 - `AGENTS.md`: this contributor guide.
-- `ourhoomu-api/README.md`: backend scope; application code is not scaffolded.
+- `ourhoomu-api/README.md`: Workers API setup, local checks and runtime scope.
 - `ourhoomu-front/README.md`: Expo frontend setup, demo scope and development commands.
 - `docs/`: requirements, architecture, contracts, and team tickets.
 - `checklist.md`: progress maintained by the Tech Lead.
 
 Frontend source, assets and its Bun dependencies belong in `ourhoomu-front/`.
-Root `neon.ts` and npm manifests configure Neon tooling only. `.neon`, `.env*`, `node_modules`, and
+Root `package.json` and `bun.lock` manage all workspaces and Neon tooling;
+`neon.ts` configures Neon policy. `.neon`, `.env*`, `node_modules`, and
 installed `.agents` skills remain local and ignored. Never print credentials.
 The linked Neon branch is production: do not migrate or write product data
 without the relevant confirmed ticket. Read `docs/adr/0002-neon.md`; previous
@@ -50,7 +51,8 @@ Supabase-specific instructions are superseded.
 
 ## Build, Test, and Development Commands
 
-Use `npm ci` for root Neon config dependencies. For frontend installation,
+Run `bun install --frozen-lockfile` at the repository root with the pinned Bun
+version in `.bun-version` to install all workspaces and Neon tooling. For frontend
 start, typecheck and export commands, follow `ourhoomu-front/README.md` and its
 package scripts. See `docs/project/neon-setup.md` for verified Neon commands.
 Use these repository checks:

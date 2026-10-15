@@ -26,8 +26,12 @@ config init/skills ทำส่วน local ระหว่างรอ browser 
 
 ## Local tooling / credentials
 
+Run the install from the repository root with the pinned Bun version in
+`.bun-version`; the root workspace install includes Neon tooling. The commands
+below retain the existing Neon authorization gates.
+
 ```sh
-npm ci
+bun install --frozen-lockfile
 neon config status --current-branch
 neon config plan
 neon bucket list --project-id lucky-bar-14515304 --branch production --output json

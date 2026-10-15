@@ -39,9 +39,13 @@ One root `bun.lock` installs both apps and `packages/*`; root Neon tooling is
 retained in the same workspace. App/root old lockfiles are superseded. Generated
 `node_modules/`, `.expo/`, `dist/`, `.turbo/` and `expo-env.d.ts` stay ignored.
 Web exports go to `dist/web/`, iOS JavaScript exports to `dist/ios/`, so the tasks
-can run independently. Exports disable dotenv loading; supply public build values
-explicitly as `EXPO_PUBLIC_*` environment variables (Turbo hashes them). Keep
-secrets out of public environment variables and exported bundles.
+can run independently. Exports use standard Expo production dotenv precedence:
+`.env.production.local`, `.env.local`, `.env.production`, then `.env`; explicit
+caller environment values take precedence. Turbo hashes app `.env` and `.env.*`
+files even when ignored, plus caller `EXPO_PUBLIC_*` values and `NODE_ENV`.
+Exports clear Metro transforms when executed so dotenv changes produce fresh
+bundles after a Turbo cache miss. Keep secrets out of public environment
+variables and exported bundles.
 
 The existing `src/api/dto.ts` is a compatibility type re-export from
 `@ourhoomu/contracts`. See [contracts](../packages/contracts/README.md) for the

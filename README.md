@@ -48,12 +48,15 @@ for the authoritative schema, generation and future shared-function boundary.
 
 Turbo 2.11.8 is installed locally. Web and iOS output to separate
 `ourhoomu-front/dist/web/` and `dist/ios/`; Workers dry-run outputs to
-`ourhoomu-api/dist/worker/`. Expo exports disable dotenv loading, accept only
-explicit public `EXPO_PUBLIC_*` build inputs, and hash those values plus
-`NODE_ENV`. Never put secrets in public variables or build outputs. Turbo
-uses strict environment mode and local caching; no remote cache is configured.
-Ignored `.env*`, `.dev.vars`, dependencies and generated artifacts are not task
-source inputs. Toolchain configuration and the frozen schema affect cache keys.
+`ourhoomu-api/dist/worker/`. Expo exports preserve standard production dotenv
+loading. Turbo hashes app `.env` and `.env.*` files (including ignored local
+files), caller-provided `EXPO_PUBLIC_*` values and `NODE_ENV`. Explicit caller
+values take precedence. Never put secrets in public variables or build outputs.
+Executed exports clear Metro transforms to avoid reusing previous public values.
+Turbo uses strict environment mode and local caching; no remote cache is configured.
+Other tasks exclude ignored dotenv files, `.dev.vars`, dependencies and generated
+artifacts from their default source inputs. Toolchain configuration and the
+frozen schema affect cache keys.
 
 Development, formatting writes, generation, E2E and runtime/DB/provider probes
 are noncached. Ordinary `test` never runs a DB fixture or provider operation.

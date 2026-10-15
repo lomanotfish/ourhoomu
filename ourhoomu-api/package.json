@@ -16,7 +16,7 @@
     "check:fixture-runtime": "bun scripts/runtime-check.ts --fixture",
     "prepare:neon-runtime": "bun tests/fixtures/prepare-neon-runtime.ts",
     "check:neon-runtime": "bun tests/fixtures/check-neon-runtime.ts",
-    "test": "bun test ./tests/runtime.test.ts ./tests/runtime-target.test.ts ./tests/auth",
+    "test": "bun test tests",
     "build:worker": "WRANGLER_SEND_METRICS=false node node_modules/wrangler/bin/wrangler.js deploy --dry-run --config wrangler.jsonc --outdir dist/worker"
   },
   "dependencies": {

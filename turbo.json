@@ -58,6 +58,11 @@
       "env": [
         "NODE_ENV",
         "EXPO_PUBLIC_*"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.*"
       ]
     },
     "export:ios": {
@@ -70,6 +75,11 @@
       "env": [
         "NODE_ENV",
         "EXPO_PUBLIC_*"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.*"
       ]
     },
     "build:worker": {

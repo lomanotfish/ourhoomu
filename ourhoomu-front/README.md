@@ -43,3 +43,61 @@ bun run export:ios     # ตรวจ/ส่งออก iOS JavaScript bundle �
 5. หน้า **เวร** เลือกวันนี้/สัปดาห์/วันที่, ทำเวรของมิวให้เสร็จ, แล้วดูกิจกรรมที่เปลี่ยน. สร้างงานครั้งเดียว ทำซ้ำ หรือหมุนเวียน พร้อมพรีวิว 14 วัน.
 
 Google/Apple session, recipient accounts, invitation tokens, payment confirmation, private slip upload/view, notifications, LINE OA และการลบข้อมูลจริงรอ API/native integration tickets. แอพเดโมไม่ขอ notification permission และไม่เรียก production network. `export:ios` พิสูจน์เฉพาะ bundle; ยังต้องทดสอบ Xcode/iPhone, OAuth, API และ TestFlight ภายหลัง.
+
+## Playwright browser and HTTP acceptance
+
+Playwright Test is pinned to `1.64.1` (official npm registry checked 2026-10-15).
+Use Node.js 24 and Bun 1.4.3 with the existing Expo dependencies. Install both
+packages from their locks, then install Playwright's bundled Chromium:
+
+```sh
+cd ourhoomu-api
+bun install --frozen-lockfile
+cd ../ourhoomu-front
+bun install --frozen-lockfile
+bun run test:e2e:install
+bun run typecheck
+bun run typecheck:e2e
+bun run format:check
+bun run test
+bun run test:e2e
+```
+
+On Linux CI, install browser system libraries with
+`bunx playwright install --with-deps chromium` instead. If the browser download
+is slow, use `PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT=180000 bun run test:e2e:install`.
+No global Playwright, user Chrome profile, API credentials or database is needed.
+
+`playwright.config.ts` owns both local server lifecycles using
+[Playwright webServer](https://playwright.dev/docs/test-webserver). Reserve
+`localhost:18047` for Expo and `127.0.0.1:18048` for local Wrangler/workerd
+(inspector `18049`); `reuseExistingServer: false` rejects existing frontend/API
+listeners. Close any conflicting listener yourself or choose a different set of
+ports consistently in the config and API test origin. Tests never reuse a user
+server. The runner shuts down its process groups after passing, failing or
+interruption. Wrangler runs through Node, matching its supported runtime; Bun
+continues to run package scripts and the existing 41 unit tests under `src/`.
+
+Browser projects run Chromium at desktop 1280×900 and mobile 390×844 with touch,
+using a fresh context per test and Asia/Bangkok timezone. These are **in-memory
+demo UI tests**: entry/reset, navigation, exact bill splits and custom percentage
+validation, pending partial cash requests/cancellation, all three chore modes,
+completion/activity, calendar keyboard/focus/date selection, house selection,
+creation/join and observable reduced-motion press transforms. There are no
+network mocks or skipped future-login placeholders. Mobile Chromium emulation
+does not prove iOS/Hermes/native accessibility or OAuth.
+
+The separate `workerd-api` project uses real
+[APIRequestContext](https://playwright.dev/docs/api-testing) HTTP requests against
+the existing API production entrypoint running **locally**, asserting health,
+request IDs, safe 404 envelopes, hidden fixture routes and configured CORS.
+It does not prove database, session, live identity, bills/chores API integration,
+SlipOK, LINE, retention or production deployment. Add API-backed browser flows
+when their real handlers and frontend wiring land; passing the demo suite does
+not satisfy those future acceptance criteria.
+
+Failures retain traces/screenshots and error context in ignored `test-results/`;
+HTML is in ignored `playwright-report/`, JSON in `test-results/results.json`.
+Use `bun run test:e2e:report` or `bunx playwright show-trace <path-to-trace.zip>`.
+Copy evidence you need before another run replaces these directories. Commit
+only config/tests/docs/locks, never generated reports or browser state.

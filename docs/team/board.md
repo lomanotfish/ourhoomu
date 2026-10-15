@@ -349,3 +349,8 @@ SW-0058 done: local843f457→8bf5e89 contains all committed branch history, corr
 
 ## Core completion resumed — 2026-10-15
 User requests completing remaining tasks; approved core local/dev continues on Run run_c1f81fe376c0, integration local802a024. SW-0054 timezone parity, SW-0055 secure credentials and SW-0005 handler implementation ready for isolated ownership. SW-0054 owns exclusive guarded synthetic DB migration/check window; SW-0005 writes handlers without changing schema/DTOs and waits timezone acceptance before integration. External/native/provider/release gates retained.
+
+### Actual first-wave receipts
+- SW-0054: `task_ddc31ea54620` / `ctx_702a67df8da1`, `sw-0054-timezone`, ready/input_accepted/turn observed; no completion claimed.
+- SW-0055: `task_700bd38a3ebc` / `ctx_534580e14583`, `sw-0055-secure-v2`, ready/input_accepted/turn observed; no completion claimed.
+- SW-0005: `task_6b34d2b62c5c` / `ctx_8cb8a8c1c064`, `sw-0005-core-api`, ready/input_accepted/turn observed; no completion claimed.

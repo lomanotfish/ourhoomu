@@ -107,7 +107,9 @@ DB proof commands remain explicit/noncached and keep their authorization gates.
 `src/db/schema.ts` declares 21 core PostgreSQL tables. Drizzle Kit 0.31.11 generates
 `drizzle/0000_core_schema.sql`; the registered custom migration
 `0001_core_operations.sql` defines atomic routines, composite constraints, FK
-indexes, grants and default-deny RLS. Generation is offline; neither the Drizzle
+indexes, grants and default-deny RLS. Additive `0002_house_timezone.sql` corrects
+`house.update` to require a PostgreSQL-catalog timezone and atomically save
+name/timezone/version. Generation is offline; neither the Drizzle
 config nor the migration script reads linked root environment or Neon config.
 
 ```sh
@@ -131,7 +133,32 @@ bun scripts/db/check-sessions.ts
 bun scripts/db/check-session-races.ts
 ```
 
-`up` requires an empty `core` schema. The disposable synthetic rehearsal is:
+`up` requires an empty `core` schema and applies all registered migrations.
+
+For an existing accepted core schema, apply SW-0054 without resetting data,
+roles, sessions or `runtime_probe` (same guarded path variables as above):
+
+```sh
+bun scripts/db/migrate.ts patch-house-timezone
+bun scripts/db/check-house-timezone-migration.ts
+bun scripts/db/check-house-timezone.ts
+bun scripts/db/check.ts
+bun scripts/db/check-sessions.ts
+bun scripts/db/check-session-races.ts
+```
+
+The patch rejects an unexpected prior function body and is safe to reapply.
+The migration check uses owner-only transactional DDL/savepoints to prove
+rollback and preservation of function identity/security, role IDs and probe;
+all changes in that check roll back. The timezone regression uses only restricted
+app/auth connections and real synthetic actors, with database readback for valid,
+invalid/missing, stale, nonowner, removed-owner and retry cases. Existing schedule
+revisions/occurrences retain their saved timezone/local dates; newly saved rules
+must use the current house timezone. Run these scripts in the Lead's exclusive
+synthetic DB window. They are not provider or native identity proof.
+
+The following destructive rehearsal is **only** for a separately authorized
+disposable reset; do not use it to apply SW-0054 to the accepted schema:
 
 ```sh
 bun scripts/db/migrate.ts rollback

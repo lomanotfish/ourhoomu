@@ -9,7 +9,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0002](tickets/SW-0002.md) | Design และเอกสารสำหรับ agents | tech-lead | คำตอบผู้ใช้ครบแล้ว | done |
 | [SW-0003](tickets/SW-0003.md) | ตั้งค่า monorepo และ toolchain ที่รันได้ | platform-engineer | SW-0015, SW-0022, SW-0024, SW-0036 | done |
 | [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003, SW-0022, SW-0024, SW-0036 | in_progress |
-| [SW-0005](tickets/SW-0005.md) | Google/Apple session และบ้านผ่าน API | backend-engineer | SW-0004, SW-0024, SW-0036 | draft |
+| [SW-0005](tickets/SW-0005.md) | Google/Apple session และบ้านผ่าน API | backend-engineer | SW-0004, SW-0024, SW-0036 | in_progress (local/dev handlers) |
 | [SW-0006](tickets/SW-0006.md) | API บิล การหาร และงวดเงินสด | backend-engineer | SW-0004, SW-0005, SW-0036 | draft |
 | [SW-0007](tickets/SW-0007.md) | ตรวจสลิปภายนอกและ private storage | backend-engineer | SW-0004, SW-0005, SW-0006, SW-0023, SW-0037 | draft |
 | [SW-0008](tickets/SW-0008.md) | API เวรสามโหมดและกิจกรรมภายในแอป | backend-engineer | SW-0004, SW-0005, SW-0036 | draft |
@@ -57,8 +57,8 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | done |
 | [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | done |
 | [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | done (approve) |
-| [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | draft |
-| [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | blocked (model quota) |
+| [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | in_progress |
+| [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -346,3 +346,17 @@ SW-0058 in_review: staged full histories incl SW-0052 approve5b6d540; all branch
 
 ## Existing branch consolidation accepted — 2026-10-15
 SW-0058 done: local843f457→8bf5e89 contains all committed branch history, corrected core data and independent SW-0052 approve5b6d540. SW-0046/49/52 done for review/race correction; SW-0004 remains in_progress beyond accepted core milestone (SW-0054 parity and SW-0037/full data/privacy gates remain). Fresh local15forced tasks/120unit/24E2E, offlineDrizzle, plus consolidated guarded core21/session4/races20 pass. All13dirty-file hashes preserved; unique old DTO report archived, obsolete drafts not restored over reviewed code. Workers2 released/captured/acked; only newly-owned integration worktree is cleanup target. [Evidence](reports/SW-0058-local-integration.md).
+
+## Core completion resumed — 2026-10-15
+User requests completing remaining tasks; approved core local/dev continues on Run run_c1f81fe376c0, integration local802a024. SW-0054 timezone parity, SW-0055 secure credentials and SW-0005 handler implementation ready for isolated ownership. SW-0054 owns exclusive guarded synthetic DB migration/check window; SW-0005 writes handlers without changing schema/DTOs and waits timezone acceptance before integration. External/native/provider/release gates retained.
+
+### Actual first-wave receipts
+- SW-0054: `task_ddc31ea54620` / `ctx_702a67df8da1`, `sw-0054-timezone`, ready/input_accepted/turn observed; no completion claimed.
+- SW-0055: `task_700bd38a3ebc` / `ctx_534580e14583`, `sw-0055-secure-v2`, ready/input_accepted/turn observed; no completion claimed.
+- SW-0005: `task_6b34d2b62c5c` / `ctx_8cb8a8c1c064`, `sw-0005-core-api`, ready/input_accepted/turn observed; no completion claimed.
+
+SW-0059 draft captures data projections/invite TTL gaps required by SW-0005; data writer starts only after accepted timezone prerequisite and exclusive DB window assignment. Account deletion remains unavailable until reviewed destructive data/reauth implementation; not full SW-0005 acceptance.
+
+SW-0054 in_review at e6bdf8a (source2a14613); worker released/captured/acked. SW-0060 independent timezone security/migration review owns exclusive guarded DB window. No timezone local integration until approved.
+
+SW-0055 in_review sourcee0e58e7/report0018ef4, released/captured/acked. SW-0061 independent secure-storage review Tasktask_c7c2f428cc14/Dispatchctx_2a56857545c1 ready/input_accepted observed, no acceptance yet. SW-0060 Tasktask_83df4682c0f7/Dispatchctx_6417e500064f reviews frozen timezone with exclusive DB window.

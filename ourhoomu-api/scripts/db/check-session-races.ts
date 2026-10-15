@@ -145,7 +145,8 @@ async function revokedBeforeScope(op: string, replay = false, atChild = false) {
     );
     input = { expectedVersion: 1, label: 'must not persist' };
   }
-  if (op === 'house.update') input = { name: 'must not persist', expectedVersion: 1 };
+  if (op === 'house.update')
+    input = { name: 'must not persist', timezone: 'Asia/Bangkok', expectedVersion: 1 };
   if (op === 'chore.create') input = { title: 'must not persist', localDate: '2026-10-20' };
   if (op === 'bill.create' || op === 'bill.update') {
     const membership = (

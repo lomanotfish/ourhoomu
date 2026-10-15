@@ -35,7 +35,7 @@ export type ChoreRule = {
 export type ScheduleWrite = { title: string; emoji?: string; rule: ChoreRule };
 export interface Commands {
   'house.create': HouseCreate;
-  'house.update': Versioned & { name: string };
+  'house.update': Versioned & HouseCreate;
   'invite.create': { tokenDigest: Digest; replayCiphertext: string };
   'invite.revoke': Record<string, never>;
   'invite.accept': { tokenDigest: Digest };

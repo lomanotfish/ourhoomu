@@ -51,9 +51,9 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | done (approve) |
 | [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | in_review (changes_requested) |
 | [SW-0047](tickets/SW-0047.md) | Playwright browser/API acceptance suite | qa-engineer | SW-0027, SW-0032, SW-0003, SW-0044 | done |
-| [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | in_review |
+| [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | in_progress |
 | [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | in_progress |
-| [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | in_progress |
+| [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | in_review (changes_requested) |
 | [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
@@ -249,3 +249,9 @@ and git inventory confirm path and owned branch absent. No force or user cleanup
 SW-0051 actual Task task_c8312ce11acf / Dispatch ctx_77309440497e, isolated
 sw-0051-house-repository from ad99ebe; ready/input_accepted/turn observed.
 House repository/selection only against frozen DTOs; actual UI/API/native pending.
+
+SW-0050 reportd265d754 preserved on Lead29df251. One P2 audience/presenter
+trust finding blocks issuer acceptance; source correction assigned under SW-0048.
+Reviewer released/captured then acked. No provider/runtime integration accepted.
+SW-0051 transport pagination omission found; Lead assigns sole FE owner additive
+paged request path + regression tests, preserving existing API behavior.

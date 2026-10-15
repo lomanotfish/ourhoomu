@@ -80,3 +80,6 @@ Stack ยืนยันตาม R17 แล้ว ส่วนภาษา UI �
 ## Core implementation confirmed — 2026-10-13
 
 User explicitly confirmed “ยืนยันแผน” for reviewed backend plan v0.2 after Lead proposed core local/dev development with external/native/release gates retained. [Approved scope and operational values](core-implementation.md). Implementation and task-relevant checks in approved plan now authorized; isolated synthetic DB work permitted, production/provider purchase/messages/deploy still separately gated.
+
+## Turborepo migration confirmed — 2026-10-15
+User prioritizes Turborepo migration with Bun workspaces and packages/ for genuinely shared types, schemas and functions. Keep app directories and behavior; no production migration/deploy. See [SW-0056](tickets/SW-0056.md).

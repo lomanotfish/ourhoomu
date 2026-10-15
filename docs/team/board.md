@@ -326,3 +326,6 @@ Accepted component cleanup confirmed all five paths and owned branches absent;
 Orca removal receipts retained. Portable root frontend negative18 probes passed
 after cleanup. Lead graft check OK308nodes; ACTIVE, observed savings estimate
 161550 across seven figure-reporting retrieval calls this continuation.
+
+## Turborepo priority — 2026-10-15
+[SW-0056](tickets/SW-0056.md) in_progress: approved workspace/shared-package migration, isolated from local e50ed8b. Run run_bc557bc8a370. Backend unfinished work preserved; no external deployment.

@@ -168,8 +168,10 @@ Durable artifacts:
 `/Users/afe/orca/artifacts/ourhoomu/SW-0058-consolidation/` contains install,
 quality, final15-gate, build and E2E logs, machine E2E JSON, draft comparisons,
 normalized read-only schema/money comparisons, Graft maps and original DTO report.
-Observed retrieval savings estimate total: **488,365 tokens** over 8 calls with
-reported savings lines (including duplicate map invocations); alias grep and
-freshness/version calls reported no savings. This is an estimate, not billing.
+Observed retrieval savings estimate subtotal: **488,365 tokens** over 7 calls
+with retrieved savings lines (including duplicate map invocations). Two earlier
+integration map outputs were transport-compressed and are excluded from this
+subtotal; alias grep and freshness/version calls reported no savings. This is
+an estimate, not billing.
 
 Task `task_b44d0cb5e3b5`, Dispatch `ctx_a3f158609e97`.

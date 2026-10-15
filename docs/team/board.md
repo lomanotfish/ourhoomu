@@ -333,3 +333,5 @@ after cleanup. Lead graft check OK308nodes; ACTIVE, observed savings estimate
 SW-0056 in_review: source6a14757/report2fb56a5, worker succeeded/released/captured/acked; independent [SW-0057](tickets/SW-0057.md) in_progress. No local integration yet.
 
 SW-0056 back in_progress after SW-0057 review d28e840: R1 Expo dotenv behavior/cache-input correction and R2 contributor setup docs. Shared contract accepted; correction owner platform-engineer.
+
+SW-0056 in_review: correctionsce113b4 accepted by non-author Lead recheck; SW-0057 done with original review + recorded R1/R2 resolution. All three workers released/captured/acked; local integration pending.

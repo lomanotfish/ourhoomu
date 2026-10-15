@@ -329,3 +329,5 @@ after cleanup. Lead graft check OK308nodes; ACTIVE, observed savings estimate
 
 ## Turborepo priority — 2026-10-15
 [SW-0056](tickets/SW-0056.md) in_progress: approved workspace/shared-package migration, isolated from local e50ed8b. Run run_bc557bc8a370. Backend unfinished work preserved; no external deployment.
+
+SW-0056 in_review: source6a14757/report2fb56a5, worker succeeded/released/captured/acked; independent [SW-0057](tickets/SW-0057.md) in_progress. No local integration yet.

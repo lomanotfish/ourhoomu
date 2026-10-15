@@ -255,3 +255,8 @@ trust finding blocks issuer acceptance; source correction assigned under SW-0048
 Reviewer released/captured then acked. No provider/runtime integration accepted.
 SW-0051 transport pagination omission found; Lead assigns sole FE owner additive
 paged request path + regression tests, preserving existing API behavior.
+
+SW-0048 correction actual Task task_1753f49f6467 / ctx_6e71a51f056b; new
+terminal in released source checkout a638077, ready/input_accepted/turn observed.
+Reject extra aud; azp requires explicit trusted presenter policy. This safe
+component default does not configure live clients or expand provider scope.

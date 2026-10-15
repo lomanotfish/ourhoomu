@@ -130,3 +130,10 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [x] Independent review and focused corrections accepted; fresh integrated15 tasks/116 unit tests and24 E2E pass.
 - [x] Setup docs updated and local integration accepted; user changes preserved and owned lifecycle evidence retained.
 Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This tooling acceptance does not close original product/native/provider/TestFlight tickets.
+
+## Existing branch consolidation — SW-0058 (2026-10-15)
+- [x] All committed local branch histories integrated into local, including original runtime/DTO histories and corrected core data.
+- [x] Independent core session security acceptance (SW-0052) and original race correction; guarded core21/session4/races20 pass on consolidated code.
+- [x] Root frozen install,15forced tasks/120unit tests,24E2E and offlineDrizzle check pass after local merge.
+- [x] Original dirty drafts/user guide preserved; unique historical report archived; worker lifecycle receipts retained.
+[Integration evidence](docs/team/reports/SW-0058-local-integration.md). Full original data/privacy, SW-0054 parity, providers/native/release remain pending; merging work is not full product completion.

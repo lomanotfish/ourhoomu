@@ -49,13 +49,13 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0043](tickets/SW-0043.md) | API package quality hooks slice | platform-engineer | SW-0038 | done |
 | [SW-0044](tickets/SW-0044.md) | Typed frontend transport/session races slice | frontend-engineer | SW-0036, SW-0042 | done |
 | [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | done (approve) |
-| [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | in_review (changes_requested) |
+| [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | done |
 | [SW-0047](tickets/SW-0047.md) | Playwright browser/API acceptance suite | qa-engineer | SW-0027, SW-0032, SW-0003, SW-0044 | done |
 | [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | done |
-| [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | in_review |
+| [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | done |
 | [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | done (approve after correction) |
 | [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | done |
-| [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | blocked (model quota) |
+| [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | done |
 | [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | done (approve) |
 | [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | draft |
 | [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | blocked (model quota) |
@@ -343,3 +343,6 @@ SW-0056 done; SW-0057 independent review findings R1/R2 resolved by non-author L
 [SW-0058](tickets/SW-0058.md) in_progress from local843f457; all existing committed branches staged in isolated sw-0058-consolidate. SW-0052 core security review resumes independently on frozen d01aba2 before core acceptance. Dirty legacy drafts and user guide preserved; SW-0055 has no implementation to integrate.
 
 SW-0058 in_review: staged full histories incl SW-0052 approve5b6d540; all branch tips ancestor of integration, core21/session4/races20 pass independently on consolidated source. Worker15forced+120unit+24E2E/Drizzle pass; original13dirtyfiles unchanged. Local integration pending.
+
+## Existing branch consolidation accepted — 2026-10-15
+SW-0058 done: local843f457→8bf5e89 contains all committed branch history, corrected core data and independent SW-0052 approve5b6d540. SW-0046/49/52 done for review/race correction; SW-0004 remains in_progress beyond accepted core milestone (SW-0054 parity and SW-0037/full data/privacy gates remain). Fresh local15forced tasks/120unit/24E2E, offlineDrizzle, plus consolidated guarded core21/session4/races20 pass. All13dirty-file hashes preserved; unique old DTO report archived, obsolete drafts not restored over reviewed code. Workers2 released/captured/acked; only newly-owned integration worktree is cleanup target. [Evidence](reports/SW-0058-local-integration.md).

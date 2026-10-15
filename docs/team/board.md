@@ -54,6 +54,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | in_review |
 | [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | in_progress |
 | [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | in_progress |
+| [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | ready |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates

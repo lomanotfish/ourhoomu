@@ -362,3 +362,5 @@ SW-0054 in_review at e6bdf8a (source2a14613); worker released/captured/acked. SW
 SW-0055 in_review sourcee0e58e7/report0018ef4, released/captured/acked. SW-0061 independent secure-storage review Tasktask_c7c2f428cc14/Dispatchctx_2a56857545c1 ready/input_accepted observed, no acceptance yet. SW-0060 Tasktask_83df4682c0f7/Dispatchctx_6417e500064f reviews frozen timezone with exclusive DB window.
 
 SW-0054/SW-0060 done and integrated local9c04e73 after independent approve and candidate13forced tasks+timezone10. SW-0059 ready; SW-0055 returned in_progress for required native deletion verification finding from SW-0061; no storage integration yet.
+
+Timezone source54 and review60 worktrees/branches removed through Orca with hooks after clean+ancestor+no-cwd-process checks; reports tracked/local and durable common git core-finish. Local postmerge13forced tasks passed; user guide hash and user directory preserved. SW0059 actual task_c2ac965664a4/ctx_815ca2a4258c owns exclusive synthetic DB window; SW0055 S1 correction actual receipt recorded in ticket.

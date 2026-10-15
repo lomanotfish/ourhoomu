@@ -54,7 +54,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | in_review |
 | [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | in_progress |
 | [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | in_progress |
-| [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | ready |
+| [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | in_progress |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -241,3 +241,11 @@ session/house handlers and live/native identity acceptance remain pending.
 Coordinator term_c6930bf4-ac9f-4b71-9151-2726254bd40c, consumer generation5.
 Lead Graft ACTIVE: map48files194symbols522edges; reported134172 tokens saved
 for this checkpoint map (tool estimate).
+
+SW-0047 cleanup: source5125df76 ancestor of localad99ebe; clean source with
+ignored generated caches only, no process using path, permanent artifacts saved.
+Orca worktree rm --run-hooks returned removed/removing; subsequent filesystem
+and git inventory confirm path and owned branch absent. No force or user cleanup.
+SW-0051 actual Task task_c8312ce11acf / Dispatch ctx_77309440497e, isolated
+sw-0051-house-repository from ad99ebe; ready/input_accepted/turn observed.
+House repository/selection only against frozen DTOs; actual UI/API/native pending.

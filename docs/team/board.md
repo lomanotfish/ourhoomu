@@ -55,10 +55,10 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | in_review |
 | [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | done (approve after correction) |
 | [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | done |
-| [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | in_progress |
+| [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | blocked (model quota) |
 | [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | done (approve) |
 | [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | draft |
-| [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | ready |
+| [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | blocked (model quota) |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -298,3 +298,21 @@ proof in reports/SW-0048-0051-integration.md. Full SW-0005/0009 remain pending.
 SW-0052 actual task_7a3621efbdcb / ctx_0af6ddfe9139 in sw-0052-session-review
 fromd01aba2, ready/input_accepted/turn observed. Source49 released/captured/acked;
 exclusive synthetic DB verification window assigned to reviewer.
+
+### Runtime quota interruption — 2026-10-15
+
+SW-0052 ctx_0af6ddfe9139 and SW-0055 ctx_a2f455c3fc54 both positively
+showed final usage-limit screens (reset13:15 local), not silence/timeouts. No
+report/code changes at either checkout. Lead preserved bounded transcripts/screens
+in ignored core-implementation/usage-interruption (mode600), stopped exact workers
+and released; terminal close receipts confirmed, archive unavailable after stop.
+Do not mark either attempt succeeded. User asked asynchronously whether to use
+gpt-6-luna or retain configured model until reset; no selection inferred.
+Blocker owner runtime/account model quota; lower-credit retry needs explicit model
+preference. Lead runs existing guarded core21/session4/races20 checks while waiting;
+independent session acceptance remains pending, DB/test window held by Lead.
+
+Accepted SW48/source+two reviewers and SW51/source+reviewer worktrees passed clean/
+merged/no-process/generated-only-artifact preflight and were removed through Orca
+with run-hooks. Receipts retained in ignored core-implementation. Source49/52 and
+unfinished55 worktrees preserved; original user-owned source4 terminal untouched.

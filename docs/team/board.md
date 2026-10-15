@@ -51,13 +51,14 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0045](tickets/SW-0045.md) | Independent transport/session review | code-reviewer | Frozen SW-0044 | done (approve) |
 | [SW-0046](tickets/SW-0046.md) | Independent core data security/atomicity review | security-engineer | Frozen SW-0004 | in_review (changes_requested) |
 | [SW-0047](tickets/SW-0047.md) | Playwright browser/API acceptance suite | qa-engineer | SW-0027, SW-0032, SW-0003, SW-0044 | done |
-| [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | in_progress |
-| [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | in_progress |
-| [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | in_review (changes_requested) |
-| [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | in_review |
-| [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | draft |
-| [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | in_progress |
+| [SW-0048](tickets/SW-0048.md) | Fail-closed issuer signature verification component | backend-engineer | SW-0036, SW-0024 | done |
+| [SW-0049](tickets/SW-0049.md) | Correct session revocation across lock waits | data-engineer | SW-0046 findings | in_review |
+| [SW-0050](tickets/SW-0050.md) | Independent issuer security review | security-engineer | Frozen SW-0048 | done (approve after correction) |
+| [SW-0051](tickets/SW-0051.md) | Typed house repository and selection component | frontend-engineer | SW-0036, SW-0042, SW-0044 | done |
+| [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | in_progress |
+| [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | done (approve) |
 | [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | draft |
+| [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | ready |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
 
 ## Dependency / dispatch gates
@@ -290,3 +291,10 @@ regressions and revised ordering. Provisional green results do not stand in for
 final migrated artifact and independent SW-0052 review. Exclusive DB window kept.
 SW-0054 tracks separately found house.update timezone omission; original contract
 requires owner timezone edit. Session fix acceptance cannot close this parity gap.
+
+Components SW-0048/0050/0051/0053 accepted/integratedlocal4591629 after
+independent approval and fresh integrated package+Playwright checks; exact
+proof in reports/SW-0048-0051-integration.md. Full SW-0005/0009 remain pending.
+SW-0052 actual task_7a3621efbdcb / ctx_0af6ddfe9139 in sw-0052-session-review
+fromd01aba2, ready/input_accepted/turn observed. Source49 released/captured/acked;
+exclusive synthetic DB verification window assigned to reviewer.

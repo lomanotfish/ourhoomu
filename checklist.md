@@ -120,6 +120,6 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [ ] Live Google/Apple/native, SlipOK, LINE, full retention and TestFlight gates require their original evidence/credentials/authorization.
 
 - [ ] SW-0049/0052: session lock-wait revocation correction and independent review.
-- [ ] SW-0048/0050: strict signed issuer audience/presenter component awaits recheck.
-- [ ] SW-0051/0053: typed house repository/pagination component awaits independent review.
+- [x] SW-0048/0050: strict signed issuer component independently approved and integrated; live/native login remains pending.
+- [x] SW-0051/0053: typed house repository/pagination independently approved and integrated; actual API-backed UI remains pending.
 - [ ] SW-0054: house timezone mutation parity before real house API integration.

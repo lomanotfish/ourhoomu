@@ -20,6 +20,17 @@ try {
     // PgBouncer may retain authenticated backends; dropping/recreating roles makes those OIDs stale.
     await client.query('COMMIT');
     console.log('Synthetic core-only rollback complete; runtime_probe preserved');
+  } else if (mode === 'patch-house-timezone') {
+    if (!before.rows[0]?.core) throw new Error('Core schema missing; run guarded up first');
+    const sql = readFileSync(
+      new URL('../../drizzle/0002_house_timezone.sql', import.meta.url),
+      'utf8',
+    );
+    await client.query('BEGIN');
+    await client.query(sql);
+    await client.query('COMMIT');
+    console.log(`0002_house_timezone.sql sha256=${createHash('sha256').update(sql).digest('hex')}`);
+    console.log('Additive house timezone patch committed; schema, roles and fixtures retained');
   } else if (mode === 'up') {
     if (before.rows[0]?.core)
       throw new Error('Core schema exists; refusing unreviewed overwrite/reset');
@@ -98,7 +109,7 @@ try {
     console.log(
       'Core schema and separately restricted app/auth roles migrated; secrets stored mode600',
     );
-  } else throw new Error('Usage: migrate.ts up|rollback');
+  } else throw new Error('Usage: migrate.ts up|patch-house-timezone|rollback');
   const after = await client.query<{ probe: string | null }>(
     "select to_regnamespace('runtime_probe')::text probe",
   );

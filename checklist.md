@@ -114,12 +114,12 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [x] SW-0036/0039: accepted OpenAPI7756bcc and independent contract review; SW-0042 generated frontend DTO consumer — [board](docs/team/board.md).
 - [x] SW-0038/0041/0043: Workers/Neon runtime proof and API quality hooks accepted; live issuer/provider/native acceptance remains separate.
 - [x] SW-0044/0045: typed frontend transport/session authority integrated and independently approved. Fresh local frontend41tests165assertions, API8tests26assertions, typecheck/format/API lint pass on dc0e908.
-- [ ] SW-0004/0046: core schema, restricted roles and atomic operations await independent review/integration.
+- [x] SW-0046: bounded core schema/atomic operations and session correction independently reviewed and integrated under SW-0058; full SW-0004 remains pending.
 - [x] SW-0047: Playwright actual demo browser and local workerd API suite integrated; 24/24 pass, zero skip/flaky. Real feature/native gates remain pending.
 - [ ] SW-0005/0006/0008 and SW-0009/0010sliceA/0011: actual core handlers and UI/API integration.
 - [ ] Live Google/Apple/native, SlipOK, LINE, full retention and TestFlight gates require their original evidence/credentials/authorization.
 
-- [ ] SW-0049/0052: session lock-wait revocation correction and independent review.
+- [x] SW-0049/0052: session lock-wait revocation correction and independent review.
 - [x] SW-0048/0050: strict signed issuer component independently approved and integrated; live/native login remains pending.
 - [x] SW-0051/0053: typed house repository/pagination independently approved and integrated; actual API-backed UI remains pending.
 - [ ] SW-0054: house timezone mutation parity before real house API integration.

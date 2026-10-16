@@ -39,7 +39,7 @@ test('native binding uses the same app service and device-only unlocked options 
   expect(await store.load()).toEqual(session);
   await store.clear();
   expect(calls).toEqual(
-    ['set', 'get', 'delete'].map((method) => [
+    ['set', 'get', 'delete', 'get'].map((method) => [
       method,
       'ourhoomu.session',
       {

@@ -137,8 +137,12 @@ races. Expired access credentials remain loadable for the authority to refresh.
 Malformed or unsupported bundles return `null` after deleting only the owned
 key. Native unavailability and read/write/delete failures reject with
 `CredentialStorageError` and a fixed message, without native error causes or
-stored values. Failed deletion never reports a successful clear. Invalid saves
-reject before changing persisted credentials.
+stored values. Clear and corrupt-record cleanup await native deletion, then
+verify absence with a read using the same owned key and service options. A
+retained value or failed verification read rejects with the opaque `delete`
+error; this depends on native reads accurately reporting presence and does not
+prove physical Keychain deletion. Invalid saves reject before changing
+persisted credentials.
 
 [Expo SecureStore documentation](https://docs.expo.dev/versions/latest/sdk/securestore/)
 explains platform persistence, payload limits and accessibility. Keychain data

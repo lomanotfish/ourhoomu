@@ -51,6 +51,92 @@ async function opaque(operation: Promise<unknown>, code: string) {
 }
 
 describe('secure credential bundle (injected fake storage, no native keychain)', () => {
+  test('clear rejects a fulfilled delete that retains the owned credential', async () => {
+    const { store, port, records } = storage();
+    await store.save(session);
+    records.set('unrelated', 'owned elsewhere');
+    port.deleteItemAsync = async () => {};
+
+    await opaque(store.clear(), 'delete');
+    expect(await store.load()).toEqual(session);
+    expect(records.get('unrelated')).toBe('owned elsewhere');
+  });
+
+  test('clear rejects opaquely when deletion verification cannot read storage', async () => {
+    const { store, port, records } = storage();
+    await store.save(session);
+    port.getItemAsync = async () => {
+      throw new Error('fixture-verification-secret');
+    };
+
+    await opaque(store.clear(), 'delete');
+    expect(records.has(key)).toBe(false);
+  });
+
+  for (const failure of ['retained', 'unreadable'] as const) {
+    test(`corrupt cleanup rejects when deletion verification is ${failure}`, async () => {
+      const { store, port, records } = storage();
+      records.set(key, '{fixture-corrupt-secret');
+      records.set('unrelated', 'owned elsewhere');
+      if (failure === 'retained') {
+        port.deleteItemAsync = async () => {};
+      } else {
+        const remove = port.deleteItemAsync;
+        port.deleteItemAsync = async (ownedKey) => {
+          await remove(ownedKey);
+          port.getItemAsync = async () => {
+            throw new Error('fixture-verification-secret');
+          };
+        };
+      }
+
+      await opaque(store.load(), 'delete');
+      expect(records.has(key)).toBe(failure === 'retained');
+      expect(records.get('unrelated')).toBe('owned elsewhere');
+    });
+  }
+
+  test('authority reports failed logout when a rotated refresh credential survives restart', async () => {
+    const { store, port } = storage();
+    const rotated = {
+      ...session,
+      accessToken: 'fixture-rotated-access',
+      refreshToken: 'fixture-rotated-refresh',
+    };
+    const options = { baseUrl: 'https://api.example.test', credentials: store };
+    const authority = createSessionAuthority({
+      ...options,
+      fetcher: async () =>
+        Response.json({
+          data: rotated,
+          requestId: '550e8400-e29b-41d4-a716-446655440030',
+        }),
+    });
+    await authority.replaceSession(session);
+    expect(await authority.refreshAfterUnauthorized(session.accessToken)).toBe(rotated.accessToken);
+    const remove = port.deleteItemAsync;
+    port.deleteItemAsync = async () => {};
+    const logoutError = await authority.logout().then(
+      () => null,
+      (error: unknown) => error,
+    );
+
+    expect(await authority.getAccessToken()).toBeNull();
+    const restartedStore = createSecureCredentialStore(port);
+    const restarted = createSessionAuthority({ ...options, credentials: restartedStore });
+    expect(await restarted.getAccessToken()).toBe(rotated.accessToken);
+    expect((await restartedStore.load())?.refreshToken).toBe(rotated.refreshToken);
+    await opaque(Promise.reject(logoutError), 'delete');
+
+    port.deleteItemAsync = remove;
+    await restarted.logout();
+    const cleared = createSessionAuthority({
+      ...options,
+      credentials: createSecureCredentialStore(port),
+    });
+    expect(await cleared.getAccessToken()).toBeNull();
+  });
+
   test('roundtrips one versioned record and replaces the refresh pair in one write', async () => {
     const { store, writes, records } = storage();
     await store.save(session);

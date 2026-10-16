@@ -34,6 +34,10 @@ export function createSecureCredentialStore(storage: SecureStoragePort): Credent
   async function remove(): Promise<void> {
     try {
       await storage.deleteItemAsync(credentialKey);
+      // Native deletion can resolve without removing the record (e.g. iOS statuses).
+      if ((await storage.getItemAsync(credentialKey)) !== null) {
+        throw new CredentialStorageError('delete');
+      }
     } catch {
       throw new CredentialStorageError('delete');
     }

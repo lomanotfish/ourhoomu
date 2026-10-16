@@ -10,10 +10,10 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0003](tickets/SW-0003.md) | ตั้งค่า monorepo และ toolchain ที่รันได้ | platform-engineer | SW-0015, SW-0022, SW-0024, SW-0036 | done |
 | [SW-0004](tickets/SW-0004.md) | สร้าง database contract และ tenant isolation | data-engineer | SW-0003, SW-0022, SW-0024, SW-0036 | in_progress |
 | [SW-0005](tickets/SW-0005.md) | Google/Apple session และบ้านผ่าน API | backend-engineer | SW-0004, SW-0024, SW-0036 | in_progress (local/dev handlers) |
-| [SW-0006](tickets/SW-0006.md) | API บิล การหาร และงวดเงินสด | backend-engineer | SW-0004, SW-0005, SW-0036 | draft |
+| [SW-0006](tickets/SW-0006.md) | API บิล การหาร และงวดเงินสด | backend-engineer | SW-0004, SW-0005, SW-0036 | in_progress (isolated local/dev component) |
 | [SW-0007](tickets/SW-0007.md) | ตรวจสลิปภายนอกและ private storage | backend-engineer | SW-0004, SW-0005, SW-0006, SW-0023, SW-0037 | draft |
-| [SW-0008](tickets/SW-0008.md) | API เวรสามโหมดและกิจกรรมภายในแอป | backend-engineer | SW-0004, SW-0005, SW-0036 | draft |
-| [SW-0009](tickets/SW-0009.md) | แอพ login บ้าน และ navigation ผ่าน API/native | frontend-engineer | SW-0003, SW-0005, SW-0026, SW-0027, SW-0036 | draft |
+| [SW-0008](tickets/SW-0008.md) | API เวรสามโหมดและกิจกรรมภายในแอป | backend-engineer | SW-0004, SW-0005, SW-0036 | in_progress (isolated local/dev component) |
+| [SW-0009](tickets/SW-0009.md) | แอพ login บ้าน และ navigation ผ่าน API/native | frontend-engineer | SW-0003, SW-0005, SW-0026, SW-0027, SW-0036 | in_progress (API-mode component; review corrections) |
 | [SW-0010](tickets/SW-0010.md) | หน้าบิลและทยอยจ่ายผ่าน API/native | frontend-engineer | SW-0006, SW-0007, SW-0009, SW-0027, SW-0036 | draft |
 | [SW-0011](tickets/SW-0011.md) | หน้าเวรและ inbox ผ่าน API/native | frontend-engineer | SW-0008, SW-0009, SW-0027, SW-0036 | draft |
 | [SW-0012](tickets/SW-0012.md) | ตรวจรับ MVP และ security boundaries อย่างอิสระ | qa-engineer | SW-0007, SW-0010, SW-0011, SW-0013, SW-0018 | draft |
@@ -67,7 +67,7 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0060](tickets/SW-0060.md) | Independent timezone migration security and rollback review | security-engineer | see ticket | done |
 | [SW-0061](tickets/SW-0061.md) | Independent native CredentialStore security review | security-engineer | see ticket | done |
 | [SW-0062](tickets/SW-0062.md) | Independent core HTTP auth security checkpoint review | security-engineer | see ticket | done (P2 rechecked; integration review remains SW-0005) |
-| [SW-0063](tickets/SW-0063.md) | Core bills chores activity and dashboard data read parity | data-engineer | see ticket | draft |
+| [SW-0063](tickets/SW-0063.md) | Core bills chores activity and dashboard data read parity | data-engineer | see ticket | in_progress (isolated read parity) |
 | [SW-0064](tickets/SW-0064.md) | Independent data HTTP seam authorization replay migration review | security-engineer | frozen SW-0059 | in_progress |
 
 ## Dependency / dispatch gates
@@ -386,3 +386,14 @@ SW0055/0061 done for bounded component: source7bbdf1a, original independent S1 f
 Storage source55v2/review61 paths and branches confirmed absent after Orca cleanup with hooks; owned source/report commits remain in local6fb08d6, all reports/probe durable. HTTP checkpoint62 report3e06eb8 changes_requested for sole P2 BOM decoding; author fix2a36ca2/reportab90e83 is ready for non-author recheck before final API integration. Reviewer released/captured before ack; unmerged HTTP review checkout retained until source5 accepted. Data59 full suites passed by author but final schema parity/security review pending.
 
 Data59 in_review at source10a0fff/report67133ee; succeeded/released/captured, reports durable, all author gates pass. SW0064 independent data/security review starts in isolated frozen checkout with exclusive synthetic DB window; API5 still waits Lead accepted source+grant. P2 decoder correction non-author Lead13test recheck passed at ab90e83, no overall API/DB acceptance claimed.
+
+## Core continuation — 2026-10-16 (V4)
+
+User requested completing remaining work. Existing local/dev core authorization continues. Native specialists perform security/data/review; frontend/backend code goes through installed Pi adapter with existing provider/model. See [execution and verification record](reports/2026-10-16-core-continuation.md).
+
+- SW-0064 original review changes_requested for candidate janitor lock inversion; SW-0059 remains unaccepted until corrected candidate passes independent recheck. Lifecycle fixture correction independently checked; original candidate safely rolled back.
+- SW-0059 correction244348c and fixturef24cefe are under independent recheck. Security reviewer owns guarded synthetic DB window; other writers have no DB authority.
+- SW-0005 caller type correctionfd099e7 passes author offline checks; credential-free runtime probe investigation and real HTTP+DB acceptance remain pending.
+- SW-0009 explicit API-mode client component is in independent review correction for session-authority composition, native storage selection and server logout. Existing demo preserved; no native/provider acceptance.
+- SW-0063 read projections in progress offline. SW-0006/0008 isolated domain HTTP component in progress against accepted wire; no real DB acceptance claimed.
+- Root user AGENTS/docs edits and node_modules 2/ preserved. No production/provider message/deploy/native release action.

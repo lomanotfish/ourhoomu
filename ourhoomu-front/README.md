@@ -62,6 +62,36 @@ support is used without custom watch folders or resolver overrides.
 
 Google/Apple session, recipient accounts, invitation tokens, payment confirmation, private slip upload/view, notifications, LINE OA และการลบข้อมูลจริงรอ API/native integration tickets. แอพเดโมไม่ขอ notification permission และไม่เรียก production network. `export:ios` พิสูจน์เฉพาะ bundle; ยังต้องทดสอบ Xcode/iPhone, OAuth, API และ TestFlight ภายหลัง.
 
+## Explicit API mode (SW-0009)
+
+The existing demo remains the default and retains its in-memory seed/flows. To
+open the new API shell explicitly, configure `EXPO_PUBLIC_APP_MODE=api` and
+`EXPO_PUBLIC_API_BASE_URL=https://<your-dev-api-origin>` before starting Expo.
+For local acceptance only, HTTP loopback requires both
+`EXPO_PUBLIC_API_LOCAL_ACCEPTANCE=true` and a development build (`__DEV__`).
+Never point local acceptance at production or put credentials in public env.
+API mode does not fall back to demo: missing API configuration, unavailable
+native secure storage, unauthenticated session, API errors and server-empty
+house lists remain visible as honest states. Web keeps API credentials only in
+volatile in-memory storage; refresh/logout ends when the page is closed. Native
+uses the accepted Expo SecureStore credential adapter. API bootstrap loads the
+stored session, refreshes expired credentials with an idempotency key, validates
+`GET /v1/me`, and loads all authorized houses before routing/selection. Logout
+calls the API and clears native credentials plus authenticated cache; a network
+failure is shown even though local credentials are cleared. Create and invitation
+accept use stable per-intent idempotency keys.
+
+No Google/Apple provider login is presented as available: issuer/native proof
+is still pending. The API shell accepts no injected credential through UI. A
+local test harness may inject signed credentials only under separately gated
+acceptance; this app does not implement that mechanism. The API shell covers session bootstrap/logout, house list/create/invite
+acceptance/selection, house detail/member list, rename/leave, owner-only invitation
+issue/copy/revoke, and the signed-in user's own recipient-account list/create/edit/archive.
+Account lists contain private self-account DTOs only; house members never receive
+another person's account details. Account numbers are not returned by the API and
+are never prefilled in edit forms. This shell is API-backed, not full SW-0009 or
+AC1a acceptance; API integration remains subject to real-handler acceptance.
+
 ## Playwright browser and HTTP acceptance
 
 Playwright Test is pinned to `1.64.1` (official npm registry checked 2026-10-15).

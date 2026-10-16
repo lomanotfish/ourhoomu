@@ -6,9 +6,11 @@ import { Button, Card, Label, MotionIn, Page, Pill, Small, Title } from '@/compo
 import { HouseArt } from '@/components/HouseArt';
 import { useDemo } from '@/demo/repository';
 import { colors } from '@/theme/tokens';
+import { useAppRuntime } from '@/runtime/api-mode';
 
 export default function Welcome() {
   const router = useRouter();
+  const { mode } = useAppRuntime();
   const { enter } = useDemo();
   return (
     <Page>
@@ -35,19 +37,32 @@ export default function Welcome() {
             <HouseArt size={215} />
           </View>
         </MotionIn>
-        <MotionIn delay={210}>
-          <Button
-            title="ลองบ้านตัวอย่าง"
-            icon={ArrowRight}
-            onPress={() => {
-              enter();
-              router.replace('/(tabs)');
-            }}
-          />
-          <Small style={{ textAlign: 'center', marginTop: 11 }}>
-            ข้อมูลตัวอย่างอยู่ในเครื่องระหว่างเปิดแอป และเริ่มใหม่เมื่อโหลดซ้ำ
-          </Small>
-        </MotionIn>
+        {mode === 'demo' ? (
+          <MotionIn delay={210}>
+            <Button
+              title="ลองบ้านตัวอย่าง"
+              icon={ArrowRight}
+              onPress={() => {
+                enter();
+                router.replace('/(tabs)');
+              }}
+            />
+            <Small style={{ textAlign: 'center', marginTop: 11 }}>
+              ข้อมูลตัวอย่างอยู่ในเครื่องระหว่างเปิดแอป และเริ่มใหม่เมื่อโหลดซ้ำ
+            </Small>
+          </MotionIn>
+        ) : (
+          <MotionIn delay={210}>
+            <Button
+              title="เข้าสู่โหมด API"
+              icon={ArrowRight}
+              onPress={() => router.replace('/api')}
+            />
+            <Small style={{ textAlign: 'center', marginTop: 11 }}>
+              ไม่มีการเข้าสู่ระบบตัวอย่างหรือเปลี่ยนไปใช้ข้อมูล demo
+            </Small>
+          </MotionIn>
+        )}
         <MotionIn delay={280}>
           <Card style={{ marginTop: 24, backgroundColor: colors.mint, borderWidth: 0 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

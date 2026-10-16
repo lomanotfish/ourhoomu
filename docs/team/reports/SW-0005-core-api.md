@@ -236,3 +236,36 @@ target and newline injection, using temporary fake-credential files that are
 removed after each test. Fresh typecheck/format/lint pass (46 files); full unit
 suite now passes90 tests /261 assertions, zero failures across11 files.
 No DB window has been granted and no real DB acceptance has run.
+
+## SW-0062 byte-evidence correction
+
+Lead relayed independent SW-0062 reproduction on frozen source: default UTF-8
+decoding strips a leading BOM before body hashing, allowing distinct request
+bytes to share refresh evidence. This worker reproduced it in a real Elysia
+handler test: after a valid refresh, the same-key BOM-prefixed retry returned200
+instead of expected400. Review feedback was checked against `boundedBody`
+through Graft before the correction.
+
+Focused commit `2a36ca2` sets `TextDecoder` to fatal UTF-8 with `ignoreBOM:true`.
+This counterintuitive standard option preserves BOM in the decoded string;
+JSON parsing then rejects it before authority/evidence calls. Fatal decoding
+continues to reject malformed/noncanonical UTF-8, so accepted bodies retain
+their exact byte meaning. No request body is trimmed or normalized for replay.
+The new regression passes with BOM400, unchanged valid exact-body replay200
+and identical credentials. The guarded Playwright refresh case includes the
+same check but still awaits actual DB execution.
+
+Fresh source gates: typecheck, format46, lint46, all91 unit tests /266 assertions
+and Workers dry-run (1406.81 KiB / gzip275.31 KiB) pass, exit0. Existing actual
+byte-cap and malformed-UTF8 handler checks remain green. A separate temporary
+credential-free workerd entrypoint on loopback18876 verified runtime support:
+valid JSON decoded unchanged, BOM was preserved and JSON rejected, malformed
+UTF-8 threw. This is decoder compatibility evidence only, not DB/handler
+integration. Temporary server stopped and files removed afterward.
+
+Graft remains ACTIVE: `graft grep boundedBody` and scoped Playwright `refresh`
+lookup reported additional estimates1250+3218 tokens saved (two calls; no
+billing claim). Lead has now executed the guarded file-only setup and confirmed
+the expected private file at mode600; this worker leaves that file/keys stable.
+Independent correction review, accepted SW-0059 mapping and exclusive DB grant
+remain pending. No DB calls or final task settlement occurred.

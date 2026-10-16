@@ -13,6 +13,7 @@ import {
   check,
   index,
   foreignKey,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 
 export const core = pgSchema('core');
@@ -704,6 +705,7 @@ export const idempotency = core.table(
     resourceKind: text('resource_kind').notNull(),
     resourceId: uuid('resource_id').notNull(),
     replayCiphertext: text('replay_ciphertext'),
+    resultData: jsonb('result_data'),
     replayUntil: timestamp('replay_until', { withTimezone: true }),
     ...history(),
   },
@@ -726,3 +728,56 @@ export const idempotency = core.table(
     index('idempotency_expiry_idx').on(t.expiresAt),
   ],
 );
+
+/** Anonymous HTTP retry locators: no raw credentials, nonce, account or identity. */
+export const authRequestLocators = core
+  .table(
+    'auth_request_locators',
+    {
+      route: text('route').notNull(),
+      keyDigest: text('key_digest').notNull(),
+      bodyHash: text('body_hash').notNull(),
+      challengeId: uuid('challenge_id').notNull(),
+      sessionId: uuid('session_id'),
+      replayCiphertext: text('replay_ciphertext'),
+      replayUntil: timestamp('replay_until', { withTimezone: true }),
+      createdAt: created(),
+      expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    },
+    (t) => [
+      primaryKey({ name: 'auth_request_locators_pkey', columns: [t.route, t.keyDigest] }),
+      foreignKey({
+        name: 'auth_request_locators_session_id_fkey',
+        columns: [t.sessionId],
+        foreignColumns: [sessions.id],
+      }),
+      check('auth_request_locators_route_check', sql`route IN ('challenge','exchange')`),
+      check('auth_request_locators_key_digest_check', sql`key_digest ~ '^[0-9a-f]{64}$'`),
+      check('auth_request_locators_body_hash_check', sql`body_hash ~ '^[0-9a-f]{64}$'`),
+      check(
+        'auth_request_locators_check',
+        sql`expires_at>created_at AND expires_at<=created_at+interval '24 hours'`,
+      ),
+      check(
+        'auth_request_locators_check1',
+        sql`(route='challenge' AND session_id IS NULL AND replay_ciphertext IS NULL AND replay_until IS NULL) OR (route='exchange' AND session_id IS NOT NULL AND replay_until>created_at AND replay_until<=created_at+interval '5 minutes')`,
+      ),
+      index('auth_locator_expiry').on(t.expiresAt),
+    ],
+  )
+  .enableRLS();
+
+/** Migration-only reversal metadata, inaccessible to both runtime credentials. */
+export const httpSeamMigrationState = core
+  .table(
+    'http_seam_migration_state',
+    {
+      singleton: boolean('singleton').primaryKey().default(true),
+      commandDefinition: text('command_definition').notNull(),
+      clearDefinition: text('clear_definition').notNull(),
+      migrationSha: text('migration_sha'),
+      appliedHashes: jsonb('applied_hashes'),
+    },
+    () => [check('http_seam_migration_state_singleton_check', sql`singleton`)],
+  )
+  .enableRLS();

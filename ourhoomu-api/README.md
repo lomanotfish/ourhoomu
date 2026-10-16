@@ -104,13 +104,63 @@ includes a local dry-run bundle in `dist/worker/`, never a deploy. Runtime and
 DB proof commands remain explicit/noncached and keep their authorization gates.
 ## Core data milestone (SW-0004)
 
-`src/db/schema.ts` declares 21 core PostgreSQL tables. Drizzle Kit 0.31.11 generates
+`src/db/schema.ts` declares 23 core PostgreSQL tables, including anonymous HTTP
+retry locators and migration-only reversal metadata. Drizzle Kit 0.31.11 generates
 `drizzle/0000_core_schema.sql`; the registered custom migration
 `0001_core_operations.sql` defines atomic routines, composite constraints, FK
 indexes, grants and default-deny RLS. Additive `0002_house_timezone.sql` corrects
 `house.update` to require a PostgreSQL-catalog timezone and atomically save
 name/timezone/version. Generation is offline; neither the Drizzle
 config nor the migration script reads linked root environment or Neon config.
+
+Additive `0003_http_seam.sql` adds authorized HTTP projections, required invitation
+TTL (integer 1–604800 seconds), command-bound member snapshots and DB-authoritative
+challenge/exchange retries. Both auth operations require route-scoped HMAC key/body
+evidence from the server. Exchange first use also requires verified issuer claims;
+preflight never creates a session. Exact encrypted exchange results last at most
+five minutes and require a still-active original session/family after the family
+root lock. Anonymous locators expire within 24 hours; the existing janitor clears
+expired locators, challenges and replay payloads. These primitives do not verify
+provider signatures themselves or establish a production janitor schedule.
+SW-0037 retains the physical pruning, scheduling and operational evidence gate.
+
+On the accepted existing synthetic schema, apply only the additive mode:
+
+```sh
+bun scripts/db/migrate.ts patch-http-seam
+bun scripts/db/check-http-auth.ts
+bun scripts/db/check-http-seam.ts
+bun scripts/db/check-http-schema.ts
+```
+
+`patch-http-seam` serializes migration attempts and verifies the candidate SHA and
+routine fingerprints on reapply. `rollback-http-seam` restores the saved accepted
+routine definitions and refuses if retry locators/member snapshots remain or the
+candidate/fingerprints differ. It preserves existing product tables, role OIDs
+and `runtime_probe`. The migration temporarily grants schema CREATE to assign new
+routine ownership, then revokes it within the same transaction. Never use the
+schema-reset `rollback` mode for this correction.
+
+These rehearsals require an exclusive synthetic DB window. The lifecycle check
+deliberately ages disposable HTTP retry fixtures through the janitor before
+rollback; run it only before handing the DB to another worker. After it, the
+schema is at the accepted pre-HTTP version until reapplication:
+
+```sh
+bun scripts/db/check-http-seam-lifecycle.ts
+bun scripts/db/check-http-seam-migration.ts
+bun scripts/db/migrate.ts patch-http-seam
+```
+
+`CoreTransaction.me()` includes all current houses. Lists accept UUID cursors
+ordered by ID, default to 20 rows and allow at most 100. `account()` and
+`accounts()` return only the owner's masked DTO; `accountSecret()` is a separate
+server-only encrypted record. Partial account updates preserve omitted encrypted
+identifiers. Archived accounts reject updates/reactivation. `ownMembership()` and
+owner-only `targetMembership()` return only ID/version for versioned commands in
+the same principal transaction. Only leave/remove/invite.accept may return a
+five-minute command-bound `data` member snapshot; removed actors remain hidden on
+subsequent membership reads/retries.
 
 ```sh
 bunx drizzle-kit check
@@ -177,7 +227,7 @@ Lead owns branch lifetime, role removal, integration and final cleanup.
 `CoreDatabase` accepts only `ourhoomu_core_app`, which cannot write tables,
 execute auth/bootstrap routines or assume `ourhoomu_core_writer`. That dedicated
 non-login role owns the schema-qualified routines with fixed `pg_catalog`
-search paths and no PUBLIC EXECUTE. All 21 tables enable and force RLS. Runtime
+search paths and no PUBLIC EXECUTE. All 23 tables enable and force RLS. Runtime
 reads use live membership, parent expiry and private-viewer predicates; the
 runtime cannot read invitation digests, session/identity tables or private bank
 snapshot columns directly.

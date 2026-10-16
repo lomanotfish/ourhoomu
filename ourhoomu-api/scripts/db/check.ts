@@ -1,3 +1,4 @@
+import { issueSyntheticSession } from './fixtures';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { Pool } from '@neondatabase/serverless';
@@ -39,23 +40,7 @@ async function rejects(work: () => Promise<unknown>, code: string) {
   );
 }
 async function actor(label: string) {
-  const proofDigest = digest(randomUUID());
-  const accessDigest = digest(randomUUID());
-  const ch = await auth.execute('challenge', { provider: 'google', proofDigest });
-  await auth.execute('exchange', {
-    provider: 'google',
-    challengeId: ch.challengeId,
-    proofDigest,
-    issuer: 'https://synthetic.invalid',
-    subject: randomUUID(),
-    displayName: label,
-    accessDigest,
-    refreshDigest: digest(randomUUID()),
-    authTime: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 3600000).toISOString(),
-    refreshExpiresAt: new Date(Date.now() + 86400000).toISOString(),
-  });
-  return auth.verifyAccessDigest(accessDigest);
+  return (await issueSyntheticSession(auth, label)).claims;
 }
 async function command<K extends keyof Commands>(
   principal: VerifiedPrincipal,
@@ -92,7 +77,11 @@ async function member(principal: VerifiedPrincipal, h: string) {
 }
 async function invite(principal: VerifiedPrincipal, h: string) {
   const tokenDigest = digest(randomUUID());
-  const p = { tokenDigest, replayCiphertext: 'synthetic-envelope-'.repeat(4) };
+  const p = {
+    tokenDigest,
+    expiresInSeconds: 604800,
+    replayCiphertext: 'synthetic-envelope-'.repeat(4),
+  };
   const issue = await command(principal, 'invite.create', h, null, p);
   return { ...issue, tokenDigest };
 }
@@ -103,8 +92,8 @@ try {
   const catalog = await owner.query(
     "select count(*)::int total,count(*) filter(where relrowsecurity and relforcerowsecurity)::int protected from pg_class where relnamespace='core'::regnamespace and relkind='r'",
   );
-  assert.equal(catalog.rows[0]?.total, 21);
-  assert.equal(catalog.rows[0]?.protected, 21);
+  assert.equal(catalog.rows[0]?.total, 23);
+  assert.equal(catalog.rows[0]?.protected, 23);
   const unsafeFunctions = await owner.query(
     "select p.proname from pg_proc p join pg_roles r on r.oid=p.proowner where p.pronamespace='core'::regnamespace and (r.rolname<>'ourhoomu_core_writer' or not coalesce(p.proconfig,'{}'::text[]) @> ARRAY['search_path=pg_catalog'] or exists(select 1 from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a where a.grantee=0 and a.privilege_type='EXECUTE'))",
   );
@@ -573,6 +562,7 @@ try {
   // Invitation encrypted replay is five minutes; semantic issuance survives the generic24h window.
   const issuedInput = {
     tokenDigest: digest(randomUUID()),
+    expiresInSeconds: 604800,
     replayCiphertext: 'synthetic-envelope-'.repeat(4),
   };
   const issuedKey = evidence(issuedInput);

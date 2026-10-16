@@ -1,43 +1,37 @@
 # SW-0009 frontend API integration report
 
-Status: bounded frontend API-mode implementation retained; focused session corrections pass. Full SW-0009 acceptance remains open. Target branch `codex/v4-front-core`, baseline `3e7c598` (working directory task worktree). No commit created.
+Status: bounded frontend API-mode implementation retained; this correction fixes three session test fixtures and removes a leftover no-op condition. Full SW-0009 acceptance remains open. Task scope: `ourhoomu-bootstrap-fixtures-precise`. No commit created.
 
-## Implemented
+## Implemented scope
 
-- Preserved the existing demo provider, welcome flow and sample screens as the default explicit `EXPO_PUBLIC_APP_MODE=demo` mode.
-- Added opt-in `EXPO_PUBLIC_APP_MODE=api` runtime and API shell with no demo fallback. Existing accepted `ApiClient`, `SessionAuthority`, native SecureStore adapter and house repository are composed together.
-- Session bootstrap and transport use the canonical authority for token state and refresh. Logout invalidates locally before remote revoke, and local/cache clearing occurs even if the server rejects the revoke.
-- API shell fetches authorized houses with cursor pagination, handles zero/one/many selection, and supports its assigned API flows with loading/empty/error/retry states. API mode does not fabricate a logged-in user or fall back to demo.
-- Native runtime uses the existing SecureStore. Web runtime uses only volatile in-memory storage (no localStorage/cookie persistence). Local HTTP requires explicit local-acceptance env and `__DEV__`; normal API URLs require HTTPS.
-- Google/Apple login remains unavailable; no provider setup or fake credential injection was added.
+- Preserved the existing demo provider, welcome flow, sample screens, calendar, theme, motion and API shell. The dirty `app/api.tsx` generation guards remain unchanged and were not extended in this task.
+- Corrected the unauthorized bootstrap test so both `createApiSession` and its owning `createSessionAuthority` have injected fetchers; the authority callback records authenticated-cache clearing. This prevents accidental external networking.
+- Corrected the concurrent bootstrap test to exercise three direct `api.bootstrap()` calls, return 401 for old credentials and profile data for the rotated bearer, wait for the shared refresh replay, and resolve the retry gate afterward. It asserts six `/me` fetches, two refresh fetches, identical idempotency key and request body.
+- Corrected expiry coverage to obtain the canonical server-directed refresh via `/me` 401 from `api.bootstrap()`, followed by a successful profile using the rotated access token. No proactive-refresh expectation was introduced.
+- Removed the `&& true` no-op from the existing 401 cleanup predicate; 401 handling remains status- and session-revision-guarded.
 
-## Tests and verification
+## Verification
 
-- `cd ourhoomu-front && bun test ./src/session/api-session.test.ts`: passed, 9 tests / 34 assertions. Regression specifically verifies the first shared refresh is retained without awaiting, concurrent callers join it while retry fetch is pending, then first response resolves; both exact idempotency keys and body stability are checked. No production timeout bypass or weakened test.
-- `cd ourhoomu-front && bun test ./src/session`: passed, 76 tests / 334 assertions.
-- `cd ourhoomu-front && bun test ./src`: passed, 110 tests / 653 assertions.
-- `cd ourhoomu-front && bun run typecheck` (root Turbo frontend typecheck and E2E typecheck): passed.
-- `cd ourhoomu-front && bun run format:check`: passed after formatting the focused test.
-- `cd ourhoomu-front && bun run export:web`: passed.
-- `cd ourhoomu-front && bun run export:ios`: passed (JavaScript/Hermes bundle only, not native startup/device evidence).
-- `cd ourhoomu-front && bun run test:e2e`: passed, 24 tests (desktop/mobile Chromium demo flows and local workerd API entrypoint). Demo tests are in-memory synthetic demo flows; workerd checks do not prove authenticated product handlers/database acceptance.
-- `bun expo install --check` was previously observed failing on pre-existing Expo compatibility drift (Expo SDK, constants, linking and router patch versions). No manifest/lock changes made under the task contract.
-- An initial focused test run exposed an incorrect refresh-request expectation: authority correctly coalesces both callers into one retry (two total fetches, not three). Adjusted the assertion to the observed exact behavior, then focused and full unit suites passed. A first root-relative test command was also run from repository root (tests are in the frontend workspace); subsequent commands were run from `ourhoomu-front`.
+All commands ran in `ourhoomu-front` under Bun 1.4.3; commands with test execution use bounded Bun timeouts.
 
-## Remaining / risks
+- `bun test --timeout 5000 src/session/api-session.test.ts`: **passed**, 9 tests / 38 assertions.
+- `bun test --timeout 10000 src/session/api-session.test.ts src/session/authority.test.ts src/session/native-secure-credentials.test.ts`: **passed**, 34 tests / 122 assertions.
+- `bun test --timeout 10000 src`: **passed**, 110 tests / 657 assertions.
+- `bun run typecheck`: **passed** (Turbo frontend typecheck and E2E typecheck plus workspace contracts/API typechecks).
+- `bun run format:check`: **passed** (workspace format checks).
+- `bun run export:web`: **passed**; Expo emitted non-fatal `NO_COLOR`/`FORCE_COLOR` environment warnings.
+- `bun run export:ios`: **passed**; JavaScript/Hermes bundle only, not native build or device evidence.
+- `git diff --check`: **passed**.
+- An initial focused test attempt exposed three fixture issues (cache-clear callback ownership, concurrent `/me` calls not receiving old-token 401s, and missing initial `/me` in the expiry path); fixtures were corrected and the final runs above passed. A first workspace `bun run format` invocation was unavailable at the root; formatting was run using `bun run --filter ourhoomu-front format` before the successful check.
 
-- No challenge/exchange/provider flow because Google/Apple native proof and issuer acceptance remain gated. No local injected signed-credential test mechanism implemented.
-- API session logic has synthetic fixture/unit coverage, not authenticated live API-handler acceptance. Backend-dependent house/session flows and isolated synthetic DB acceptance remain unverified.
-- No native device build, VoiceOver/Dynamic Type, real provider proof, or production acceptance. JavaScript export is not native startup evidence.
-- Expo package compatibility drift remains; resolving it requires manifest/lock ownership not included here.
+## Remaining acceptance / risks
+
+- Tests use injected synthetic session fixtures; they do not verify live API handlers, database behavior, native Google/Apple identity, Keychain/device behavior or production.
+- Exports do not constitute iOS native startup/device, accessibility, provider or TestFlight acceptance.
+- Full SW-0009 and backend-dependent house/session acceptance remain open. No Playwright rerun was necessary for these fixture-only changes; previously recorded demo/workerd Playwright evidence in this report's history does not establish authenticated product API acceptance.
 
 ## Changed files
 
-- `ourhoomu-front/src/session/api-session.ts`
 - `ourhoomu-front/src/session/api-session.test.ts`
-- `ourhoomu-front/src/runtime/api-mode.tsx`
-- `ourhoomu-front/app/_layout.tsx`
-- `ourhoomu-front/app/index.tsx`
-- `ourhoomu-front/app/api.tsx`
-- `ourhoomu-front/README.md`
+- `ourhoomu-front/src/session/api-session.ts`
 - `docs/team/reports/SW-0009-v4-integration.md`

@@ -1,4 +1,5 @@
 import type { components } from '../api/dto';
+import { createApiClient } from '../api/client';
 import type { FetchFunction, SessionTransport } from '../api/client';
 import {
   ApiHttpError,
@@ -37,6 +38,18 @@ export function createApiSession(options: ApiSessionOptions): ApiSession {
   const fetcher = options.fetcher ?? (fetch as FetchFunction);
   const createKey = options.createIdempotencyKey ?? (() => crypto.randomUUID());
   let cached: Me | null = null;
+  const sessionTransport: SessionTransport = {
+    getSessionRevision: () => options.authority.getSessionRevision(),
+    getAccessToken: () => options.authority.getAccessToken(),
+    refreshAfterUnauthorized: (accessToken, signal, revision) =>
+      options.authority.refreshAfterUnauthorized(accessToken, signal, revision),
+  };
+  const protectedClient = createApiClient({
+    baseUrl: baseUrl.toString(),
+    fetcher,
+    session: sessionTransport,
+    allowDevelopmentLoopback: options.allowDevelopmentLoopback === true,
+  });
 
   async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const response = await fetcher(new URL(path.slice(1), baseUrl), {
@@ -71,13 +84,7 @@ export function createApiSession(options: ApiSessionOptions): ApiSession {
   }
 
   async function readMe(signal?: AbortSignal): Promise<Me> {
-    const accessToken = await options.authority.getAccessToken();
-    if (accessToken === null) throw new Error('No authenticated session');
-    return request<Me>('/v1/me', {
-      method: 'GET',
-      signal,
-      headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' },
-    });
+    return protectedClient.request<Me>('/v1/me', { method: 'GET', signal });
   }
 
   async function clearLocalSession(): Promise<void> {
@@ -92,10 +99,7 @@ export function createApiSession(options: ApiSessionOptions): ApiSession {
   }
 
   return {
-    getSessionRevision: () => options.authority.getSessionRevision(),
-    getAccessToken: () => options.authority.getAccessToken(),
-    refreshAfterUnauthorized: (accessToken, signal, sessionRevision) =>
-      options.authority.refreshAfterUnauthorized(accessToken, signal, sessionRevision),
+    ...sessionTransport,
     async bootstrap(signal) {
       if (signal?.aborted) throw abortError();
       const bootstrapRevision = options.authority.getSessionRevision();

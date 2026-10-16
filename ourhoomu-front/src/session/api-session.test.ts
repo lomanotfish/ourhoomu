@@ -67,16 +67,29 @@ test('bootstrap validates protected profile and only sends current bearer creden
 test('401 bootstrap clears credential and authenticated cache, never falls back', async () => {
   const credentials = store();
   let cacheClears = 0;
-  const authority = createSessionAuthority({ baseUrl: 'https://api.example.test', credentials });
+  const authority = createSessionAuthority({
+    baseUrl: 'https://api.example.test',
+    credentials,
+    fetcher: async () => new Response(null, { status: 401 }),
+    onAuthenticatedCacheClear: () => {
+      cacheClears++;
+    },
+  });
   const api = createApiSession({
     baseUrl: 'https://api.example.test',
     credentials,
     authority,
+    fetcher: async () =>
+      new Response(
+        JSON.stringify({
+          error: { code: 'unauthenticated', message: 'No session' },
+          requestId,
+        }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+      ),
     onAuthenticatedCacheClear: () => {
       cacheClears++;
     },
-    fetcher: async () =>
-      response({ error: { code: 'unauthenticated', message: 'No session' }, requestId }, 401),
   });
   await expect(api.bootstrap()).rejects.toBeInstanceOf(ApiHttpError);
   expect(credentials.value).toBeNull();
@@ -89,6 +102,7 @@ test('bootstrap refreshes through the canonical authority with one shared flight
   const credentials = store(expired);
   const first = deferred<Response>();
   const retryStarted = deferred<void>();
+  const bootstrapsStarted = deferred<void>();
   const requests: Request[] = [];
   let keys = 0;
   let calls = 0;
@@ -99,12 +113,15 @@ test('bootstrap refreshes through the canonical authority with one shared flight
     now: () => Date.parse('2020-01-01T00:00:00Z'),
     createIdempotencyKey: () => `authority-${++keys}`,
     fetcher: async (input, init) => {
-      requests.push(new Request(input, init));
-      calls++;
-      if (calls === 1) throw new TypeError('lost response after rotation');
-      retryStarted.resolve();
-      if (calls <= 2) return first.promise;
-      return response(rotated);
+      const request = new Request(input, init);
+      requests.push(request);
+      if (request.url.endsWith('/auth/refresh')) {
+        calls++;
+        if (calls === 1) throw new TypeError('lost response after rotation');
+        retryStarted.resolve();
+        return first.promise;
+      }
+      return response(me);
     },
   });
   const sessionApi = createApiSession({
@@ -115,21 +132,22 @@ test('bootstrap refreshes through the canonical authority with one shared flight
       throw new Error('bootstrap must not construct a second refresh key');
     },
     fetcher: async (input, init) => {
-      requests.push(new Request(input, init));
-      return response(me);
+      const request = new Request(input, init);
+      requests.push(request);
+      return request.headers.get('authorization') === 'Bearer rotated'
+        ? response(me)
+        : response({ error: { code: 'unauthenticated', message: 'Expired' }, requestId }, 401);
     },
   });
 
-  const initial = authority.refreshAfterUnauthorized('access');
+  const bootstraps = [sessionApi.bootstrap(), sessionApi.bootstrap(), sessionApi.bootstrap()];
+  bootstrapsStarted.resolve();
+  await bootstrapsStarted.promise;
   await retryStarted.promise;
-  const concurrentBootstrap = authority.refreshAfterUnauthorized('access');
-  const anotherConcurrentCaller = authority.refreshAfterUnauthorized('access');
   first.resolve(response(rotated));
-  await expect(
-    Promise.all([initial, concurrentBootstrap, anotherConcurrentCaller]),
-  ).resolves.toEqual(['rotated', 'rotated', 'rotated']);
+  await expect(Promise.all(bootstraps)).resolves.toEqual([me, me, me]);
 
-  const refreshRequests = requests.filter((request) => request.url.endsWith('/refresh'));
+  const refreshRequests = requests.filter((request) => request.url.endsWith('/auth/refresh'));
   expect(keys).toBe(1);
   expect(refreshRequests).toHaveLength(2);
   expect(refreshRequests.map((request) => request.headers.get('idempotency-key'))).toEqual([
@@ -137,6 +155,7 @@ test('bootstrap refreshes through the canonical authority with one shared flight
     'authority-1',
   ]);
   expect(await refreshRequests[0]!.clone().text()).toBe(await refreshRequests[1]!.clone().text());
+  expect(requests.filter((request) => request.url.endsWith('/me'))).toHaveLength(6);
   expect(calls).toBe(2);
   expect(credentials.value).toEqual(rotated);
 });
@@ -150,11 +169,7 @@ test('terminal bootstrap 401 cannot clear an identity accepted while its respons
     accessToken: 'new-identity',
     userId: '550e8400-e29b-41d4-a716-446655440002',
   };
-  const authority = createSessionAuthority({
-    baseUrl: 'https://api.example.test',
-    credentials,
-    now: () => Date.parse('2099-01-02T00:00:00Z'),
-  });
+  const authority = createSessionAuthority({ baseUrl: 'https://api.example.test', credentials });
   const api = createApiSession({
     baseUrl: 'https://api.example.test',
     credentials,
@@ -199,7 +214,6 @@ test('logout invalidates locally before a stalled remote revoke and late revoke 
       return response(me);
     },
   });
-
   const logout = api.logout();
   const revoke = await revokeStarted.promise;
   expect(revoke.headers.get('authorization')).toBe('Bearer access');
@@ -258,10 +272,8 @@ test('acceptSession replaces the canonical transport token and rejects the old t
       return response({ ok: true });
     },
   });
-
   await sessionApi.acceptSession({ ...valid, accessToken: 'accepted-new' });
   await client.request('/v1/houses');
-
   expect(seen.at(-1)?.headers.get('authorization')).toBe('Bearer accepted-new');
   expect(await authority.getAccessToken()).toBe('accepted-new');
 });
@@ -289,7 +301,6 @@ test('logout invalidates delayed bootstrap refresh and clears persisted credenti
       return response(me);
     },
   });
-
   const bootstrap = sessionApi.bootstrap();
   await refreshStarted.promise;
   await sessionApi.logout();
@@ -298,7 +309,6 @@ test('logout invalidates delayed bootstrap refresh and clears persisted credenti
     '/v1/auth/logout',
   ]);
   refreshResponse.resolve(response({ ...valid, accessToken: 'resurrected' }));
-
   await expect(bootstrap).rejects.toThrow(/Session changed/);
   expect(credentials.value).toBeNull();
   expect(await authority.getAccessToken()).toBeNull();
@@ -313,18 +323,31 @@ test('expired session refreshes once with idempotency and persists before me', a
     baseUrl: 'https://api.example.test',
     credentials,
     now: () => Date.parse('2020-01-02T00:00:00Z'),
-    fetcher: async () => response(rotated),
+    createIdempotencyKey: () => requestId,
+    fetcher: async (input, init) => {
+      const request = new Request(input, init);
+      requests.push(request);
+      expect(request.headers.get('idempotency-key')).toBe(requestId);
+      return Response.json({ data: rotated, requestId });
+    },
   });
   const api = createApiSession({
     baseUrl: 'https://api.example.test',
     credentials,
     authority,
-    createIdempotencyKey: () => requestId,
     fetcher: async (input, init) => {
-      requests.push(new Request(input, init));
-      return requests.at(-1)?.url.endsWith('/refresh') ? response(rotated) : response(me);
+      const request = new Request(input, init);
+      requests.push(request);
+      return request.headers.get('authorization') === 'Bearer access'
+        ? response({ error: { code: 'unauthenticated', message: 'Expired' }, requestId }, 401)
+        : response(me);
     },
   });
-  await authority.refreshAfterUnauthorized('access');
+  await expect(api.bootstrap()).resolves.toEqual(me);
+  expect(requests.map((request) => new URL(request.url).pathname)).toEqual([
+    '/v1/me',
+    '/v1/auth/refresh',
+    '/v1/me',
+  ]);
   expect(credentials.value?.refreshToken).toBe('rotated-refresh');
 });

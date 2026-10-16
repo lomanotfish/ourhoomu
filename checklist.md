@@ -139,3 +139,6 @@ Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This 
 [Integration evidence](docs/team/reports/SW-0058-local-integration.md). Full original data/privacy, SW-0054 parity, providers/native/release remain pending; merging work is not full product completion.
 
 - [x] SW-0055/0061: native secure credential storage component and required deletion verification correction independently checked and integrated local6fb08d6;15forced tasks/164unit/24E2E pass. Real-device and login acceptance remain pending — [integration](docs/team/reports/SW-0055-integration.md).
+
+
+- [x] SW-0059/0064: corrected core data/auth projection seam independently approved; dynamic cleanup-lock race, auth16/data11/schema4/races20/lifecycle4/migration2 and ACL probes pass; isolated integration forced10offline tasks pass. [Review](docs/team/reports/SW-0064-correction-recheck.md). Full SW0004/0005/provider/native/retention acceptance remains open.

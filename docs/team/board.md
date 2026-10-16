@@ -63,12 +63,12 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0056](tickets/SW-0056.md) | see ticket | see ticket | see ticket | see ticket |
 | [SW-0057](tickets/SW-0057.md) | see ticket | see ticket | see ticket | see ticket |
 | [SW-0058](tickets/SW-0058.md) | see ticket | see ticket | see ticket | see ticket |
-| [SW-0059](tickets/SW-0059.md) | Close core data projections and invitation TTL for real HTTP handlers | data-engineer | see ticket | in_review |
+| [SW-0059](tickets/SW-0059.md) | Close core data projections and invitation TTL for real HTTP handlers | data-engineer | see ticket | done (bounded corrected seam) |
 | [SW-0060](tickets/SW-0060.md) | Independent timezone migration security and rollback review | security-engineer | see ticket | done |
 | [SW-0061](tickets/SW-0061.md) | Independent native CredentialStore security review | security-engineer | see ticket | done |
 | [SW-0062](tickets/SW-0062.md) | Independent core HTTP auth security checkpoint review | security-engineer | see ticket | done (P2 rechecked; integration review remains SW-0005) |
 | [SW-0063](tickets/SW-0063.md) | Core bills chores activity and dashboard data read parity | data-engineer | see ticket | in_progress (isolated read parity) |
-| [SW-0064](tickets/SW-0064.md) | Independent data HTTP seam authorization replay migration review | security-engineer | frozen SW-0059 | in_progress |
+| [SW-0064](tickets/SW-0064.md) | Independent data HTTP seam authorization replay migration review | security-engineer | frozen SW-0059 | done (corrected candidate approve) |
 
 ## Dependency / dispatch gates
 
@@ -397,3 +397,6 @@ User requested completing remaining work. Existing local/dev core authorization 
 - SW-0009 explicit API-mode client component is in independent review correction for session-authority composition, native storage selection and server logout. Existing demo preserved; no native/provider acceptance.
 - SW-0063 read projections in progress offline. SW-0006/0008 isolated domain HTTP component in progress against accepted wire; no real DB acceptance claimed.
 - Root user AGENTS/docs edits and node_modules 2/ preserved. No production/provider message/deploy/native release action.
+
+
+Corrected SW0059/SW0064 bounded data seam accepted: source244348c, independent reportd6f7259, integration6a9dbee and fresh forced10offline tasks pass. Full SW0004 and product HTTP/native/provider/retention acceptance remain open. Actual SW0005 HTTP+DB verification now owns exclusive guarded synthetic window. User working files preserved.

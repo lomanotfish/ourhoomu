@@ -347,6 +347,42 @@ async function main() {
       await denied(() => read(a.claims, (tx) => tx.chores(houseId, options)), 'validation_error');
     assert(chorePage1.items.every((item) => item.localDate === today));
     noPrivateFields([...chorePage1.items, ...chorePage2.items]);
+    const choreToComplete = choreIds[1];
+    assert(choreToComplete);
+    const listedChores = await read(a.claims, (tx) =>
+      tx.chores(houseId, { fromDate: today, toDate: today, limit: 100 }),
+    );
+    const assignedPending = listedChores.items.find((item) => item.id === choreToComplete);
+    assert(assignedPending);
+    assert(!('scheduleId' in assignedPending));
+    assert(!('completedAt' in assignedPending));
+    assert(!('completedByMembershipId' in assignedPending));
+    await command(
+      b.claims,
+      'chore.complete',
+      houseId,
+      choreToComplete,
+      { expectedVersion: 1 },
+      syntheticEvidence(),
+    );
+    const completedChore = (
+      await read(a.claims, (tx) =>
+        tx.chores(houseId, { fromDate: today, toDate: today, limit: 100 }),
+      )
+    ).items.find((item) => item.id === choreToComplete);
+    assert(completedChore);
+    assert(completedChore.completedAt);
+    assert.equal(completedChore.completedByMembershipId, memberB);
+    await command(b.claims, 'chore.reopen', houseId, choreToComplete, { expectedVersion: 2 });
+    const reopenedChore = (
+      await read(a.claims, (tx) =>
+        tx.chores(houseId, { fromDate: today, toDate: today, limit: 100 }),
+      )
+    ).items.find((item) => item.id === choreToComplete);
+    assert(reopenedChore);
+    assert.equal(reopenedChore.status, 'pending');
+    assert(!('completedAt' in reopenedChore));
+    assert(!('completedByMembershipId' in reopenedChore));
     pass(
       'chores: local-date filters, same-date keyset pagination, invalid dates/ranges and safe projection',
     );
@@ -394,6 +430,9 @@ async function main() {
     assert(dashboard.asOf);
     assert(dashboard.todayChores.length <= 20);
     assert(dashboard.todayChores.every((chore) => chore.localDate === today));
+    assert(dashboard.todayChores.every((chore) => !('scheduleId' in chore)));
+    assert(dashboard.todayChores.every((chore) => !('completedAt' in chore)));
+    assert(dashboard.todayChores.every((chore) => !('completedByMembershipId' in chore)));
     assert.equal(dashboard.pendingPayments.length, 20);
     assert(dashboard.pendingPayments.every((payment) => payment.method === 'cash'));
     noPrivateFields(dashboard);

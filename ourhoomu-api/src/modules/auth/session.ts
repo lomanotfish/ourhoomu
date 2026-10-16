@@ -79,8 +79,9 @@ export function createSessions(options: SessionOptions) {
         evidence.keyDigest,
         evidence.bodyHash,
       ]);
-      let result = await store.execute('exchange', { ...binding, checkReplay: true });
-      if (result.pending === true) {
+      const replayResult = await store.execute('exchange', { ...binding, checkReplay: true });
+      let replayCiphertext: string;
+      if ('pending' in replayResult && replayResult.pending === true) {
         const claims = await issuer.verifyIdToken({
           provider,
           idToken,
@@ -88,7 +89,7 @@ export function createSessions(options: SessionOptions) {
           expectedAudience: config.audience,
         });
         const tokens = credentials();
-        result = await store.execute('exchange', {
+        const result = await store.execute('exchange', {
           ...binding,
           ...claims,
           displayName: 'Member',
@@ -98,9 +99,16 @@ export function createSessions(options: SessionOptions) {
           refreshExpiresAt: new Date(now() + options.refreshTtlSeconds * 1000).toISOString(),
           replayCiphertext: await secrets.seal('exchange-replay', scope, tokens),
         });
+        replayCiphertext = result.replayCiphertext;
+      } else if (
+        'replayCiphertext' in replayResult &&
+        typeof replayResult.replayCiphertext === 'string'
+      ) {
+        replayCiphertext = replayResult.replayCiphertext;
+      } else {
+        throw new DataError('internal_error');
       }
-      if (typeof result.replayCiphertext !== 'string') throw new DataError('internal_error');
-      const replay = await secrets.open('exchange-replay', scope, result.replayCiphertext);
+      const replay = await secrets.open('exchange-replay', scope, replayCiphertext);
       if (typeof replay.accessToken !== 'string' || typeof replay.refreshToken !== 'string')
         throw new DataError('internal_error');
       return session({ accessToken: replay.accessToken, refreshToken: replay.refreshToken });

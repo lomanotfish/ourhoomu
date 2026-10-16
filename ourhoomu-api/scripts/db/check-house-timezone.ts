@@ -1,3 +1,4 @@
+import { issueSyntheticSession } from './fixtures';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import {
@@ -23,23 +24,7 @@ function pass(label: string) {
   console.log(`PASS ${label}`);
 }
 async function actor() {
-  const proofDigest = digest(randomUUID());
-  const accessDigest = digest(randomUUID());
-  const challenge = await auth.execute('challenge', { provider: 'google', proofDigest });
-  await auth.execute('exchange', {
-    provider: 'google',
-    challengeId: challenge.challengeId,
-    proofDigest,
-    issuer: 'https://synthetic.invalid',
-    subject: randomUUID(),
-    displayName: 'Timezone synthetic',
-    accessDigest,
-    refreshDigest: digest(randomUUID()),
-    authTime: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 3600000).toISOString(),
-    refreshExpiresAt: new Date(Date.now() + 86400000).toISOString(),
-  });
-  return auth.verifyAccessDigest(accessDigest);
+  return (await issueSyntheticSession(auth, 'Timezone synthetic')).claims;
 }
 function command<K extends keyof Commands>(
   actor: VerifiedPrincipal,
@@ -88,6 +73,7 @@ try {
   const tokenDigest = digest(randomUUID());
   await command(owner, 'invite.create', house, null, {
     tokenDigest,
+    expiresInSeconds: 604800,
     replayCiphertext: 'synthetic-timezone-envelope-'.repeat(4),
   });
   await command(member, 'invite.accept', null, null, { tokenDigest });

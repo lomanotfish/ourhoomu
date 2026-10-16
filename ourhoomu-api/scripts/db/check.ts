@@ -251,11 +251,16 @@ try {
       ),
     'idempotency_conflict',
   );
-  assert.deepEqual(await db.withPrincipal(b, (tx) => tx.dashboard(h1)), {
-    outstandingSatang: '10000',
-    owedToMeSatang: '0',
-    pendingSatang: '4000',
-  });
+  const dashboardBeforeConfirmation = await db.withPrincipal(b, (tx) => tx.dashboard(h1));
+  assert.equal(dashboardBeforeConfirmation.outstandingSatang, '10000');
+  assert.equal(dashboardBeforeConfirmation.owedToMeSatang, '0');
+  assert.equal(dashboardBeforeConfirmation.pendingSatang, '4000');
+  assert(dashboardBeforeConfirmation.asOf);
+  assert.equal(dashboardBeforeConfirmation.cashAwaitingDecisionCount, 1);
+  assert(
+    dashboardBeforeConfirmation.pendingPayments.some((payment) => payment.id === p1.resourceId),
+  );
+  assert(Array.isArray(dashboardBeforeConfirmation.todayChores));
   await rejects(
     () => command(b, 'cash.confirm', h1, p1.resourceId, { expectedVersion: 1 }),
     'forbidden',

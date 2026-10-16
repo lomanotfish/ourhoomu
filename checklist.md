@@ -142,3 +142,5 @@ Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This 
 
 
 - [x] SW-0059/0064: corrected core data/auth projection seam independently approved; dynamic cleanup-lock race, auth16/data11/schema4/races20/lifecycle4/migration2 and ACL probes pass; isolated integration forced10offline tasks pass. [Review](docs/team/reports/SW-0064-correction-recheck.md). Full SW0004/0005/provider/native/retention acceptance remains open.
+
+- [x] SW-0005 local/dev HTTP milestone: actual Elysia/restricted synthetic DB/synthetic signed issuer Playwright7/7 independently pass; source77b7fb6+244348c. [Evidence](docs/team/reports/SW-0005-http-acceptance-qa.md). Full native/provider identity and account deletion acceptance remain open.

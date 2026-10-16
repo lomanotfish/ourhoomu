@@ -400,3 +400,8 @@ User requested completing remaining work. Existing local/dev core authorization 
 
 
 Corrected SW0059/SW0064 bounded data seam accepted: source244348c, independent reportd6f7259, integration6a9dbee and fresh forced10offline tasks pass. Full SW0004 and product HTTP/native/provider/retention acceptance remain open. Actual SW0005 HTTP+DB verification now owns exclusive guarded synthetic window. User working files preserved.
+
+
+## Core HTTP local/dev milestone accepted — 2026-10-16
+
+SW0005 core HTTP77b7fb6 + data244348c independently approved and actual QA7/7 at15d6a05. Backend/package source in integration matches tested tree; forced10offline tasks pass. See [QA](reports/SW-0005-http-acceptance-qa.md). Full SW0005 remains in_progress for real native/provider identity and guarded account deletion; frontend/domain/retention/release remain open. Data63 corrections under independent guarded recheck; no unaccepted frontend/domain component integrated.

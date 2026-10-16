@@ -1,6 +1,6 @@
 import { Pool, type PoolClient } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gt } from 'drizzle-orm';
 import * as schema from './schema';
 import type {
   Commands,
@@ -16,6 +16,18 @@ import type {
   ChoreRecord,
   PaymentRecord,
   SchedulePreview,
+  HouseProjection,
+  AccountProjection,
+  AccountSecret,
+  InvitationProjection,
+  ListOptions,
+  MemberSnapshot,
+  ChallengeInput,
+  ChallengeResult,
+  ExchangeReplayInput,
+  ExchangeReplayResult,
+  VerifiedExchangeInput,
+  ExchangeResult,
 } from './types';
 
 const verified = Symbol('server-verified-principal');
@@ -141,21 +153,99 @@ export class CoreTransaction {
     if (!result) throw new DataError('internal_error');
     return result;
   }
-  async houses() {
+  private listOptions(options: ListOptions) {
+    const limit = options.limit ?? 20;
+    if (
+      !Number.isInteger(limit) ||
+      limit < 1 ||
+      limit > 100 ||
+      (options.cursor !== undefined &&
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.cursor))
+    )
+      throw new DataError('validation_error');
+    return { limit, cursor: options.cursor?.toLowerCase() };
+  }
+  async houses(options: ListOptions = {}): Promise<HouseProjection[]> {
+    const { limit, cursor } = this.listOptions(options);
     return this.db
       .select({
         id: schema.houses.id,
         name: schema.houses.name,
         timezone: schema.houses.timezone,
-        state: schema.houses.state,
         version: schema.houses.version,
-        createdAt: schema.houses.createdAt,
       })
-      .from(schema.houses);
+      .from(schema.houses)
+      .where(cursor ? gt(schema.houses.id, cursor) : undefined)
+      .orderBy(schema.houses.id)
+      .limit(limit);
   }
-  async members(houseId: UUID) {
-    return this.readJson<MemberProfile[]>('select core.member_profiles($1::uuid) as data', [
+  async me() {
+    const profile = await this.projection<{ id: UUID; displayName: string }>('me');
+    // /me is not paginated: include every currently accessible house.
+    const houses = await this.db
+      .select({
+        id: schema.houses.id,
+        name: schema.houses.name,
+        timezone: schema.houses.timezone,
+        version: schema.houses.version,
+      })
+      .from(schema.houses)
+      .orderBy(schema.houses.id);
+    return { ...profile, houses };
+  }
+  async house(houseId: UUID) {
+    return this.projection<HouseProjection>('house', houseId);
+  }
+  async ownMembership(houseId: UUID) {
+    return this.projection<{ id: UUID; version: number }>('ownMembership', houseId);
+  }
+  async targetMembership(houseId: UUID, id: UUID) {
+    return this.projection<{ id: UUID; version: number }>('targetMembership', houseId, id);
+  }
+  async account(id: UUID) {
+    return this.projection<AccountProjection>('account', null, id);
+  }
+  async accountSecret(id: UUID) {
+    return this.projection<AccountSecret>('accountSecret', null, id);
+  }
+  async accounts(options: ListOptions = {}): Promise<AccountProjection[]> {
+    const { limit, cursor } = this.listOptions(options);
+    const rows = await this.db
+      .select({
+        id: schema.accounts.id,
+        version: schema.accounts.version,
+        bankCode: schema.accounts.bankCode,
+        label: schema.accounts.label,
+        maskedAccount: schema.accounts.maskedAccount,
+        isDefault: schema.accounts.isDefault,
+        state: schema.accounts.state,
+      })
+      .from(schema.accounts)
+      .where(cursor ? gt(schema.accounts.id, cursor) : undefined)
+      .orderBy(schema.accounts.id)
+      .limit(limit);
+    return rows.map(({ state, ...row }) => ({ ...row, active: state === 'active' }));
+  }
+  async invitation(houseId: UUID, id: UUID) {
+    return this.projection<InvitationProjection>('invitation', houseId, id);
+  }
+  async members(houseId: UUID, options: ListOptions = {}): Promise<MemberSnapshot[]> {
+    const { limit, cursor } = this.listOptions(options);
+    const rows = await this.readJson<MemberProfile[]>(
+      'select core.member_profiles($1::uuid) data',
+      [houseId],
+    );
+    return rows
+      .filter((row) => !cursor || row.id > cursor)
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .slice(0, limit)
+      .map(({ houseId: _houseId, ...row }) => row);
+  }
+  private projection<T>(kind: string, houseId: UUID | null = null, id: UUID | null = null) {
+    return this.readJson<T>('select core.http_projection($1,$2::uuid,$3::uuid) data', [
+      kind,
       houseId,
+      id,
     ]);
   }
   async bill(houseId: UUID, billId: UUID) {
@@ -238,6 +328,13 @@ export class SessionStore {
       throw new Error('SessionStore requires restricted verifier role');
     this.pool = new Pool({ connectionString, max: 4 });
   }
+  execute(op: 'challenge', input: ChallengeInput): Promise<ChallengeResult>;
+  execute(op: 'exchange', input: ExchangeReplayInput): Promise<ExchangeReplayResult>;
+  execute(op: 'exchange', input: VerifiedExchangeInput): Promise<ExchangeResult>;
+  execute(
+    op: 'rotate' | 'revoke',
+    input: Record<string, unknown>,
+  ): Promise<Record<string, unknown>>;
   async execute(
     op: 'challenge' | 'exchange' | 'rotate' | 'revoke',
     input: Record<string, unknown>,

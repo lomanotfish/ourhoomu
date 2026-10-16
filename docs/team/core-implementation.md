@@ -33,3 +33,6 @@ Run run_a401e29c745e; current coordinator term_3477fed4-f980-4cc6-994c-81da695c4
 ## Operational clarification — 2026-10-14
 
 Lead freezes non-history mutation idempotency locator24h from initial accept; history locators persist through capped parent access expiry. Clients informed in SW-0044: no automatic uncertain old-write replay after window; semantic uniques/version checks remain. Invitation token and refresh-family encrypted replay5min rules unchanged. Latest core transaction lock order supersedes older database design idempotency-first prose. Wire7756bcc unchanged.
+
+## Local session runtime values — 2026-10-15
+For SW-0005 synthetic integration, Lead freezes explicit required configuration (no defaults): access TTL900s, absolute refresh-family TTL2592000s; accepted bounds access1..3600s, refresh>=access and<=31536000s. Fresh local-only256bit HMAC/AES-GCM keys, AES key version1, purpose-bound challenges/idempotency/digests/account ciphertext/session replay; missing or invalid configuration fails closed. Challenge five-minute expiry, DB digest/one-time provider binding and nonce HMAC(provider,challengeId,clientNonce), with original >=32-character random base64url clientNonce as exchange proof, preserve accepted wire. These values do not enable a live issuer or authorize production configuration.

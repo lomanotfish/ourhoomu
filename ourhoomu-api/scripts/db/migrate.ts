@@ -20,6 +20,73 @@ try {
     // PgBouncer may retain authenticated backends; dropping/recreating roles makes those OIDs stale.
     await client.query('COMMIT');
     console.log('Synthetic core-only rollback complete; runtime_probe preserved');
+  } else if (mode === 'patch-http-seam' || mode === 'rollback-http-seam') {
+    if (!before.rows[0]?.core) throw new Error('HTTP seam requires accepted existing core');
+    const sql = readFileSync(new URL('../../drizzle/0003_http_seam.sql', import.meta.url), 'utf8');
+    const sha = createHash('sha256').update(sql).digest('hex');
+    await client.query('BEGIN');
+    await client.query("select pg_advisory_xact_lock(hashtextextended('http-seam-migration',0))");
+    const state = await client.query(
+      "select to_regclass('core.http_seam_migration_state') is not null applied",
+    );
+    const fingerprint = async () =>
+      (
+        await client.query(
+          `select jsonb_object_agg(p.oid::regprocedure::text,md5(pg_get_functiondef(p.oid))) hashes from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='core' and p.proname in ('command','auth_command','auth_command_before_http','http_projection','clear_replay_secrets')`,
+        )
+      ).rows[0]?.hashes;
+    if (state.rows[0]?.applied) {
+      const row = (await client.query('select * from core.http_seam_migration_state')).rows[0];
+      const hashes = await fingerprint();
+      if (
+        row?.migration_sha !== sha ||
+        JSON.stringify(row.applied_hashes) !== JSON.stringify(hashes)
+      )
+        throw new Error('Refusing unknown HTTP seam migration or changed function definitions');
+      if (mode === 'rollback-http-seam') {
+        const occupied = await client.query(
+          'select exists(select 1 from core.auth_request_locators) or exists(select 1 from core.idempotency_records where result_data is not null) occupied',
+        );
+        if (occupied.rows[0]?.occupied)
+          throw new Error('Refusing rollback with retained HTTP replay data');
+        await client.query(row.command_definition);
+        await client.query(row.clear_definition);
+        await client.query('DROP FUNCTION core.auth_command(text,jsonb)');
+        await client.query(
+          'ALTER FUNCTION core.auth_command_before_http(text,jsonb) RENAME TO auth_command',
+        );
+        await client.query(
+          'GRANT EXECUTE ON FUNCTION core.auth_command(text,jsonb) TO ourhoomu_core_auth',
+        );
+        await client.query('DROP FUNCTION core.http_projection(text,uuid,uuid)');
+        await client.query('ALTER TABLE core.idempotency_records DROP COLUMN result_data');
+        await client.query('DROP TABLE core.auth_request_locators,core.http_seam_migration_state');
+        console.log(
+          'HTTP seam rollback restored accepted functions; roles and runtime_probe preserved',
+        );
+      } else console.log('HTTP seam reapply verified exact migration and function hashes; no-op');
+    } else {
+      if (mode === 'rollback-http-seam')
+        throw new Error('Refusing rollback: HTTP seam not applied');
+      await client.query(sql);
+      await client.query(
+        'update core.http_seam_migration_state set migration_sha=$1,applied_hashes=$2::jsonb',
+        [sha, JSON.stringify(await fingerprint())],
+      );
+      console.log(`0003_http_seam.sql sha256=${sha}`);
+    }
+    await client.query('COMMIT');
+  } else if (mode === 'patch-house-timezone') {
+    if (!before.rows[0]?.core) throw new Error('Core schema missing; run guarded up first');
+    const sql = readFileSync(
+      new URL('../../drizzle/0002_house_timezone.sql', import.meta.url),
+      'utf8',
+    );
+    await client.query('BEGIN');
+    await client.query(sql);
+    await client.query('COMMIT');
+    console.log(`0002_house_timezone.sql sha256=${createHash('sha256').update(sql).digest('hex')}`);
+    console.log('Additive house timezone patch committed; schema, roles and fixtures retained');
   } else if (mode === 'up') {
     if (before.rows[0]?.core)
       throw new Error('Core schema exists; refusing unreviewed overwrite/reset');
@@ -72,6 +139,16 @@ try {
       await client.query(sql);
       console.log(`${file} sha256=${createHash('sha256').update(sql).digest('hex')}`);
     }
+    await client.query(
+      `update core.http_seam_migration_state set migration_sha=$1,applied_hashes=(select jsonb_object_agg(p.oid::regprocedure::text,md5(pg_get_functiondef(p.oid))) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='core' and p.proname in ('command','auth_command','auth_command_before_http','http_projection','clear_replay_secrets'))`,
+      [
+        createHash('sha256')
+          .update(
+            readFileSync(new URL('../../drizzle/0003_http_seam.sql', import.meta.url), 'utf8'),
+          )
+          .digest('hex'),
+      ],
+    );
     for (const role of ['app', 'auth'] as const) {
       if (!reuse)
         await client.query(`ALTER ROLE ourhoomu_core_${role} LOGIN PASSWORD '${passwords[role]}'`);
@@ -98,7 +175,10 @@ try {
     console.log(
       'Core schema and separately restricted app/auth roles migrated; secrets stored mode600',
     );
-  } else throw new Error('Usage: migrate.ts up|rollback');
+  } else
+    throw new Error(
+      'Usage: migrate.ts up|patch-house-timezone|patch-http-seam|rollback-http-seam|rollback',
+    );
   const after = await client.query<{ probe: string | null }>(
     "select to_regnamespace('runtime_probe')::text probe",
   );

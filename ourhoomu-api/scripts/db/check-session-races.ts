@@ -1,3 +1,4 @@
+import { issueSyntheticSession } from './fixtures';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { Pool, type PoolClient } from '@neondatabase/serverless';
@@ -25,24 +26,12 @@ const accountInput = {
 let checks = 0;
 
 async function issue(subject = randomUUID()) {
-  const proofDigest = digest(randomUUID());
-  const accessDigest = digest(randomUUID());
-  const refreshDigest = digest(randomUUID());
-  const challenge = await auth.execute('challenge', { provider: 'google', proofDigest });
-  await auth.execute('exchange', {
-    provider: 'google',
-    challengeId: challenge.challengeId,
-    proofDigest,
-    issuer: 'https://synthetic.invalid',
-    subject,
-    displayName: 'SW0049 synthetic',
-    accessDigest,
-    refreshDigest,
-    authTime: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 3600000).toISOString(),
-    refreshExpiresAt: new Date(Date.now() + 86400000).toISOString(),
-  });
-  return { principal: await auth.verifyAccessDigest(accessDigest), accessDigest, refreshDigest };
+  const result = await issueSyntheticSession(auth, 'SW0049 synthetic actor', subject);
+  return {
+    principal: result.claims,
+    accessDigest: result.accessDigest,
+    refreshDigest: result.refreshDigest,
+  };
 }
 
 async function begin(client: PoolClient, principal?: VerifiedPrincipal) {
@@ -145,7 +134,8 @@ async function revokedBeforeScope(op: string, replay = false, atChild = false) {
     );
     input = { expectedVersion: 1, label: 'must not persist' };
   }
-  if (op === 'house.update') input = { name: 'must not persist', expectedVersion: 1 };
+  if (op === 'house.update')
+    input = { name: 'must not persist', timezone: 'Asia/Bangkok', expectedVersion: 1 };
   if (op === 'chore.create') input = { title: 'must not persist', localDate: '2026-10-20' };
   if (op === 'bill.create' || op === 'bill.update') {
     const membership = (
@@ -205,7 +195,11 @@ async function revokedBeforeScope(op: string, replay = false, atChild = false) {
   }
   if (op === 'invite.accept') {
     const tokenDigest = digest(randomUUID());
-    const invitation = { tokenDigest, replayCiphertext: 'synthetic-envelope-'.repeat(4) };
+    const invitation = {
+      tokenDigest,
+      expiresInSeconds: 604800,
+      replayCiphertext: 'synthetic-envelope-'.repeat(4),
+    };
     await db.withPrincipal(principal, (tx) =>
       tx.command('invite.create', house, null, invitation, {
         keyDigest: digest(randomUUID()),

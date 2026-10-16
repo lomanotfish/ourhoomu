@@ -122,7 +122,7 @@ Frontend demo ไม่ใช้ปิดการตรวจ API/social login/
 - [x] SW-0049/0052: session lock-wait revocation correction and independent review.
 - [x] SW-0048/0050: strict signed issuer component independently approved and integrated; live/native login remains pending.
 - [x] SW-0051/0053: typed house repository/pagination independently approved and integrated; actual API-backed UI remains pending.
-- [ ] SW-0054: house timezone mutation parity before real house API integration.
+- [x] SW-0054: house timezone mutation parity before real house API integration.
 
 ## Turborepo and shared packages — SW-0056 (2026-10-15)
 - [x] Bun workspaces, one root lock, pinned Turbo/runtime, shared contracts and reproducible generation.

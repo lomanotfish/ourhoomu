@@ -1,3 +1,4 @@
+import { issueSyntheticSession } from './fixtures';
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { Pool } from '@neondatabase/serverless';
@@ -11,26 +12,11 @@ const db = new CoreDatabase(secrets.CORE_APP_DATABASE_URL);
 const owner = new Pool({ connectionString: secrets.MIGRATION_DATABASE_URL, max: 1 });
 const digest = (v: string) => createHash('sha256').update(v).digest('hex');
 async function issue() {
-  const proofDigest = digest(randomUUID());
-  const ch = await store.execute('challenge', { provider: 'google', proofDigest });
-  const accessDigest = digest(randomUUID()),
-    refreshDigest = digest(randomUUID());
-  const p = {
-    provider: 'google',
-    challengeId: ch.challengeId,
-    proofDigest,
-    issuer: 'https://synthetic.invalid',
-    subject: randomUUID(),
-    displayName: 'Synthetic session',
-    accessDigest,
-    refreshDigest,
-    authTime: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 3600000).toISOString(),
-    refreshExpiresAt: new Date(Date.now() + 86400000).toISOString(),
-  };
-  const claims = await store.execute('exchange', p);
-  await assert.rejects(() => store.execute('exchange', p));
-  return { claims, accessDigest, refreshDigest };
+  const result = await issueSyntheticSession(store, 'Synthetic session');
+  await assert.rejects(() =>
+    store.execute('exchange', { ...result.input, keyDigest: digest(randomUUID()) }),
+  );
+  return result;
 }
 async function denied(work: () => Promise<unknown>) {
   await assert.rejects(

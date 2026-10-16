@@ -35,8 +35,8 @@ export type ChoreRule = {
 export type ScheduleWrite = { title: string; emoji?: string; rule: ChoreRule };
 export interface Commands {
   'house.create': HouseCreate;
-  'house.update': Versioned & { name: string };
-  'invite.create': { tokenDigest: Digest; replayCiphertext: string };
+  'house.update': Versioned & HouseCreate;
+  'invite.create': { tokenDigest: Digest; replayCiphertext: string; expiresInSeconds: number };
   'invite.revoke': Record<string, never>;
   'invite.accept': { tokenDigest: Digest };
   'member.leave': Versioned;
@@ -80,6 +80,7 @@ export type CommandResult = {
     | 'session';
   replayed: boolean;
   replayCiphertext: string | null;
+  data?: MemberSnapshot | null;
 };
 export type RequestEvidence = Readonly<{ keyDigest: Digest; bodyHash: Digest }>;
 
@@ -149,3 +150,52 @@ export type SchedulePreview = {
   timezone: string;
   occurrences: Array<{ localDate: string; assigneeMembershipId: UUID | null }>;
 };
+
+/** Wire-safe projections; encrypted records below remain server-only. */
+export type MemberSnapshot = Omit<MemberProfile, 'houseId'> & { removedAt?: string };
+export type HouseProjection = { id: UUID; name: string; timezone: string; version: number };
+export type AccountProjection = {
+  id: UUID;
+  version: number;
+  bankCode: string;
+  label: string;
+  maskedAccount: string;
+  isDefault: boolean;
+  active: boolean;
+};
+export type AccountSecret = {
+  bankCode: string;
+  identifierCiphertext: string;
+  identifierDigest: Digest;
+  keyVersion: number;
+};
+export type InvitationProjection = {
+  id: UUID;
+  houseId: UUID;
+  expiresAt: string;
+  createdAt: string;
+  status: 'active' | 'consumed' | 'revoked';
+};
+export type ListOptions = { cursor?: UUID; limit?: number };
+export type ChallengeInput = {
+  provider: 'google' | 'apple';
+  proofDigest: Digest;
+  keyDigest: Digest;
+  bodyHash: Digest;
+};
+export type ExchangeReplayInput = ChallengeInput & { challengeId: UUID; checkReplay: true };
+export type VerifiedExchangeInput = ChallengeInput & {
+  challengeId: UUID;
+  issuer: string;
+  subject: string;
+  displayName: string;
+  authTime: string;
+  expiresAt: string;
+  refreshExpiresAt: string;
+  accessDigest: Digest;
+  refreshDigest: Digest;
+  replayCiphertext: string;
+};
+export type ChallengeResult = { challengeId: UUID; expiresAt: string; replayed: boolean };
+export type ExchangeResult = { replayed: boolean; replayCiphertext: string };
+export type ExchangeReplayResult = { pending: true } | { replayed: true; replayCiphertext: string };

@@ -381,3 +381,5 @@ SW-0005: Task`task_6b34d2b62c5c` / Dispatch`ctx_4b754b600f93`, existing exclusiv
 
 ## Secure storage accepted — 2026-10-16
 SW0055/0061 done for bounded component: source7bbdf1a, original independent S1 finding corrected and non-author Lead recheck approved; local6fb08d6,15forced tasks/164unit/24E2E and postmerge probe/code parity pass. Native hardware/provider acceptance remains separate. Data59 and API5 continue in isolated checkouts; HTTP security checkpoint62 starts at frozeneed9420, no DB access. [Evidence](reports/SW-0055-integration.md).
+
+Storage source55v2/review61 paths and branches confirmed absent after Orca cleanup with hooks; owned source/report commits remain in local6fb08d6, all reports/probe durable. HTTP checkpoint62 report3e06eb8 changes_requested for sole P2 BOM decoding; author fix2a36ca2/reportab90e83 is ready for non-author recheck before final API integration. Reviewer released/captured before ack; unmerged HTTP review checkout retained until source5 accepted. Data59 full suites passed by author but final schema parity/security review pending.

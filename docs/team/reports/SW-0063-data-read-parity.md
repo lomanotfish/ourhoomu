@@ -84,3 +84,36 @@ read parity acceptance for list ordering/cursors and limits, expiry and
 cross-house hiding, payment privacy, recipient account selector scope, exact
 dashboard totals/local date, and activity privacy. Schedule acceptance stays
 blocked until the required `expiresAt` mapping is resolved.
+
+## Restricted read-parity acceptance prepared
+
+Added `ourhoomu-api/scripts/db/check-read-parity.ts` as a synthetic-only
+restricted-role suite. It covers two-page bill and payment lists, three-page
+activity lists, same-local-date chore pagination and date filters, invalid
+cursor/date/range rejection, draft and cross-house hiding, recipient-account
+selector masking and scope, safe read projections, exact dashboard decimal
+balances and integer pending amounts, Bangkok-local dashboard chores, expired
+parent/child visibility, removed memberships, and revoked sessions. The
+migration credential is used only to age disposable synthetic rows for expiry
+tests; app reads remain through the restricted runtime principal. The script
+was not executed because the Lead reserved the current database window for API
+handler acceptance.
+
+The dashboard contract review found `outstandingSatang` was summing other
+members' remaining shares. Updated its filter to the current viewer's own
+membership and added a large synthetic exact-value acceptance assertion
+(`2160000000000` satang). The restricted database assertion remains NOT
+VERIFIED until run in the granted synthetic window.
+
+Offline verification on this checkpoint:
+- `cd ourhoomu-api && bun run typecheck` — passed, including the new acceptance
+  script.
+- `cd ourhoomu-api && bun run lint` — passed.
+- `cd ourhoomu-api && bun test tests` — 67 passed, 0 failed (110 assertions).
+- `cd ourhoomu-api && bunx biome format --write scripts/db/check-read-parity.ts
+  src/db/connection.ts` — formatting applied; subsequent `bun run format:check`
+  passed.
+- `git diff --check` — passed after the report edit.
+
+No DB calls were made. Schedule reads remain blocked on the required
+`expiresAt` contract/schema decision documented above.

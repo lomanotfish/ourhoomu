@@ -402,7 +402,7 @@ export class CoreTransaction {
       )
       select jsonb_build_object(
         'asOf',(select at from asof),
-        'outstandingSatang',coalesce((select sum(amount) from remaining where membership_id<>(select membership_id from viewer)),0)::numeric::text,
+        'outstandingSatang',coalesce((select sum(amount) from remaining where membership_id=(select membership_id from viewer)),0)::numeric::text,
         'owedToMeSatang',coalesce((select sum(amount) from remaining where recipient_membership_id=(select membership_id from viewer)),0)::numeric::text,
         'pendingSatang',coalesce((select sum(amount_satang)::numeric from pending where payer_membership_id=(select membership_id from viewer)),0)::numeric::text,
         'pendingPayments',coalesce((select jsonb_agg(item order by id) from (

@@ -94,6 +94,21 @@ try {
     console.log(
       `Private destination AAD ${action} complete; sha256=${createHash('sha256').update(sql).digest('hex')}`,
     );
+  } else if (mode === 'patch-bill-detail-actions' || mode === 'rollback-bill-detail-actions') {
+    if (!before.rows[0]?.core)
+      throw new Error('Bill detail actions patch requires accepted existing core');
+    const isRollback = mode === 'rollback-bill-detail-actions';
+    const file = isRollback
+      ? './sql/rollback-bill-detail-actions.sql'
+      : '../../drizzle/0005_bill_detail_actions.sql';
+    const sql = readFileSync(new URL(file, import.meta.url), 'utf8');
+    await client.query('BEGIN');
+    await client.query(sql);
+    await client.query('COMMIT');
+    const action = isRollback ? 'rollback' : 'patch';
+    console.log(
+      `Bill detail actions ${action} complete; sha256=${createHash('sha256').update(sql).digest('hex')}`,
+    );
   } else if (mode === 'patch-house-timezone') {
     if (!before.rows[0]?.core) throw new Error('Core schema missing; run guarded up first');
     const sql = readFileSync(
@@ -195,7 +210,7 @@ try {
     );
   } else
     throw new Error(
-      'Usage: migrate.ts up|patch-house-timezone|patch-http-seam|rollback-http-seam|patch-private-destination-aad|rollback-private-destination-aad|rollback',
+      'Usage: migrate.ts up|patch-house-timezone|patch-http-seam|rollback-http-seam|patch-private-destination-aad|rollback-private-destination-aad|patch-bill-detail-actions|rollback-bill-detail-actions|rollback',
     );
   const after = await client.query<{ probe: string | null }>(
     "select to_regnamespace('runtime_probe')::text probe",

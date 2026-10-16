@@ -196,6 +196,24 @@ async function main() {
       participants: [{ membershipId: memberB, basisPoints: 10000 }],
       publish: false,
     });
+    const draftDetail = await read(a.claims, (tx) => tx.bill(houseId, draftBill));
+    exactKeys(draftDetail.actions, [
+      'canEditDraft',
+      'canPublish',
+      'canVoid',
+      'canCreatePayment',
+      'canViewRecipientAccount',
+    ]);
+    assert.deepEqual(draftDetail.actions, {
+      canEditDraft: true,
+      canPublish: true,
+      canVoid: true,
+      canCreatePayment: false,
+      canViewRecipientAccount: false,
+    });
+    assert.equal(draftDetail.shares[0]?.amount_satang, null);
+    assert.equal(draftDetail.shares[0]?.remaining_satang, null);
+    assert.equal(draftDetail.shares[0]?.reserved_satang, '0');
 
     const selector = await read(a.claims, (tx) => tx.accountSelector(houseId, draftBill, memberB));
     assert.equal(selector.length, 1);
@@ -234,6 +252,18 @@ async function main() {
     assert(!billPage1.items.some((item) => 'identifierCiphertext' in item));
     assert(!billPage1.items.some((item) => 'recipientAccountEncrypted' in item));
     assert(billPage1.items.every((item) => Number.isSafeInteger(item.totalSatang)));
+    assert(
+      billPage1.items.every((item) => {
+        exactKeys(item.actions, [
+          'canEditDraft',
+          'canPublish',
+          'canVoid',
+          'canCreatePayment',
+          'canViewRecipientAccount',
+        ]);
+        return true;
+      }),
+    );
     noPrivateFields([...billPage1.items, ...billPage2.items]);
     const memberBills = await read(b.claims, (tx) => tx.bills(houseId));
     assert.equal(memberBills.items.length, 20);
@@ -316,6 +346,23 @@ async function main() {
         ).resourceId,
       );
     }
+    const billWithReservations = await read(a.claims, (tx) => tx.bill(houseId, paymentBillId));
+    const ownerShare = billWithReservations.shares.find((share) => share.membership_id === memberA);
+    assert(ownerShare);
+    assert.equal(ownerShare.reserved_satang, '21');
+    assert.equal(ownerShare.remaining_satang, '720000000000');
+    exactKeys(billWithReservations.actions, [
+      'canEditDraft',
+      'canPublish',
+      'canVoid',
+      'canCreatePayment',
+      'canViewRecipientAccount',
+    ]);
+    assert.equal(billWithReservations.actions.canCreatePayment, true);
+    assert.equal(billWithReservations.actions.canViewRecipientAccount, true);
+    const nonOwingDetail = await read(d.claims, (tx) => tx.bill(houseId, paymentBillId));
+    assert.equal(nonOwingDetail.actions.canCreatePayment, false);
+    assert.equal(nonOwingDetail.actions.canViewRecipientAccount, false);
     const paymentPage1 = await read(a.claims, (tx) =>
       tx.payments(houseId, paymentBillId, { limit: 20 }),
     );

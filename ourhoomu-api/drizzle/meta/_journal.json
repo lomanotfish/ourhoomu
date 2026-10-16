@@ -36,6 +36,13 @@
       "when": 1792146368744,
       "tag": "0004_private_destination_aad",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792152206910,
+      "tag": "0005_bill_detail_actions",
+      "breakpoints": true
     }
   ]
 }

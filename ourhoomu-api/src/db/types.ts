@@ -101,7 +101,18 @@ export type PaymentRecord = Omit<
 export type ShareRecord = Omit<
   JsonRow<typeof import('./schema').shares.$inferSelect>,
   'retention_deadline_at'
-> & { confirmed_satang: string; remaining_satang: string | null };
+> & {
+  confirmed_satang: string;
+  reserved_satang: string;
+  remaining_satang: string | null;
+};
+export type BillActions = {
+  canEditDraft: boolean;
+  canPublish: boolean;
+  canVoid: boolean;
+  canCreatePayment: boolean;
+  canViewRecipientAccount: boolean;
+};
 export type MaskedDestination = {
   sourceAccountId: UUID;
   accountVersion: number;
@@ -128,6 +139,7 @@ export type BillRecord = Omit<
   shares: ShareRecord[];
   recipientAccountMasked: MaskedDestination | null;
   recipientAccountEncrypted: EncryptedDestination | null;
+  actions: BillActions;
 };
 export type MemberProfile = {
   id: UUID;
@@ -173,6 +185,7 @@ export type BillListProjection = {
   viewerMembershipId: UUID;
   viewerRemainingSatang: number;
   viewerPendingSatang: number;
+  actions: BillActions;
 };
 export type PaymentSummaryProjection = {
   id: UUID;

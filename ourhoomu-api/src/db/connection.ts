@@ -37,6 +37,42 @@ import type {
 } from './types';
 
 const verified = Symbol('server-verified-principal');
+const billActionsSql = (
+  bill = 'b',
+  viewer = '(select id from viewer)',
+  at = '(select at from asof)',
+) =>
+  `jsonb_build_object(
+    'canEditDraft',${bill}.creator_membership_id=${viewer} and ${bill}.status='draft',
+    'canPublish',case when ${bill}.creator_membership_id=${viewer} and ${bill}.status='draft' then
+      exists(select 1 from core.house_memberships r where r.house_id=${bill}.house_id
+        and r.id=${bill}.recipient_membership_id and r.state='active')
+      and not exists(select 1 from core.bill_shares s join core.house_memberships x
+        on x.house_id=s.house_id and x.id=s.membership_id
+        where s.house_id=${bill}.house_id and s.bill_id=${bill}.id and x.state<>'active')
+      and jsonb_array_length(core.account_selector(${bill}.house_id,${bill}.id))>0 else false end,
+    'canVoid',${bill}.creator_membership_id=${viewer} and ${bill}.status<>'voided'
+      and not exists(select 1 from core.payment_confirmations c
+        where c.house_id=${bill}.house_id and c.bill_id=${bill}.id),
+    'canCreatePayment',${bill}.status='open' and ${bill}.expires_at>${at} and exists(
+      select 1 from core.bill_shares s where s.house_id=${bill}.house_id and s.bill_id=${bill}.id
+        and s.membership_id=${viewer} and not s.self_covered and s.expires_at>${at}
+        and s.amount_satang::numeric-coalesce((select sum(c.amount_satang)::numeric
+          from core.payment_confirmations c where c.house_id=s.house_id and c.bill_id=s.bill_id
+            and c.payer_membership_id=s.membership_id and c.expires_at>${at}),0)-coalesce((select sum(p.amount_satang)::numeric
+          from core.payment_attempts p where p.house_id=s.house_id and p.bill_id=s.bill_id
+            and p.payer_membership_id=s.membership_id and p.reservation_released_at is null
+            and p.reservation_until>${at} and p.expires_at>${at}),0)>0),
+    'canViewRecipientAccount',${bill}.expires_at>${at}
+      and exists(select 1 from core.bill_recipient_snapshots x where x.house_id=${bill}.house_id
+        and x.bill_id=${bill}.id and x.expires_at>${at})
+      and (${bill}.recipient_membership_id=${viewer} or exists(
+        select 1 from core.bill_shares s where s.house_id=${bill}.house_id and s.bill_id=${bill}.id
+          and s.membership_id=${viewer} and not s.self_covered and s.expires_at>${at} and s.amount_satang::numeric>
+            coalesce((select sum(c.amount_satang)::numeric from core.payment_confirmations c
+              where c.house_id=s.house_id and c.bill_id=s.bill_id and c.payer_membership_id=s.membership_id and c.expires_at>${at}),0)))
+  )`;
+
 export type VerifiedPrincipal = Readonly<{
   userId: UUID;
   sessionId: UUID;
@@ -284,7 +320,8 @@ export class CoreTransaction {
     const { limit, cursor } = this.listOptions(options);
     await this.ensureMember(houseId);
     return this.readPage<BillListProjection>(
-      `with viewer as (select core.member($1::uuid) id),
+      `with asof as (select statement_timestamp() at),
+       viewer as (select core.member($1::uuid) id),
        cursor_row as (select created_at,id from core.bills where house_id=$1::uuid and id=$3::uuid)
        select coalesce(jsonb_agg(item order by created_at,id),'[]'::jsonb) data from (
          select b.id,b.created_at,jsonb_build_object(
@@ -321,7 +358,8 @@ export class CoreTransaction {
            'viewerPendingSatang',coalesce((select sum(p.amount_satang)::numeric from core.payment_attempts p
              where p.house_id=b.house_id and p.bill_id=b.id and p.payer_membership_id=(select id from viewer)
                and p.reservation_released_at is null and p.reservation_until>statement_timestamp()
-               and p.expires_at>statement_timestamp()),0)
+               and p.expires_at>statement_timestamp()),0),
+           'actions',${billActionsSql('b')}
          ) item
          from core.bills b
          where b.house_id=$1::uuid and b.expires_at>statement_timestamp()

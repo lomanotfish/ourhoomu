@@ -174,3 +174,38 @@ made no schema or migration changes. Its `finally` closed all three pools and
 the process exited without an active runner. Captured output is retained at
 `/tmp/ourhoomu-corecheck-e73a071.log` in the local environment; credentials
 and branch receipt contents are not included in this report.
+
+## Bill action and reservation projection candidate — offline only
+Prepared additive migration `0005_bill_detail_actions` without editing accepted
+`0000`–`0004`. The exact predecessor body was matched to the captured
+`core.bill_detail(uuid,uuid)` definition: OID 61303, source MD5
+`161704d41ad0681f0333a82508718a49`, and definition SHA-256
+`b50a2d8d73987c3898d077b4468a74da4b4b4148be7e7573d1f6020dc9b8f22b`. The
+migration replaces only that function body. It preserves the live-member,
+parent-expiry, account snapshot and private-destination paths; adds each share's
+`reserved_satang` from unreleased, unexpired attempts under a live parent; keeps
+`remaining_satang` as allocation minus confirmed credits; and adds the five
+existing `BillActions` fields. Draft amounts and remaining remain null. The
+list projection obtains `canPublish` through the already-authorized
+`core.account_selector` function, avoiding a direct RLS-hidden recipient account
+lookup. No table, column, grant, or OpenAPI change is included.
+
+Apply and rollback guard the exact predecessor/candidate source hashes, function
+signature, SECURITY DEFINER/search_path, owner, ACL, and post-replacement
+function identity. Reapply is a no-op only for the recognized candidate;
+rollback restores the exact captured predecessor only from the candidate and
+fails closed on unknown definitions. Migration SQL SHA-256:
+`2e616611b4cdacf06bc1eca373119700b793158b189131ed4c5b08dfb9a1c58e`; rollback
+SQL SHA-256:
+`d0aa31af8818d57e158421f721a21d73701aaa7f489689a17d1ec3d98e7f194d`.
+
+Offline checks passed: `bun run typecheck`, `bun run lint`,
+`bun scripts/db/check-bill-detail-actions-migration.ts`,
+`bunx drizzle-kit check`, and `git diff --check`. The static test verifies exact
+predecessor/replacement/rollback bodies, hashes, guard and metadata invariants,
+wire field allowlists, active reservation filters, and null draft arithmetic.
+The restricted acceptance script now asserts draft action values, bill-list
+action keys, per-share reservations, gross remaining, and an unrelated member's
+action denial. This candidate has NOT been applied or run against a database;
+independent security review and a separately granted synthetic apply/reapply /
+rollback acceptance window remain required.

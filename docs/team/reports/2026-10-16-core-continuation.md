@@ -81,3 +81,10 @@ User requested completing remaining work after reviewing the backlog. Existing a
 - Frontend owner direct-bootstrap attempt ended BLOCKED: dirty source/test/UI preserved and backed up /tmp/ourhoomu-frontend-blocked-backup.patch; focused file6pass/3fail including timeout. An untested unconditional401guard was left in dirty source and MUST NOT integrate. QA read-only source-vs-fixture diagnosis assigned; no completion claimed.
 - Domain actual typed adapter being implemented in isolated worktree against provisional SW63; own diff backed up /tmp/ourhoomu-domain-adapter-backup.patch. No dispatcher integration acceptance.
 - Data owner0004 server-only frozen snapshotAAD implementation offline, no synthetic/production migration applied. Independent review and actual restricted tests pending before use.
+
+## Continuation recovery and narrow pending gates
+
+- Frontend4578a32 committed direct-bootstrap fixture corrections; Lead fresh focused9tests38assertions pass. Independent reviewer approves bounded session layer but current dirty UI still has stale post-await mutation callbacks and busy reset gap. Owner task ui-generation-all-mutations receives exact before-await/current-generation plan; no frontend merge until UI delta verified.
+- Domain dirty adapter rewrite silently replaced required endpoints with503 and removed original handlers; architecture review rejects it. Retain backup, return original dispatch then augment narrow data seams. No domain rewrite integrated.
+- AAD security reviewer recovered exact accepted old functionOID61299/hash and is executing function-only migration lifecycle/restricted tests on synthetic target with exclusive window; no production operations.
+- User schedule expiresAt material question remains pending; no default decision inferred from silence. Work not dependent on it continues.

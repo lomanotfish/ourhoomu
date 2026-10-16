@@ -251,11 +251,18 @@ try {
       ),
     'idempotency_conflict',
   );
-  assert.deepEqual(await db.withPrincipal(b, (tx) => tx.dashboard(h1)), {
-    outstandingSatang: '10000',
-    owedToMeSatang: '0',
-    pendingSatang: '4000',
-  });
+  const dashboardBeforeConfirmation = await db.withPrincipal(b, (tx) => tx.dashboard(h1));
+  assert.equal(dashboardBeforeConfirmation.outstandingSatang, '10000');
+  assert.equal(dashboardBeforeConfirmation.owedToMeSatang, '0');
+  assert.equal(dashboardBeforeConfirmation.pendingSatang, '4000');
+  assert(dashboardBeforeConfirmation.asOf);
+  assert.equal(dashboardBeforeConfirmation.cashAwaitingDecisionCount, 0);
+  const creatorDashboard = await db.withPrincipal(a, (tx) => tx.dashboard(h1));
+  assert.equal(creatorDashboard.cashAwaitingDecisionCount, 1);
+  assert(
+    dashboardBeforeConfirmation.pendingPayments.some((payment) => payment.id === p1.resourceId),
+  );
+  assert(Array.isArray(dashboardBeforeConfirmation.todayChores));
   await rejects(
     () => command(b, 'cash.confirm', h1, p1.resourceId, { expectedVersion: 1 }),
     'forbidden',
@@ -279,11 +286,14 @@ try {
     ).rows[0]?.n,
     1,
   );
-  assert.deepEqual(await db.withPrincipal(b, (tx) => tx.dashboard(h1)), {
-    outstandingSatang: '6000',
-    owedToMeSatang: '0',
-    pendingSatang: '0',
-  });
+  const dashboardAfterConfirmation = await db.withPrincipal(b, (tx) => tx.dashboard(h1));
+  assert.equal(dashboardAfterConfirmation.outstandingSatang, '6000');
+  assert.equal(dashboardAfterConfirmation.owedToMeSatang, '0');
+  assert.equal(dashboardAfterConfirmation.pendingSatang, '0');
+  assert(dashboardAfterConfirmation.asOf);
+  assert.equal(dashboardAfterConfirmation.cashAwaitingDecisionCount, 0);
+  assert(Array.isArray(dashboardAfterConfirmation.pendingPayments));
+  assert(Array.isArray(dashboardAfterConfirmation.todayChores));
   const p2 = (
     await command(b, 'payment.reserve', h1, bid, {
       method: 'cash',

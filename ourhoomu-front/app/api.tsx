@@ -39,7 +39,15 @@ export default function ApiModeScreen() {
   const activeHouseIdRef = useRef<string | null>(activeHouse?.id ?? null);
   activeHouseIdRef.current = activeHouse?.id ?? null;
 
-  useEffect(() => {
+  const clearAccountForm = () => {
+    setAccountEditing(null);
+    setAccountLabel('');
+    setBankCode('');
+    setAccountNumber('');
+    setAccountDefault(false);
+  };
+
+  const resetAuthenticatedData = () => {
     ++loadGeneration.current;
     ++dataGeneration.current;
     setBusy(false);
@@ -52,24 +60,15 @@ export default function ApiModeScreen() {
     setProfileName('');
     setHouses([]);
     setPersistedHouseId(null);
+    clearAccountForm();
+  };
+
+  useEffect(() => {
+    resetAuthenticatedData();
   }, [authGeneration, runtime]);
 
   const clearAuthenticatedData = () => {
-    ++loadGeneration.current;
-    ++dataGeneration.current;
-    setProfileName('');
-    setHouses([]);
-    setPersistedHouseId(null);
-    setActiveHouse(null);
-    setBusy(false);
-    setMembers([]);
-    setAccounts([]);
-    setActiveInvitation(null);
-    setAccountEditing(null);
-    setAccountLabel('');
-    setBankCode('');
-    setAccountNumber('');
-    setAccountDefault(false);
+    resetAuthenticatedData();
   };
 
   const clearHouseData = (houseId: string) => {
@@ -141,8 +140,6 @@ export default function ApiModeScreen() {
         liveGeneration: () => dataGeneration.current,
         authGeneration: authAtStart,
         liveAuthGeneration: () => authGenerationRef.current,
-        targetHouseId: house.id,
-        liveTargetHouseId: () => activeHouseIdRef.current,
       }).current;
       setError('');
       setBusy(true);
@@ -506,14 +503,6 @@ export default function ApiModeScreen() {
     } finally {
       if (current()) setBusy(false);
     }
-  };
-
-  const clearAccountForm = () => {
-    setAccountEditing(null);
-    setAccountLabel('');
-    setBankCode('');
-    setAccountNumber('');
-    setAccountDefault(false);
   };
 
   const beginEditAccount = (account: OwnAccount) => {

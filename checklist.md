@@ -146,3 +146,5 @@ Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This 
 - [x] SW-0005 local/dev HTTP milestone: actual Elysia/restricted synthetic DB/synthetic signed issuer Playwright7/7 independently pass; source77b7fb6+244348c. [Evidence](docs/team/reports/SW-0005-http-acceptance-qa.md). Full native/provider identity and account deletion acceptance remain open.
 
 - [x] SW-0063 non-schedule read milestone: bills/payments/chores/activity/dashboard and masked selector, independent restricted7groups exit0 plus integrated10offline tasks. [Evidence](docs/team/reports/SW-0063-security-read-recheck.md). Schedule expiry mapping remains open.
+
+- [x] Private destination AAD server-only seam: frozen snapshot fields behind unchanged authorization, independent8groups/schema4/lifecycle/invariants and integrated10offline tasks pass. [Review](docs/team/reports/SW-0063-private-destination-aad-security-review.md). Full legacy suite and bill handler acceptance remain open.

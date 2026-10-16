@@ -408,3 +408,6 @@ SW0005 core HTTP77b7fb6 + data244348c independently approved and actual QA7/7 at
 
 
 SW0063 non-schedule reads accepted (bb1da9b+62bcb61, independent8f4db38): real restricted7groups exit0, projection/permissions/pagination/chore reopen tests pass; integrated forced10tasks pass. Schedule expiresAt mapping remains pending user decision, so full ticket remains in_progress. DataAAD extension and domain/frontend integration remain open.
+
+
+Private bill snapshot AAD bounded seam accepted: source dfb7e6e+20ae005, independent report5453ded confirms restricted8groups/schema4/function lifecycle and unchanged OID/ACL/roles/probe. Isolated integration forced10offline tasks pass; full legacy DB invariant suite remains open due stale expanded-dashboard assertion, owner correcting separately. This is server-only projection, no wire secret exposure or full bill-handler acceptance.

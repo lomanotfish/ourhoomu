@@ -74,3 +74,10 @@ User requested completing remaining work after reviewing the backlog. Existing a
 - SW63 sourcebb1da9b addresses unconditional dashboard membership, null optional chore fields and reopened completion actor. Independent review found owner report claimed assertions not committed; owner added real assertions62bcb61 and review will rerun newest script.
 - Private destinationAAD migration0004 in offline implementation only; accepted0000–3 immutable, runtime SQL apply blocked until explicit exclusive test window and independent review.
 - Frontendc100906 review reproduced actual bootstrap401 deleting valid refresh; final owner task uses protected canonical client and DIRECT bootstrap tests, not manual authority priming. No frontend acceptance inferred from existing passing tests.
+
+## Non-schedule reads integrated; frontend remains blocked
+
+- SW63bb1da9b+62bcb61 independently rerun7groups exit0, report8f4db38; final roles/probe/grants unchanged/pools closed. Isolated mergec731b5b forced10offline tasks pass; local47e34cc accepts non-schedule milestone. Full SW63 schedule expiry still pending user decision.
+- Frontend owner direct-bootstrap attempt ended BLOCKED: dirty source/test/UI preserved and backed up /tmp/ourhoomu-frontend-blocked-backup.patch; focused file6pass/3fail including timeout. An untested unconditional401guard was left in dirty source and MUST NOT integrate. QA read-only source-vs-fixture diagnosis assigned; no completion claimed.
+- Domain actual typed adapter being implemented in isolated worktree against provisional SW63; own diff backed up /tmp/ourhoomu-domain-adapter-backup.patch. No dispatcher integration acceptance.
+- Data owner0004 server-only frozen snapshotAAD implementation offline, no synthetic/production migration applied. Independent review and actual restricted tests pending before use.

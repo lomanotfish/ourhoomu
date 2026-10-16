@@ -405,3 +405,6 @@ Corrected SW0059/SW0064 bounded data seam accepted: source244348c, independent r
 ## Core HTTP local/dev milestone accepted — 2026-10-16
 
 SW0005 core HTTP77b7fb6 + data244348c independently approved and actual QA7/7 at15d6a05. Backend/package source in integration matches tested tree; forced10offline tasks pass. See [QA](reports/SW-0005-http-acceptance-qa.md). Full SW0005 remains in_progress for real native/provider identity and guarded account deletion; frontend/domain/retention/release remain open. Data63 corrections under independent guarded recheck; no unaccepted frontend/domain component integrated.
+
+
+SW0063 non-schedule reads accepted (bb1da9b+62bcb61, independent8f4db38): real restricted7groups exit0, projection/permissions/pagination/chore reopen tests pass; integrated forced10tasks pass. Schedule expiresAt mapping remains pending user decision, so full ticket remains in_progress. DataAAD extension and domain/frontend integration remain open.

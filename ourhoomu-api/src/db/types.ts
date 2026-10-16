@@ -146,6 +146,92 @@ export type DashboardTotals = {
   owedToMeSatang: string;
   pendingSatang: string;
 };
+export type CorePage<T> = { items: T[]; nextCursor: UUID | null };
+export type ChoreListOptions = ListOptions & { fromDate?: string; toDate?: string };
+export type BillListProjection = {
+  id: UUID;
+  houseId: UUID;
+  creatorMembershipId: UUID;
+  recipientMembershipId: UUID;
+  title: string;
+  emoji: string | null;
+  dueDate: string;
+  totalSatang: number;
+  currency: 'THB';
+  status: 'draft' | 'open' | 'settled' | 'voided';
+  version: number;
+  recipientAccountMasked: string | null;
+  createdAt: string;
+  expiresAt: string;
+  confirmedSatang: number;
+  outstandingSatang: number;
+  pendingSatang: number;
+  viewerMembershipId: UUID;
+  viewerRemainingSatang: number;
+  viewerPendingSatang: number;
+};
+export type PaymentSummaryProjection = {
+  id: UUID;
+  billId: UUID;
+  payerMembershipId: UUID;
+  method: 'cash' | 'transfer';
+  amountSatang: number;
+  status:
+    | 'awaiting_confirmation'
+    | 'awaiting_upload'
+    | 'verifying'
+    | 'pending_verification'
+    | 'needs_attention'
+    | 'confirmed'
+    | 'rejected'
+    | 'cancelled';
+  version: number;
+  createdAt: string;
+  expiresAt: string;
+  reservationExpiresAt?: string;
+  confirmedAt?: string;
+  decisionByMembershipId?: UUID;
+  decidedAt?: string;
+  rejectionReason?: string;
+};
+export type ChoreProjection = {
+  id: UUID;
+  houseId: UUID;
+  scheduleId?: UUID;
+  title: string;
+  localDate: string;
+  assigneeMembershipId?: UUID;
+  status: 'pending' | 'completed' | 'cancelled';
+  version: number;
+  expiresAt: string;
+  emoji?: string;
+  assignmentState: 'assigned' | 'unassigned';
+  completedAt?: string;
+  completedByMembershipId?: UUID;
+};
+export type ScheduleProjection = {
+  id: UUID;
+  houseId: UUID;
+  title: string;
+  rule: ChoreRule;
+  version: number;
+  expiresAt: string;
+  emoji?: string;
+};
+export type ActivityProjection = {
+  id: UUID;
+  houseId: UUID;
+  kind: string;
+  summary: string;
+  createdAt: string;
+  expiresAt: string;
+};
+export type DashboardProjection = DashboardTotals & {
+  asOf: string;
+  pendingPayments: PaymentSummaryProjection[];
+  todayChores: ChoreProjection[];
+  cashAwaitingDecisionCount: number;
+};
 export type SchedulePreview = {
   timezone: string;
   occurrences: Array<{ localDate: string; assigneeMembershipId: UUID | null }>;

@@ -44,3 +44,43 @@ candidate then applied successfully.
 The independent security reviewer still needs to recheck the corrected source
 and lock-order behavior. SW-0063 read projections and their acceptance tests are
 not implemented at this checkpoint.
+
+## Read parity implementation checkpoint — 2026-10-16
+
+The current isolated implementation adds paginated bills, payment summaries,
+chores and activity reads, recipient-scoped account selection, and the expanded
+dashboard projection in `src/db/connection.ts`. `CorePage<T>` is
+`{ items: T[]; nextCursor: UUID | null }`; each cursor is the final item's ID,
+while SQL resolves the row's stable ordering tuple (`created_at,id` for bills,
+payments and activity; `local_date,id` for chores). This preserves the frozen
+wire envelope's UUID-shaped `nextCursor` while following the OpenAPI ordering
+contract. Limits remain 20 by default and 100 maximum. Activity summaries expose
+only event kind and related chore/bill title; they do not include account,
+payment-provider or slip details. Bill totals bounded by MAX_SATANG are JSON
+integers; cross-house dashboard totals remain exact decimal strings.
+
+The schedule list/detail implementation is gated by a contract mismatch. The
+OpenAPI `ChoreSchedule.expiresAt` is required and non-null, but the accepted
+schema has no active schedule expiry: `chore_schedules` is current state, and
+only superseded revisions have `archive_expires_at`. Current domain policy also
+classifies active schedules as current state. No expiry mapping has been
+invented. Lead is obtaining the user's decision; schedule methods and the final
+domain interface remain pending that answer.
+
+Verification completed offline in this worktree:
+
+- `bun install --frozen-lockfile` — completed with Bun 1.4.3.
+- `bun run typecheck` — passed.
+- `bun test tests` — 67 passed, 0 failed (110 assertions).
+- `bun run format:check` — initially reported the required formatting change;
+  `bunx biome format --write src/db/connection.ts` applied it.
+- `bun run lint` — initially reported the two unused imports; they were removed.
+- Restricted-role checks have not run for this checkpoint. The Lead's
+  synthetic database window is currently withheld pending the real HTTP handler
+  acceptance step. No database commands were run from this worktree.
+
+Required next step: once the Lead grants a restricted synthetic DB window, run
+read parity acceptance for list ordering/cursors and limits, expiry and
+cross-house hiding, payment privacy, recipient account selector scope, exact
+dashboard totals/local date, and activity privacy. Schedule acceptance stays
+blocked until the required `expiresAt` mapping is resolved.

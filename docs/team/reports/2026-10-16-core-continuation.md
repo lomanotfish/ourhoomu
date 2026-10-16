@@ -65,3 +65,12 @@ User requested completing remaining work after reviewing the backlog. Existing a
 - QA found frontend test deferred-promise deadlock; owner receives exact sequencing fix, source diff backed up at /tmp/ourhoomu-front-final-backup.patch. No test failure is counted as passing.
 - Domain correction attempt failed file recovery and restored its own unaccepted changes to committed af41e7b; no user/root data lost, no integration. New narrow owner task commits verified projection/date/privacy fixes separately.
 - Private bill decryption investigation: accepted snapshot copies ciphertext unchanged, but authorized internal function omits recipient_user_id+identifier_digest required by AES AAD. Restricted role has no direct column grant. Database owner will propose reviewed additive server-only seam, never wire exposure or mutable account fallback.
+
+## Independent HTTP acceptance integrated
+
+- QA actual Playwright7/7 at15d6a05 (77b7fb6+244348c), reportbdea841, redacted durable log in common git. QA listener18765/pools closed; explicit DB release.
+- Isolated integration backend/contracts tree exactly matches QA tested source; frozen install and forced10offline tasks pass, no cache hits. Local fast-forwarddb2d608 accepts local HTTP milestone while originalSW0005 remains open for real native/live issuer and guarded account deletion.
+- Root user dirty files remain preserved; no production/provider/publishing action.
+- SW63 sourcebb1da9b addresses unconditional dashboard membership, null optional chore fields and reopened completion actor. Independent review found owner report claimed assertions not committed; owner added real assertions62bcb61 and review will rerun newest script.
+- Private destinationAAD migration0004 in offline implementation only; accepted0000–3 immutable, runtime SQL apply blocked until explicit exclusive test window and independent review.
+- Frontendc100906 review reproduced actual bootstrap401 deleting valid refresh; final owner task uses protected canonical client and DIRECT bootstrap tests, not manual authority priming. No frontend acceptance inferred from existing passing tests.

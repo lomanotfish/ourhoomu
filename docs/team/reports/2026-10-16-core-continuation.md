@@ -108,3 +108,11 @@ User requested completing remaining work after reviewing the backlog. Existing a
 - Legacycoreteste73a071 actual cleancheckout21groups exit0, report4a85573, poolsclosed. Its assertions preserve exactmoney and current-viewer cashdecision counts; sourceintegrated alongsidefrontend.
 - Browserharness Pi work test-only; read-only reviewer suggested customExpoRoot entry using existing testRuntime; no productionauthbridge/publictoken. External authgeneration propagation not implied by testRuntime override.
 - Dataactions/reservations offline implementation awaiting exactguardedbill_detail baseline capturedfromDB. Domain dispatch restored original401d0ca; dirtyadapter/tests remain unaccepted and failtypes/lint until narrowcheckpointownerfixes.
+
+## Current active work after accepted milestones
+
+- Local4e75c44 contains approved coreHTTP/data/privateAAD and boundedAPIclient/UI. Root user modifications preserved.
+- Legacy finance suite cleane73a07121groups exit0, report4a85573 committed; no longer blocked by stale dashboard comparison. Source acceptedtests retain exact3money expectations and creator-only cash counts.
+- BrowserAPI-mode signedout2tests passed author; test-only files uncommitted at first delivery, no authenticatedcoverage. Lead explicitlyauthorized isolated DEVELOPMENT ExpoRoot entry/harness (existing scope), no productionauthbypass, publictokens, newdeps or DBcalls. Owner continues actualscreen fixturebrowser coverage with honest limits.
+- Bill0005 offline migration nowbeing prepared against catalog-captured actualpredecessor; exactsameauthorization plus internal reserved totals/actionflags peracceptedwire. No apply before frozencommit/securityreview. Cash/chore projection parity follows separate slices.
+- Domain originaldispatch401d0ca restored and cleancheckpointa6e310a holds typedadapter draft unregistered; no malformed503rewrite accepted. Future adapters wait exactserverprojection methods then wire/review/test.

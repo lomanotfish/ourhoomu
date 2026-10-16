@@ -411,3 +411,6 @@ SW0063 non-schedule reads accepted (bb1da9b+62bcb61, independent8f4db38): real r
 
 
 Private bill snapshot AAD bounded seam accepted: source dfb7e6e+20ae005, independent report5453ded confirms restricted8groups/schema4/function lifecycle and unchanged OID/ACL/roles/probe. Isolated integration forced10offline tasks pass; full legacy DB invariant suite remains open due stale expanded-dashboard assertion, owner correcting separately. This is server-only projection, no wire secret exposure or full bill-handler acceptance.
+
+
+Frontend API client/UI milestone accepted (aed0bd8, independent7379dfa): bootstrap/logout/generation/selection corrections complete; independent117unit and integrated10offline/24demo-workerd E2E pass. No authenticated product browser/native/login/provider acceptance inferred. SW0009 remains in_progress. Browser harness uses test-only scope; domain handlers and current-state schedule expiry gate remain open.

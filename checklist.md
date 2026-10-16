@@ -148,3 +148,5 @@ Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This 
 - [x] SW-0063 non-schedule read milestone: bills/payments/chores/activity/dashboard and masked selector, independent restricted7groups exit0 plus integrated10offline tasks. [Evidence](docs/team/reports/SW-0063-security-read-recheck.md). Schedule expiry mapping remains open.
 
 - [x] Private destination AAD server-only seam: frozen snapshot fields behind unchanged authorization, independent8groups/schema4/lifecycle/invariants and integrated10offline tasks pass. [Review](docs/team/reports/SW-0063-private-destination-aad-security-review.md). Full legacy suite and bill handler acceptance remain open.
+
+- [x] SW0009 API client/UI bounded milestone aed0bd8, independent review; bootstrap/logout/house generation fixes,117units and integrated10tasks+24demo/workerd E2E pass. [Review](docs/team/reports/SW-0009-review-aed0bd8.md). Authenticated browser/native/live identity remains open.

@@ -414,3 +414,6 @@ Private bill snapshot AAD bounded seam accepted: source dfb7e6e+20ae005, indepen
 
 
 Frontend API client/UI milestone accepted (aed0bd8, independent7379dfa): bootstrap/logout/generation/selection corrections complete; independent117unit and integrated10offline/24demo-workerd E2E pass. No authenticated product browser/native/login/provider acceptance inferred. SW0009 remains in_progress. Browser harness uses test-only scope; domain handlers and current-state schedule expiry gate remain open.
+
+
+Bill action/reservation data milestone accepted (00fff178, independentbe47cdb): restricted8groups and function lifecycle/refusal/identity/grants tests pass, accepted0000–4 unchanged, privateAAD retained. Integrated forced10offline tasks pass. Required wire actions and reservation facts now available to domain adapter; actual bill HTTP integration is still open.

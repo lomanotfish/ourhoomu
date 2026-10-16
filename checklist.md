@@ -150,3 +150,5 @@ Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This 
 - [x] Private destination AAD server-only seam: frozen snapshot fields behind unchanged authorization, independent8groups/schema4/lifecycle/invariants and integrated10offline tasks pass. [Review](docs/team/reports/SW-0063-private-destination-aad-security-review.md). Full legacy suite and bill handler acceptance remain open.
 
 - [x] SW0009 API client/UI bounded milestone aed0bd8, independent review; bootstrap/logout/house generation fixes,117units and integrated10tasks+24demo/workerd E2E pass. [Review](docs/team/reports/SW-0009-review-aed0bd8.md). Authenticated browser/native/live identity remains open.
+
+- [x] BillActions/share reservation server projection: source00fff178, independentbe47cdb restricted8groups/lifecycle/catalog and integrated10tasks pass. [Review](docs/team/reports/SW-0063-bill-actions-security-review.md). HTTP bill endpoint acceptance remains open.

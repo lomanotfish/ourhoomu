@@ -189,12 +189,16 @@ REVOKE CREATE ON SCHEMA core FROM ourhoomu_core_writer;
 
 -- Runtime janitor is separately authorized; clear expired encrypted results and anonymous ledgers.
 DO $patch$
-DECLARE definition text:=pg_get_functiondef('core.clear_replay_secrets()'::regprocedure);
+DECLARE definition text:=pg_get_functiondef('core.clear_replay_secrets()'::regprocedure); previous text; replacement text;
 BEGIN
  definition:=replace(definition,'BEGIN','BEGIN
  DELETE FROM core.auth_request_locators WHERE expires_at<=clock_timestamp();
  UPDATE core.auth_request_locators SET replay_ciphertext=NULL WHERE replay_until<=clock_timestamp();
  DELETE FROM core.auth_challenges c WHERE c.expires_at<=clock_timestamp() AND NOT EXISTS(SELECT 1 FROM core.auth_request_locators l WHERE l.challenge_id=c.id);
- UPDATE core.idempotency_records SET result_data=NULL WHERE replay_until IS NULL OR replay_until<=clock_timestamp();');
+');
+previous:=$old$UPDATE core.idempotency_records SET replay_ciphertext=NULL,replay_until=NULL WHERE replay_until<=clock_timestamp();$old$;
+replacement:=$new$UPDATE core.idempotency_records SET replay_ciphertext=NULL,replay_until=NULL,result_data=NULL WHERE replay_until<=clock_timestamp() OR (replay_until IS NULL AND result_data IS NOT NULL);$new$;
+IF (length(definition)-length(replace(definition,previous,'')))<>length(previous) THEN RAISE EXCEPTION 'Unknown clear_replay_secrets predecessor for HTTP seam'; END IF;
+definition:=replace(definition,previous,replacement);
  EXECUTE definition;
 END $patch$;

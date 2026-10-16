@@ -364,3 +364,9 @@ SW-0055 in_review sourcee0e58e7/report0018ef4, released/captured/acked. SW-0061 
 SW-0054/SW-0060 done and integrated local9c04e73 after independent approve and candidate13forced tasks+timezone10. SW-0059 ready; SW-0055 returned in_progress for required native deletion verification finding from SW-0061; no storage integration yet.
 
 Timezone source54 and review60 worktrees/branches removed through Orca with hooks after clean+ancestor+no-cwd-process checks; reports tracked/local and durable common git core-finish. Local postmerge13forced tasks passed; user guide hash and user directory preserved. SW0059 actual task_c2ac965664a4/ctx_815ca2a4258c owns exclusive synthetic DB window; SW0055 S1 correction actual receipt recorded in ticket.
+
+## Resume after quota/runtime interruption — 2026-10-16
+Positive final usage-limit turns, no worker_done, were preserved with dirty diffs/status and exact terminal evidence in common git core-finish/*-interruption; old55fix/59/5 stopped exact supervised terminals and released, archive unavailable after stop. No worktree/reset/integration of unfinished code. A mistaken model-picker input changed inherited model; Lead restored only original observed GPT-6.1-Sol/high config keys, preserved all other settings, then fresh same-Task retries verified live GPT-6.1-Sol high. No alternate model preference inferred from picker.
+SW-0055: Task`task_b9b54e15178d` / Dispatch`ctx_6005e960548b`, existing exclusive checkout, ready/input_accepted/turn observed; inherited model verified actual GPT-6.1-Sol high.
+SW-0059: Task`task_c2ac965664a4` / Dispatch`ctx_f28db1309590`, existing exclusive checkout, ready/input_accepted/turn observed; inherited model verified actual GPT-6.1-Sol high.
+SW-0005: Task`task_6b34d2b62c5c` / Dispatch`ctx_4b754b600f93`, existing exclusive checkout, ready/input_accepted/turn observed; inherited model verified actual GPT-6.1-Sol high.

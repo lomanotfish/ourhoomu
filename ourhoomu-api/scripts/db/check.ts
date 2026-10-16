@@ -256,7 +256,9 @@ try {
   assert.equal(dashboardBeforeConfirmation.owedToMeSatang, '0');
   assert.equal(dashboardBeforeConfirmation.pendingSatang, '4000');
   assert(dashboardBeforeConfirmation.asOf);
-  assert.equal(dashboardBeforeConfirmation.cashAwaitingDecisionCount, 1);
+  assert.equal(dashboardBeforeConfirmation.cashAwaitingDecisionCount, 0);
+  const creatorDashboard = await db.withPrincipal(a, (tx) => tx.dashboard(h1));
+  assert.equal(creatorDashboard.cashAwaitingDecisionCount, 1);
   assert(
     dashboardBeforeConfirmation.pendingPayments.some((payment) => payment.id === p1.resourceId),
   );

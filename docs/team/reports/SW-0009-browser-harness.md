@@ -4,8 +4,7 @@
 
 **Bounded harness implemented; authenticated browser acceptance remains blocked
 by a precise test-entrypoint seam.** The existing API screen/runtime are reachable
-in the browser in explicit API mode without injected credentials. Synthetic
-HTTP fixtures demonstrate the honest signed-out and error paths only. No claim
+in the browser in explicit API mode without injected credentials. HTTP route fixtures are registered but not exercised: signed-out bootstrap makes zero /me requests. The tests demonstrate signed-out retry and no demo fallback only. No claim
 of authenticated houses, real API handlers, database, provider or native login
 acceptance is made.
 
@@ -19,10 +18,7 @@ The production app/router/provider source was not modified. Inspected
 `AppRuntimeProvider` accepts optional `testRuntime`, requiring both `__DEV__`
 and `EXPO_PUBLIC_API_TEST_HARNESS=true`; it further requires the client, session
 and house repository. Current Expo Router root layout does not accept or supply
-that override. The isolated Expo web server serves a production web bundle, for
-which `__DEV__` is false. Existing root test can only create `AppRuntimeProvider`
-with no override, yielding normal production construction and unauthenticated
-bootstrap. Passing private credentials through a browser global, URL, or
+that override. The current root does not provide the test override; the bundle development flag was not independently verified. Existing root tests use normal construction and unauthenticated bootstrap. Passing private credentials through a browser global, URL, or
 production bridge would violate the task boundary and is not done.
 
 ## Implemented

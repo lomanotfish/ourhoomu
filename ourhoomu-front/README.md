@@ -147,6 +147,39 @@ Use `bun run test:e2e:report` or `bunx playwright show-trace <path-to-trace.zip>
 Copy evidence you need before another run replaces these directories. Commit
 only config/tests/docs/locks, never generated reports or browser state.
 
+## API-mode browser harness (synthetic HTTP fixtures)
+
+The separate `playwright.api.config.ts` suite runs only the existing Expo API
+shell and actual `AppRuntimeProvider`/`ApiModeScreen`. Start it with
+`bunx playwright test --config=playwright.api.config.ts` from this directory;
+its dedicated Expo port is `18057` and synthetic HTTP fixture origin is
+`127.0.0.1:18058`. It rejects an existing frontend listener and shuts down its
+owned Expo server after the run. It does not start or call the API/Workers,
+Neon, identity provider, or production. Playwright route fixtures are registered but intentionally never reached when
+there are no credentials; the checks assert zero fixture calls. The suite covers
+API-mode signed-out state, retry remaining unauthenticated, and no demo
+fallback—not authenticated house scenarios.
+
+Inspection confirmed the production app exports `AppRuntimeProvider` with an
+optional injected runtime, but injection is gated by both `__DEV__` and
+`EXPO_PUBLIC_API_TEST_HARNESS=true`. Expo web export in this harness is a
+production bundle (`__DEV__` is false), and the repository has no separate test
+entrypoint/provider capable of wrapping `Stack` with `testRuntime`. Therefore
+this browser suite deliberately does not enable credentials or inject a runtime.
+The actual `ApiModeScreen` resets signed-in component state on auth-generation
+changes and logout, but zero/one/many-house selection, stale selection, logout
+cache reset, and authenticated account/error flows remain unproven in browser.
+The exact missing seam for those scenarios is a **test-only Expo Router root
+entrypoint** that supplies `AppRuntimeProvider.testRuntime` around the real
+router tree during a dedicated development browser build, with fixture session
+and house repository implementations. It must remain absent from the production
+entrypoint and must not add a login bypass, token URL/global bridge, or public
+credential path. Alternatively, route through real handlers and a separately
+authorized synthetic DB after those handlers exist. Existing focused unit tests
+(`src/runtime/api-mode.test.ts`, `src/repositories/house-selection.test.ts` and
+`src/runtime/operation-guard.test.ts`) exercise composition and reset/race
+invariants, but are not browser coverage or authenticated API acceptance.
+
 ## Native session credential component (SW-0055)
 
 `src/session/native-secure-credentials.ts` exports

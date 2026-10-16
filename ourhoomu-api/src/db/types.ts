@@ -111,6 +111,10 @@ export type MaskedDestination = {
   recipientName: string;
 };
 export type EncryptedDestination = {
+  /** Server-only identity bound into encryption AAD; never serialize into a DTO. */
+  ownerUserId: UUID;
+  /** Server-only frozen digest bound into encryption AAD; never serialize into a DTO. */
+  identifierDigest: Digest;
   bankCode: string;
   identifierKind: string;
   identifierCiphertext: string;

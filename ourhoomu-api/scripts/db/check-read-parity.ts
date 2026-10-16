@@ -246,6 +246,54 @@ async function main() {
       'bills: stable multi-page cursor, default/max validation, private draft and masked projection',
     );
 
+    const recipientBillId = publishedBills[0];
+    assert(recipientBillId);
+    const owingBillId = largeBills[0];
+    assert(owingBillId);
+    const recipientDestination = await read(b.claims, (tx) =>
+      tx.privateDestination(houseId, recipientBillId),
+    );
+    assert(recipientDestination);
+    exactKeys(recipientDestination, [
+      'bankCode',
+      'identifierKind',
+      'identifierCiphertext',
+      'keyVersion',
+      'recipientName',
+      'ownerUserId',
+      'identifierDigest',
+    ]);
+    assert.equal(recipientDestination.ownerUserId, b.claims.userId);
+    const owingDestination = await read(a.claims, (tx) =>
+      tx.privateDestination(houseId, owingBillId),
+    );
+    assert(owingDestination);
+    assert.equal(owingDestination.ownerUserId, b.claims.userId);
+    await denied(
+      () => read(d.claims, (tx) => tx.privateDestination(houseId, owingBillId)),
+      'forbidden',
+    );
+    await denied(
+      () => read(c.claims, (tx) => tx.privateDestination(houseId, owingBillId)),
+      'not_found',
+    );
+    const changedAccountDigest = syntheticDigest();
+    await command(b.claims, 'account.update', null, accountB.resourceId, {
+      expectedVersion: 1,
+      identifierCiphertext: `synthetic-mutated-${syntheticDigest()}`,
+      identifierDigest: changedAccountDigest,
+    });
+    assert.deepEqual(
+      await read(a.claims, (tx) => tx.privateDestination(houseId, owingBillId)),
+      owingDestination,
+    );
+    const publicBillJson = JSON.stringify([...billPage1.items, ...billPage2.items]);
+    assert(!publicBillJson.includes('ownerUserId'));
+    assert(!publicBillJson.includes('identifierDigest'));
+    pass(
+      'private destination: recipient/owing-payer access, frozen snapshot AAD and hidden metadata',
+    );
+
     const paymentBillId = largeBills[0];
     assert(paymentBillId);
     const paymentIds: string[] = [];
@@ -465,6 +513,10 @@ async function main() {
     );
     const afterExpiry = await read(a.claims, (tx) => tx.bills(houseId, { limit: 100 }));
     assert(!afterExpiry.items.some((item) => item.id === expiredBill));
+    await denied(
+      () => read(b.claims, (tx) => tx.privateDestination(houseId, expiredBill)),
+      'expired',
+    );
     assert(
       !(await read(a.claims, (tx) => tx.activity(houseId, { limit: 100 }))).items.some(
         (item) => item.summary === 'SW0063 settled 0',

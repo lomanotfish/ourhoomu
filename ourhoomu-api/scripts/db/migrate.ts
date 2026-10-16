@@ -76,6 +76,24 @@ try {
       console.log(`0003_http_seam.sql sha256=${sha}`);
     }
     await client.query('COMMIT');
+  } else if (
+    mode === 'patch-private-destination-aad' ||
+    mode === 'rollback-private-destination-aad'
+  ) {
+    if (!before.rows[0]?.core)
+      throw new Error('Private destination AAD patch requires accepted existing core');
+    const isRollback = mode === 'rollback-private-destination-aad';
+    const file = isRollback
+      ? './sql/rollback-private-destination-aad.sql'
+      : '../../drizzle/0004_private_destination_aad.sql';
+    const sql = readFileSync(new URL(file, import.meta.url), 'utf8');
+    await client.query('BEGIN');
+    await client.query(sql);
+    await client.query('COMMIT');
+    const action = isRollback ? 'rollback' : 'patch';
+    console.log(
+      `Private destination AAD ${action} complete; sha256=${createHash('sha256').update(sql).digest('hex')}`,
+    );
   } else if (mode === 'patch-house-timezone') {
     if (!before.rows[0]?.core) throw new Error('Core schema missing; run guarded up first');
     const sql = readFileSync(
@@ -177,7 +195,7 @@ try {
     );
   } else
     throw new Error(
-      'Usage: migrate.ts up|patch-house-timezone|patch-http-seam|rollback-http-seam|rollback',
+      'Usage: migrate.ts up|patch-house-timezone|patch-http-seam|rollback-http-seam|patch-private-destination-aad|rollback-private-destination-aad|rollback',
     );
   const after = await client.query<{ probe: string | null }>(
     "select to_regnamespace('runtime_probe')::text probe",

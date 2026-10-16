@@ -58,8 +58,16 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0052](tickets/SW-0052.md) | Independent session correction review | security-engineer | Frozen SW-0049 | done |
 | [SW-0053](tickets/SW-0053.md) | Independent house repository review | code-reviewer | Frozen SW-0051 | done (approve) |
 | [SW-0054](tickets/SW-0054.md) | House timezone patch data parity | data-engineer | SW-0049 | done |
-| [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | in_progress |
+| [SW-0055](tickets/SW-0055.md) | Native secure credential storage component | frontend-engineer | SW-0044, SW-0051 | done (component) |
 | [SW-0037](tickets/SW-0037.md) | Slip LINE retention data extensions and atomic operations | data-engineer | SW-0004, SW-0006, SW-0036 | draft |
+| [SW-0056](tickets/SW-0056.md) | see ticket | see ticket | see ticket | see ticket |
+| [SW-0057](tickets/SW-0057.md) | see ticket | see ticket | see ticket | see ticket |
+| [SW-0058](tickets/SW-0058.md) | see ticket | see ticket | see ticket | see ticket |
+| [SW-0059](tickets/SW-0059.md) | Close core data projections and invitation TTL for real HTTP handlers | data-engineer | see ticket | in_progress |
+| [SW-0060](tickets/SW-0060.md) | Independent timezone migration security and rollback review | security-engineer | see ticket | done |
+| [SW-0061](tickets/SW-0061.md) | Independent native CredentialStore security review | security-engineer | see ticket | done |
+| [SW-0062](tickets/SW-0062.md) | Independent core HTTP auth security checkpoint review | security-engineer | see ticket | draft |
+| [SW-0063](tickets/SW-0063.md) | Core bills chores activity and dashboard data read parity | data-engineer | see ticket | draft |
 
 ## Dependency / dispatch gates
 
@@ -370,3 +378,6 @@ Positive final usage-limit turns, no worker_done, were preserved with dirty diff
 SW-0055: Task`task_b9b54e15178d` / Dispatch`ctx_6005e960548b`, existing exclusive checkout, ready/input_accepted/turn observed; inherited model verified actual GPT-6.1-Sol high.
 SW-0059: Task`task_c2ac965664a4` / Dispatch`ctx_f28db1309590`, existing exclusive checkout, ready/input_accepted/turn observed; inherited model verified actual GPT-6.1-Sol high.
 SW-0005: Task`task_6b34d2b62c5c` / Dispatch`ctx_4b754b600f93`, existing exclusive checkout, ready/input_accepted/turn observed; inherited model verified actual GPT-6.1-Sol high.
+
+## Secure storage accepted — 2026-10-16
+SW0055/0061 done for bounded component: source7bbdf1a, original independent S1 finding corrected and non-author Lead recheck approved; local6fb08d6,15forced tasks/164unit/24E2E and postmerge probe/code parity pass. Native hardware/provider acceptance remains separate. Data59 and API5 continue in isolated checkouts; HTTP security checkpoint62 starts at frozeneed9420, no DB access. [Evidence](reports/SW-0055-integration.md).

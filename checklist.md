@@ -137,3 +137,5 @@ Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This 
 - [x] Root frozen install,15forced tasks/120unit tests,24E2E and offlineDrizzle check pass after local merge.
 - [x] Original dirty drafts/user guide preserved; unique historical report archived; worker lifecycle receipts retained.
 [Integration evidence](docs/team/reports/SW-0058-local-integration.md). Full original data/privacy, SW-0054 parity, providers/native/release remain pending; merging work is not full product completion.
+
+- [x] SW-0055/0061: native secure credential storage component and required deletion verification correction independently checked and integrated local6fb08d6;15forced tasks/164unit/24E2E pass. Real-device and login acceptance remain pending — [integration](docs/team/reports/SW-0055-integration.md).

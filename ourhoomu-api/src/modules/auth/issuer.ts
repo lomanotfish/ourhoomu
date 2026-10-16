@@ -10,7 +10,7 @@ type TrustedIssuerConfig = Readonly<{
   trustedPresenters?: readonly string[];
 }>;
 
-type IssuerAdapterOptions = Readonly<{
+export type IssuerAdapterOptions = Readonly<{
   providers: Partial<Record<IssuerProvider, TrustedIssuerConfig>>;
   getJwks: (trustedUrl: string) => Promise<{ keys: JWK[] }>;
   now?: () => number;

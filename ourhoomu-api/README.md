@@ -46,11 +46,22 @@ bun run dev
 ```
 
 Run the production request matrix while Wrangler is running in a second
-terminal. It checks that proof routes are hidden with 404:
+terminal. Start Wrangler on a dedicated unused loopback port (do not use the
+default `8787` when another process already owns it), then point the check to
+that exact server URL. The check validates the health success envelope and
+request ID, plus hidden proof routes and 404 error envelopes:
 
 ```sh
-bun run check:runtime
+bunx wrangler dev --config wrangler.jsonc --ip 127.0.0.1 --port 18787
+RUNTIME_BASE_URL=http://127.0.0.1:18787 bun run check:runtime
 ```
+
+The runtime check requires `RUNTIME_BASE_URL` and refuses non-loopback URLs.
+`check:runtime` validates the production entry; use `check:fixture-runtime` only
+against the separate test-only worker below. Error checks require the exact
+contract status/code pairs (400 validation, 401 unauthenticated, 404 not found),
+not just any client-error response. A successful response from the fixture
+worker is not evidence about production routing.
 
 The Neon proof uses a separate Wrangler config and test-only entry. The Lead
 must provision a schema-only synthetic Neon branch and provide two ignored
@@ -66,14 +77,14 @@ In this directory, with both path variables set to those private files:
 
 ```sh
 bun run prepare:neon-runtime
-bunx wrangler dev --config wrangler.runtime.jsonc --ip 127.0.0.1 --port 8787
+bunx wrangler dev --config wrangler.runtime.jsonc --ip 127.0.0.1 --port 18788
 ```
 
 While Wrangler is running, use another terminal in this directory with the
 same path variables:
 
 ```sh
-bun run check:fixture-runtime
+RUNTIME_BASE_URL=http://127.0.0.1:18788 bun run check:fixture-runtime
 bun run check:neon-runtime
 ```
 
@@ -296,3 +307,103 @@ concurrency tests, not login/provider/native evidence. Transfers can reserve
 but cannot be credited by core cash routines. SlipOK/reference/slip/LINE,
 physical purge, restore fencing, deployed Workers and native identity proof
 retain their separate acceptance gates.
+
+## Core HTTP handlers (SW-0005)
+
+The Elysia registry serves `/v1/auth/challenges`, `/auth/exchange`, `/auth/refresh`,
+`/auth/logout`, `/me`, houses, members, invitations and owner recipient accounts.
+All paths after the first example share the `/v1` prefix. `DELETE /v1/me` remains
+`503 feature_unavailable`: destructive account deletion and fresh provider
+reauthentication are separately gated. Live native Google/Apple acceptance is
+also pending; signed synthetic issuer fixtures are explicitly test-only.
+
+Core handlers require every binding below. Missing/invalid configuration fails
+closed with an opaque `503`, while `/health` remains available. There are no
+actor-header credentials, unsigned-token fallback or implicit production login.
+Keep binding files ignored and server-only; never print or commit their contents.
+
+| Binding | Required value/policy |
+| --- | --- |
+| `CORE_APP_DATABASE_URL` | Restricted `ourhoomu_core_app` connection for the accepted core schema |
+| `CORE_AUTH_DATABASE_URL` | Separate restricted `ourhoomu_core_auth` connection to the same database |
+| `CORE_HMAC_KEY` | Independently generated random 256-bit key, encoded as 64 lowercase hex characters |
+| `CORE_AES_KEY` | Different random 256-bit key with the same encoding; AES-GCM ciphertext never stores plaintext credentials |
+| `CORE_KEY_VERSION` | Explicit `1`; unsupported key versions fail closed |
+| `CORE_ACCESS_TTL_SECONDS` | Required integer, 1–3600; approved synthetic setup uses 900 |
+| `CORE_REFRESH_TTL_SECONDS` | Required integer, at least access TTL and at most 31536000; approved synthetic setup uses 2592000 |
+| `CORE_ISSUERS` | JSON object keyed by `google` and/or `apple`, each with trusted HTTPS `issuer`, exact `audience`, trusted HTTPS `jwksUrl`, pinned `algorithms` (`RS256`/`ES256`), and optional explicit `trustedPresenters` |
+
+These lifetimes are explicit development settings, not production defaults.
+Refresh rotation retains the original absolute family expiry, and the API reads
+canonical expiry from the verified database session after rotation. Runtime
+issuer configuration is server-owned; HTTP bodies cannot choose audiences,
+issuers, algorithms or key URLs. JWKS loading rejects redirects and fails closed.
+
+Every mutation requires a UUID `Idempotency-Key`. JSON bodies are bounded to
+16 KiB and reject unknown input fields. Keep the exact body bytes and key for an
+uncertain retry; changed-body retries conflict. A challenge accepts a fresh
+32–128-character random base64url `clientNonce`. Send the returned server `nonce`
+to the provider and send the original `clientNonce` as `proof` during exchange.
+The server derives the nonce with a purpose-bound HMAC of provider, challenge ID
+and client proof. The database enforces provider/proof binding, five-minute
+validity and one-time consumption. Exact exchange retries look up the previously
+verified encrypted result before issuer verification, allowing a lost-response
+retry even after that original ID token expires; active session/family checks
+still apply. Challenge/exchange require the accepted additive auth replay seam.
+
+Refresh and exchange replay store encrypted credentials for at most five minutes;
+invitation issuance stores only a token digest plus similarly bounded encrypted
+replay. Invitation lifetime is 1–604800 seconds. Encryption authenticates purpose,
+version and request/owner scope. Recipient identifiers are encrypted and have a
+separate HMAC blind index; general account/member/profile DTOs contain no raw
+account identifier, ciphertext, digest or global member user ID. The account
+management DTO itself is masked, as specified by the frozen contract.
+
+Focused synthetic, in-process HTTP and crypto checks use Bun Test:
+
+```sh
+bun test tests/auth
+bun run typecheck
+bun run format:check
+bun run lint
+bun run build:worker
+```
+
+Tests exercise real Elysia handlers and signed synthetic JWT verification with
+an in-process authority fixture; they do not establish database, provider or
+native acceptance. Real API acceptance must run against the accepted synthetic
+core schema with both restricted roles, dedicated local servers and Playwright
+HTTP checks, only after the Lead grants the exclusive DB window. Never reuse the
+linked production URL. Returned lists default to 20 and cap at 100; cursors bind
+to the authenticated user and route and every page rechecks database authority.
+
+The separate `http-acceptance/core.spec.ts` Playwright suite starts a dedicated
+loopback Bun server with these same Elysia handlers, restricted database roles
+and an explicitly synthetic signed issuer. It covers session replay/rotation,
+0/1/many houses, cross-house denial, version conflicts, invitation/member
+lifecycle, recipient privacy and logout. It does not use browser binaries or
+prove workerd/database compatibility, native login or live provider behavior.
+The directory deliberately avoids `tests` in its name so `bun test tests`
+continues to discover only Bun tests.
+
+After the Lead grants the exclusive synthetic DB window and accepts the
+required SW-0059 data/auth replay seam, set `SYNTHETIC_DB_ENV_FILE` and
+`NEON_BRANCH_RECEIPT` to the existing guarded target artifacts described above.
+Also set `CORE_HTTP_BINDINGS_FILE` to an ignored, mode-600 file with the bindings
+in the table, matching those guarded restricted connection URLs exactly. Its
+only issuer must be `google`, with issuer `https://synthetic.invalid`, JWKS URL
+`https://synthetic.invalid/jwks`, audience `core-http-acceptance` and algorithm
+`RS256`. The fixture supplies its own in-process public key and makes no provider
+requests. Then run from `ourhoomu-api/`:
+
+```sh
+export ALLOW_CORE_HTTP_ACCEPTANCE=true
+export CORE_HTTP_TEST_SHA="$(git rev-parse HEAD)"
+bun run test:http
+```
+
+Record that SHA, command, outcome and exclusive-window grant in the ticket
+report. No schema reset or migration runs as part of this suite; its random
+synthetic identities and records are written only to the guarded dedicated DB.
+Playwright request traces, screenshots and video are disabled to avoid storing
+credentials. Do not capture HTTP request/response bodies in shared test logs.

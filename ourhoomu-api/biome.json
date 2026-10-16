@@ -1,7 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
   "files": {
-    "includes": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts", "package.json", "biome.json"]
+    "includes": [
+      "src/**/*.ts",
+      "scripts/**/*.ts",
+      "tests/**/*.ts",
+      "package.json",
+      "biome.json",
+      "http-acceptance/**/*.ts",
+      "playwright.config.ts"
+    ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
   "javascript": { "formatter": { "quoteStyle": "single" } },

@@ -9,5 +9,11 @@
     "types": ["@cloudflare/workers-types", "bun"],
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "http-acceptance/**/*.ts",
+    "playwright.config.ts"
+  ]
 }

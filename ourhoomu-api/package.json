@@ -12,12 +12,13 @@
     "format:check": "biome format .",
     "lint": "biome lint --error-on-warnings .",
     "typecheck": "tsc --noEmit",
-    "check:runtime": "bun scripts/runtime-check.ts",
+    "check:runtime": "bun scripts/runtime-check.ts --production",
     "check:fixture-runtime": "bun scripts/runtime-check.ts --fixture",
     "prepare:neon-runtime": "bun tests/fixtures/prepare-neon-runtime.ts",
     "check:neon-runtime": "bun tests/fixtures/check-neon-runtime.ts",
     "test": "bun test tests",
-    "build:worker": "WRANGLER_SEND_METRICS=false node node_modules/wrangler/bin/wrangler.js deploy --dry-run --config wrangler.jsonc --outdir dist/worker"
+    "build:worker": "WRANGLER_SEND_METRICS=false node node_modules/wrangler/bin/wrangler.js deploy --dry-run --config wrangler.jsonc --outdir dist/worker",
+    "test:http": "playwright test --config playwright.config.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.2.0",
@@ -33,6 +34,7 @@
     "@types/bun": "1.3.10",
     "drizzle-kit": "0.31.11",
     "typescript": "7.0.2",
-    "wrangler": "4.150.0"
+    "wrangler": "4.150.0",
+    "@playwright/test": "1.64.1"
   }
 }

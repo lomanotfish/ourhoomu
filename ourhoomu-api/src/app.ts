@@ -1,8 +1,9 @@
 import { Elysia } from 'elysia';
 import { CloudflareAdapter } from 'elysia/adapter/cloudflare-worker';
 import type { AppConfig } from './config';
+import { coreHttp, type CoreServices } from './modules/core/http';
 
-export function createApp(config: AppConfig) {
+export function createApp(config: AppConfig, services?: CoreServices) {
   return new Elysia({ adapter: CloudflareAdapter })
     .onRequest(({ set }) => {
       set.headers['access-control-allow-origin'] = config.allowedOrigin;
@@ -24,6 +25,9 @@ export function createApp(config: AppConfig) {
       data: { status: 'ok' },
       requestId,
     }))
+    .all('/v1/*', ({ request, requestId }) => coreHttp(request, requestId, services), {
+      parse: 'none',
+    })
     .onError(({ code, error, requestId, set }) => {
       requestId ??= crypto.randomUUID();
       if (code === 'NOT_FOUND') {

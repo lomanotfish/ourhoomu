@@ -117,3 +117,28 @@ Offline verification on this checkpoint:
 
 No DB calls were made. Schedule reads remain blocked on the required
 `expiresAt` contract/schema decision documented above.
+
+
+## Restricted read-parity acceptance — synthetic branch
+
+After the Lead granted the guarded window, `bun scripts/db/check-read-parity.ts`
+was run with the explicit mode-600 synthetic credential file and authoritative
+branch receipt. The target guard passed for the pinned project, synthetic
+branch, and endpoint. It used restricted app/auth roles for reads and owner
+access only for disposable fixture expiry updates. No schema or migration
+changes were made.
+
+The full run reached its final success line: 7 acceptance groups passed for
+bills, payments, chores, activity, dashboard, expired-parent visibility, and
+removed/revoked access. Two findings were corrected from run evidence: chore
+filter pagination testing needed `limit: 100` to inspect all 21 fixtures (the
+API default remains 20), and activity aggregation had to preserve descending
+order to avoid overlapping pages. A subsequent full run passed all 7 groups.
+The synthetic app/auth/owner pools closed in `finally`; no read-parity runner
+remains active and the DB window is released.
+
+The Bun output log records the final suite success line. A zsh wrapper attempted
+to assign the reserved variable name `status` after Bun finished, so the shell
+exit code was not captured; there was no Bun/SQL error after the final success
+line. Do not treat the wrapper's zsh assignment error as a DB test failure.
+Schedule expiry remains gated on the product decision described above.

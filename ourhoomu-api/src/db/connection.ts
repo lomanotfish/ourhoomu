@@ -541,7 +541,7 @@ export class CoreTransaction {
          select created_at,id from core.activity_events
          where house_id=$1::uuid and id=$3::uuid
        )
-       select coalesce(jsonb_agg(item order by created_at,id),'[]'::jsonb) data from (
+       select coalesce(jsonb_agg(item order by created_at desc,id desc),'[]'::jsonb) data from (
          select ae.id,ae.created_at,jsonb_build_object(
            'id',ae.id,'houseId',ae.house_id,'kind',ae.event_type,
            'summary',case

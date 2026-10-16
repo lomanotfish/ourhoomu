@@ -335,7 +335,8 @@ async function main() {
       new Set(choreIds),
     );
     assert(
-      (await read(a.claims, (tx) => tx.chores(houseId, { fromDate: today }))).items.length >= 21,
+      (await read(a.claims, (tx) => tx.chores(houseId, { fromDate: today, limit: 100 }))).items
+        .length >= 21,
     );
     for (const options of [
       { fromDate: '2026-02-30' },

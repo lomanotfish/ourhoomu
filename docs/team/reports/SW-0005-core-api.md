@@ -185,3 +185,54 @@ privacy/removal/revoke; private account edit/archive; logout/replay denial.
 Listing these cases is not execution evidence. Independent review, integration
 and cleanup are Lead-owned; live Google/Apple/native and destructive deletion
 remain gated. This checkpoint does not close full SW-0005 acceptance.
+
+## Lead-requested file-only acceptance setup
+
+Lead confirmed canonical data names `accounts()` / `account(id)`; injectable
+HTTP aliases can remain and the real adapter mapping waits accepted SW-0059.
+Lead requested the frozen HTTP snapshot for independent review and explicitly
+kept this dispatch active without a final outcome while data acceptance waits.
+Snapshot `38107fb58c6c19dd34ba10e654c14faf626f5208` contains the source/report
+above and remains the frozen HTTP review target.
+
+Subsequent setup-only commit `77b16c7` adds
+`ourhoomu-api/tests/fixtures/prepare-core-http.ts` and its focused tests, without
+changing the frozen HTTP implementation or adapter. With the pre-existing
+explicit guarded `SYNTHETIC_DB_ENV_FILE` and `NEON_BRANCH_RECEIPT` set, run from
+the API directory:
+
+```sh
+bun tests/fixtures/prepare-core-http.ts
+```
+
+The executable validates the existing receipt/expiry/target and restricted
+roles before writing. It performs no DB or provider calls, does not read root
+linked production env, copies only the two guarded restricted role URLs and
+generates fresh independent 256-bit HMAC/AES keys. Its output is
+`/Users/afe/Desktop/ourhoomu/.git/core-finish/sw-0005-http.env`, mode600, under
+the actual common Git directory; an occupied path is refused. It prints only
+that path, never values. The Lead executes it; this worker has not run the real
+generator or test server.
+
+The file contains exactly `CORE_APP_DATABASE_URL`, `CORE_AUTH_DATABASE_URL`,
+`CORE_HMAC_KEY`, `CORE_AES_KEY`, `CORE_KEY_VERSION=1`,
+`CORE_ACCESS_TTL_SECONDS=900`, `CORE_REFRESH_TTL_SECONDS=2592000` and
+`CORE_ISSUERS`. Issuer JSON shape is deliberately synthetic:
+
+```json
+{"google":{"issuer":"https://synthetic.invalid","audience":"core-http-acceptance","jwksUrl":"https://synthetic.invalid/jwks","algorithms":["RS256"]}}
+```
+
+The existing dedicated test server creates its RSA signing keypair in memory
+at later authorized startup and explicitly injects that public JWKS into the
+issuer verifier. No signing private key is persisted or accepted by production
+runtime; no actor-header shortcut is introduced.
+
+Test-first evidence: absent module initially failed, then a stub failed the
+positive file-creation case; complete generator passed both focused cases with
+12 assertions. They check exact field minimization, restrictive permissions,
+fresh keys, refusal to overwrite and rejection of missing/wrong roles, wrong
+target and newline injection, using temporary fake-credential files that are
+removed after each test. Fresh typecheck/format/lint pass (46 files); full unit
+suite now passes90 tests /261 assertions, zero failures across11 files.
+No DB window has been granted and no real DB acceptance has run.

@@ -3,12 +3,13 @@
 TASK: Independent bounded recheck of corrected source
 `77b7fb6ff758ab74bf3329c8ad16b426926d871c` against previous review `50796a8`.
 
-STATUS: The three previous findings are resolved in the committed correction.
+STATUS: APPROVE the bounded core corrections. The three previous findings are
+resolved in the committed correction.
 No application authentication, authorization or DTO privacy blocker was found in
 this bounded delta. One requested verification detail remains: the runtime check
-accepts health status 201, rather than requiring exactly 200. Changes requested
-for that check detail; this is a low-severity verification gap and does not
-prevent running restricted synthetic real-handler acceptance.
+accepts health status 201, rather than requiring exactly 200. Record that
+low-severity verification gap for the Pi owner to correct during restricted
+synthetic real-handler acceptance; it does not block that acceptance run.
 
 Review/report workspace:
 `/Users/afe/orca/workspaces/ourhoomu/v4-core-api-final-review`, branch
@@ -77,7 +78,8 @@ HTTP acceptance is NOT VERIFIED by this review and stays with its exclusive Pi
 owner. The separate bill-destination snapshot AAD seam is outside this core
 correction and must not be inferred complete from this review.
 
-NEXT_ACTION: Pi tightens health equality, then Lead records the final source SHA
-and restricted synthetic real-handler acceptance before integration/status
-updates. The corrected core adapter/pagination/error source is ready for that
-acceptance run.
+NEXT_ACTION: Proceed with the restricted synthetic real-handler acceptance
+window. Pi also tightens health equality during that task. Lead records final
+source SHA and actual acceptance before integration/status updates. The
+corrected core adapter/pagination/error source is approved for that acceptance
+run; no full SW-0005 acceptance is implied.

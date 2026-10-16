@@ -160,3 +160,17 @@ Offline checks after this correction: formatting, typecheck, lint, and the 67
 unit tests pass (110 assertions). The guarded restricted-role database suite
 has NOT been rerun after this correction; prior 7-group result applies to the
 previous source SHA only. No database calls were made for this follow-up.
+
+## Legacy core finance regression after dashboard assertion corrections
+At commit `e73a071b24010384a931bc07199a0c02bb63aaeb`, the clean detached
+worktree ran `bun scripts/db/check.ts` against the guarded synthetic target.
+The target guard passed with the approved env and branch receipt both mode
+0600. The runner exited `0` and reported `Core synthetic database checks
+passed: 21`; all 21 groups passed, including exact satang/dashboard string
+totals, payer-versus-creator cash decision counts, reservation caps and
+release behavior, and cross-house/expiry authorization. The script used only
+the synthetic app/auth roles plus owner fixture setup and expiry updates; it
+made no schema or migration changes. Its `finally` closed all three pools and
+the process exited without an active runner. Captured output is retained at
+`/tmp/ourhoomu-corecheck-e73a071.log` in the local environment; credentials
+and branch receipt contents are not included in this report.

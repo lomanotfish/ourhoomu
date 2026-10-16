@@ -66,7 +66,9 @@ async function boundedBody(request: Request) {
     offset += chunk.length;
   }
   try {
-    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    // Preserve BOM rather than silently changing the body used for evidence.
+    // JSON.parse rejects it; fatal decoding rejects noncanonical UTF-8 bytes.
+    return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
   } catch {
     throw new DataError('validation_error');
   }

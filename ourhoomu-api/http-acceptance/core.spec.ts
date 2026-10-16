@@ -186,6 +186,20 @@ test('real refresh concurrent exact retries converge and reuse revokes the entir
   expect(first.status).toBe(200);
   expect(retry.status).toBe(200);
   expect(JSON.stringify(first.json.data) === JSON.stringify(retry.json.data)).toBe(true);
+  const bom = await call(
+    request,
+    '/v1/auth/refresh',
+    'POST',
+    body,
+    undefined,
+    key,
+    `\ufeff${JSON.stringify(body)}`,
+  );
+  expect(bom.status).toBe(400);
+  expect(bom.json.error.code).toBe('validation_error');
+  const validReplay = await call(request, '/v1/auth/refresh', 'POST', body, undefined, key);
+  expect(validReplay.status).toBe(200);
+  expect(JSON.stringify(validReplay.json.data) === JSON.stringify(first.json.data)).toBe(true);
   expect((await call(request, '/v1/me', 'GET', undefined, session)).status).toBe(401);
   expect((await call(request, '/v1/auth/refresh', 'POST', body)).status).toBe(401);
   expect((await call(request, '/v1/me', 'GET', undefined, first.json.data)).status).toBe(401);

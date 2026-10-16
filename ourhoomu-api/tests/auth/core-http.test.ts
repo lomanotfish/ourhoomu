@@ -149,6 +149,22 @@ test('validation rejects unknown identity fields, malformed proof, missing key a
   ).toBe(400);
 });
 
+test('BOM-prefixed refresh is rejected without changing exact valid-body replay', async () => {
+  const client = await syntheticClient();
+  const original = (await client.signIn()).result.json.data;
+  const body = { refreshToken: original.refreshToken };
+  const raw = JSON.stringify(body);
+  const headers = { 'idempotency-key': crypto.randomUUID() };
+  const first = await client.request('/auth/refresh', 'POST', body, headers, raw);
+  expect(first.response.status).toBe(200);
+  const noncanonical = await client.request('/auth/refresh', 'POST', body, headers, `\ufeff${raw}`);
+  expect(noncanonical.response.status).toBe(400);
+  expect(noncanonical.json.error.code).toBe('validation_error');
+  const replay = await client.request('/auth/refresh', 'POST', body, headers, raw);
+  expect(replay.response.status).toBe(200);
+  expect(JSON.stringify(replay.json.data) === JSON.stringify(first.json.data)).toBe(true);
+});
+
 test('signed wrong nonce and expired challenge fail authentication without consuming a valid challenge', async () => {
   const client = await syntheticClient();
   const proof = 'p'.repeat(43);

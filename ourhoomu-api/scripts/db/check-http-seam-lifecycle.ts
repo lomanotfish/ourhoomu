@@ -69,7 +69,7 @@ try {
     "update core.auth_request_locators set created_at=statement_timestamp()-interval '25 hours',expires_at=statement_timestamp()-interval '1 hour',replay_until=case when route='exchange' then statement_timestamp()-interval '25 hours'+interval '1 minute' end",
   );
   await owner.query(
-    "update core.idempotency_records set replay_until=statement_timestamp()-interval '1 second',created_at=least(created_at,statement_timestamp()-interval '2 seconds') where result_data is not null",
+    "update core.idempotency_records set replay_until=least(created_at+interval '5 minutes',statement_timestamp()-interval '1 second') where result_data is not null",
   );
   await owner.query('select core.clear_replay_secrets()');
   const rolledBack = run('rollback-http-seam');

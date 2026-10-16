@@ -63,11 +63,12 @@ Tech Lead เป็นผู้ดูแลสถานะและ checklist �
 | [SW-0056](tickets/SW-0056.md) | see ticket | see ticket | see ticket | see ticket |
 | [SW-0057](tickets/SW-0057.md) | see ticket | see ticket | see ticket | see ticket |
 | [SW-0058](tickets/SW-0058.md) | see ticket | see ticket | see ticket | see ticket |
-| [SW-0059](tickets/SW-0059.md) | Close core data projections and invitation TTL for real HTTP handlers | data-engineer | see ticket | in_progress |
+| [SW-0059](tickets/SW-0059.md) | Close core data projections and invitation TTL for real HTTP handlers | data-engineer | see ticket | in_review |
 | [SW-0060](tickets/SW-0060.md) | Independent timezone migration security and rollback review | security-engineer | see ticket | done |
 | [SW-0061](tickets/SW-0061.md) | Independent native CredentialStore security review | security-engineer | see ticket | done |
-| [SW-0062](tickets/SW-0062.md) | Independent core HTTP auth security checkpoint review | security-engineer | see ticket | draft |
+| [SW-0062](tickets/SW-0062.md) | Independent core HTTP auth security checkpoint review | security-engineer | see ticket | done (P2 rechecked; integration review remains SW-0005) |
 | [SW-0063](tickets/SW-0063.md) | Core bills chores activity and dashboard data read parity | data-engineer | see ticket | draft |
+| [SW-0064](tickets/SW-0064.md) | Independent data HTTP seam authorization replay migration review | security-engineer | frozen SW-0059 | in_progress |
 
 ## Dependency / dispatch gates
 

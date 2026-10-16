@@ -49,3 +49,11 @@ User requested completing remaining work after reviewing the backlog. Existing a
 - Lead granted exclusive synthetic DB window to Pi core HTTP acceptance task ourhoomu-v4-core-http-acceptance, no data writer DB access. Candidate already applied; no reset/new production authorization.
 - Native/frontend independent recheck returned remaining original refresh/UI generation findings plus delayed server revoke local-clearing defect. Owner final-corrections task receives exact reproductions; full feature acceptance remains open.
 - SW0063 schedule expiry mismatch is a material contract/domain ambiguity: current active schedule has no expiry while OpenAPI requires string. User question pending. Other reads continue; no invented expiration or silently changed contract.
+
+## Accepted local checkpoint and open blockers
+
+- Local fast-forwarded to3b26268 after corrected bounded data acceptance. User AGENTS/docs edits/deleted agent-guide/untracked directory remain unchanged.
+- SW0059/SW0064 bounded seam done; SW0004 full product/privacy/retention and SW0005 actual HTTP acceptance remain open.
+- Additional independent core review found runtime canonical account method alias mismatch (actual accounts/account vs required ownAccounts/ownAccount), HTTP double pagination at DB default20, and weakened runtime-check status equality. Return to backend owner; no handler integration acceptance yet.
+- Domain review of af41e7b found encrypted destination ciphertext mapped as accountNumber, fabricated reserved/action fields, camelCase SW63 vs raw-row adapter mismatch, and PATCH schedule optional-to-full command mismatch. Domain remains unaccepted until owner corrections and actual adapter tests; synthetic tests that assert fake ciphertext are invalid evidence.
+- Frontendfe1b1ed fixes native store/remote logout wiring but canonical refresh retry/UI invalidation/delayed revoke generation remain under final owner correction. Do not mark SW0009 done from demo24pass.

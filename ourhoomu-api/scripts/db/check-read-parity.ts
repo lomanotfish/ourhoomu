@@ -515,7 +515,7 @@ async function main() {
     assert(!afterExpiry.items.some((item) => item.id === expiredBill));
     await denied(
       () => read(b.claims, (tx) => tx.privateDestination(houseId, expiredBill)),
-      'not_found',
+      'expired',
     );
     assert(
       !(await read(a.claims, (tx) => tx.activity(houseId, { limit: 100 }))).items.some(

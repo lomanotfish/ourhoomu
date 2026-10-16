@@ -88,3 +88,10 @@ User requested completing remaining work after reviewing the backlog. Existing a
 - Domain dirty adapter rewrite silently replaced required endpoints with503 and removed original handlers; architecture review rejects it. Retain backup, return original dispatch then augment narrow data seams. No domain rewrite integrated.
 - AAD security reviewer recovered exact accepted old functionOID61299/hash and is executing function-only migration lifecycle/restricted tests on synthetic target with exclusive window; no production operations.
 - User schedule expiresAt material question remains pending; no default decision inferred from silence. Work not dependent on it continues.
+
+## Latest reviewed inputs
+
+- Frontend4578 direct-bootstrap fixture tests pass; newfde5587 unified operation guard applied across mutations and busy/form invalidation, author113unit663assertions. Independent exact-delta recheck running; no native/provider acceptance.
+- AADdfb7e6e actual review lifecycle apply/reapply/rollback/unknown-body/SECURITY INVOKER refusal passes, originalfunctionOID61299/ACL/owner/config and other core functions/table counts preserved. New private destination frozenAADgroup passes; owner test expectedexpired correction20ae005 advanced reviewea435c1. Review remains open until final suite/state/release.
+- Legacy DB core check dashboard deepEqual is stale against acceptedSW63 expanded result; owner will narrowly update assertions preserving all financial expectedvalues, no invented passing result.
+- Domain architect identified required server-owned action projections, share live reservation totals, true payment confirmation timestamps and current chore completion. Database owner implementing additive/typed parity offline; no API contract changes. Domain restore task instructed preserve draft backups then restore ONLY own original dispatch401d0ca and narrow adapters, not503rewrite.

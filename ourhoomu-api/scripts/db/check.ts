@@ -286,11 +286,14 @@ try {
     ).rows[0]?.n,
     1,
   );
-  assert.deepEqual(await db.withPrincipal(b, (tx) => tx.dashboard(h1)), {
-    outstandingSatang: '6000',
-    owedToMeSatang: '0',
-    pendingSatang: '0',
-  });
+  const dashboardAfterConfirmation = await db.withPrincipal(b, (tx) => tx.dashboard(h1));
+  assert.equal(dashboardAfterConfirmation.outstandingSatang, '6000');
+  assert.equal(dashboardAfterConfirmation.owedToMeSatang, '0');
+  assert.equal(dashboardAfterConfirmation.pendingSatang, '0');
+  assert(dashboardAfterConfirmation.asOf);
+  assert.equal(dashboardAfterConfirmation.cashAwaitingDecisionCount, 0);
+  assert(Array.isArray(dashboardAfterConfirmation.pendingPayments));
+  assert(Array.isArray(dashboardAfterConfirmation.todayChores));
   const p2 = (
     await command(b, 'payment.reserve', h1, bid, {
       method: 'cash',

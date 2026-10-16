@@ -1,32 +1,22 @@
 import type { components } from '@ourhoomu/contracts';
-import type { VerifiedPrincipal } from '../../db/connection';
-import type { CommandResult, Commands, RequestEvidence } from '../../db/types';
+import type { CoreTransaction, VerifiedPrincipal } from '../../db/connection';
+import type { Commands } from '../../db/types';
 
 type DTO = components['schemas'];
-export interface HttpTransaction {
-  command(
-    op: keyof Commands,
-    houseId: string | null,
-    resourceId: string | null,
-    input: Record<string, unknown>,
-    evidence: RequestEvidence,
-  ): Promise<CommandResult & { data?: DTO['Member'] }>;
-  me(): Promise<DTO['Me']>;
-  houses(): Promise<DTO['House'][]>;
-  house(houseId: string): Promise<DTO['House']>;
-  targetMembership(houseId: string, id: string): Promise<{ id: string; version: number }>;
-  ownMembership(houseId: string): Promise<{ id: string; version: number }>;
-  members(houseId: string): Promise<DTO['Member'][]>;
-  ownAccounts(): Promise<DTO['AccountPrivate'][]>;
-  ownAccount(id: string): Promise<DTO['AccountPrivate']>;
-  accountSecret(id: string): Promise<{
-    bankCode: string;
-    identifierCiphertext: string;
-    identifierDigest: string;
-    keyVersion: number;
-  }>;
-  invitation(houseId: string, id: string): Promise<DTO['InvitationMetadata']>;
-}
+export type HttpTransaction = Pick<
+  CoreTransaction,
+  | 'command'
+  | 'me'
+  | 'houses'
+  | 'house'
+  | 'targetMembership'
+  | 'ownMembership'
+  | 'members'
+  | 'accounts'
+  | 'account'
+  | 'accountSecret'
+  | 'invitation'
+>;
 export interface CoreData {
   withPrincipal<T>(
     principal: VerifiedPrincipal,
@@ -87,19 +77,18 @@ function boolean(value: unknown) {
   if (typeof value !== 'boolean') throw new DataError('validation_error');
   return value;
 }
-async function page<T extends { id: string }>(
-  rows: T[],
+async function pageCursor(
   url: URL,
   actor: VerifiedPrincipal,
   secrets: ServerSecrets,
-) {
+): Promise<{ limit: number; after?: string; scope: string }> {
   const rawLimit = url.searchParams.get('limit');
   if (rawLimit !== null && !/^[1-9][0-9]*$/.test(rawLimit)) throw new DataError('validation_error');
   const limit = rawLimit === null ? 20 : integer(Number(rawLimit), 100);
   const cursor = url.searchParams.get('cursor');
   const scope = `${actor.userId}:${url.pathname}`;
-  let after = '';
-  if (cursor) {
+  let after: string | undefined;
+  if (cursor !== null) {
     const [id, mac, extra] = cursor.split('.');
     if (
       !id ||
@@ -110,15 +99,22 @@ async function page<T extends { id: string }>(
       throw new DataError('validation_error');
     after = uuid(id);
   }
-  const sorted = rows.filter((row) => row.id > after).sort((a, b) => a.id.localeCompare(b.id));
-  const data = sorted.slice(0, limit);
+  return { limit, after, scope };
+}
+
+async function pageResult<T extends { id: string }>(
+  rows: T[],
+  limit: number,
+  scope: string,
+  hasMore: boolean,
+  secrets: ServerSecrets,
+) {
+  const data = rows.slice(0, limit);
   const last = data.at(-1);
   return {
     data,
     nextCursor:
-      sorted.length > limit && last
-        ? `${last.id}.${await secrets.mac('list-cursor', [scope, last.id])}`
-        : null,
+      hasMore && last ? `${last.id}.${await secrets.mac('list-cursor', [scope, last.id])}` : null,
   };
 }
 
@@ -152,8 +148,18 @@ export async function coreDataHttp(
       await tx.command('session.revoke', null, null, {}, await evidence());
       return { data: before };
     }
-    if (method === 'GET' && path === '/v1/houses')
-      return page((await tx.houses()).map(houseDto), url, actor, secrets);
+    if (method === 'GET' && path === '/v1/houses') {
+      const paging = await pageCursor(url, actor, secrets);
+      const rows = await tx.houses({
+        limit: Math.min(paging.limit + 1, 100),
+        cursor: paging.after,
+      });
+      const hasMore = rows.length > paging.limit;
+      if (hasMore || rows.length < paging.limit)
+        return pageResult(rows.map(houseDto), paging.limit, paging.scope, hasMore, secrets);
+      const probe = await tx.houses({ limit: 1, cursor: rows.at(-1)?.id ?? paging.after });
+      return pageResult(rows.map(houseDto), paging.limit, paging.scope, probe.length > 0, secrets);
+    }
     if (method === 'POST' && path === '/v1/houses') {
       const input = fields(body, ['name', 'timezone']);
       const result = await tx.command(
@@ -183,8 +189,21 @@ export async function coreDataHttp(
         return { data: houseDto(await tx.house(houseId)) };
       }
     }
-    if (houseId && method === 'GET' && tail === '/members')
-      return page((await tx.members(houseId)).map(memberDto), url, actor, secrets);
+    if (houseId && method === 'GET' && tail === '/members') {
+      const paging = await pageCursor(url, actor, secrets);
+      const rows = await tx.members(houseId, {
+        limit: Math.min(paging.limit + 1, 100),
+        cursor: paging.after,
+      });
+      const hasMore = rows.length > paging.limit;
+      if (hasMore || rows.length < paging.limit)
+        return pageResult(rows.map(memberDto), paging.limit, paging.scope, hasMore, secrets);
+      const probe = await tx.members(houseId, {
+        limit: 1,
+        cursor: rows.at(-1)?.id ?? paging.after,
+      });
+      return pageResult(rows.map(memberDto), paging.limit, paging.scope, probe.length > 0, secrets);
+    }
     if (houseId && method === 'POST' && tail === '/invitations') {
       const input = fields(body, ['expiresInSeconds']);
       const expiresInSeconds = integer(input.expiresInSeconds, 604800);
@@ -251,8 +270,24 @@ export async function coreDataHttp(
       if (!result.data) throw new DataError('internal_error');
       return { data: memberDto(result.data) };
     }
-    if (method === 'GET' && path === '/v1/me/recipient-accounts')
-      return page((await tx.ownAccounts()).map(accountDto), url, actor, secrets);
+    if (method === 'GET' && path === '/v1/me/recipient-accounts') {
+      const paging = await pageCursor(url, actor, secrets);
+      const rows = await tx.accounts({
+        limit: Math.min(paging.limit + 1, 100),
+        cursor: paging.after,
+      });
+      const hasMore = rows.length > paging.limit;
+      if (hasMore || rows.length < paging.limit)
+        return pageResult(rows.map(accountDto), paging.limit, paging.scope, hasMore, secrets);
+      const probe = await tx.accounts({ limit: 1, cursor: rows.at(-1)?.id ?? paging.after });
+      return pageResult(
+        rows.map(accountDto),
+        paging.limit,
+        paging.scope,
+        probe.length > 0,
+        secrets,
+      );
+    }
     const accountMatch = /^\/v1\/me\/recipient-accounts\/([^/]+)$/.exec(path);
     if (
       (method === 'POST' && path === '/v1/me/recipient-accounts') ||
@@ -293,7 +328,10 @@ export async function coreDataHttp(
         }
         const normalized = text(accountNumber, 34, 5);
         if (!/^[0-9]+$/.test(normalized)) throw new DataError('validation_error');
-        if (!output.bankCode && id) output.bankCode = (await tx.ownAccount(id)).bankCode;
+        if (!output.bankCode && id) {
+          if (!tx.account) throw new DataError('feature_unavailable');
+          output.bankCode = (await tx.account(id)).bankCode;
+        }
         const identifierDigest = await secrets.mac('account-identifier-digest', [
           String(output.bankCode),
           normalized,
@@ -314,10 +352,14 @@ export async function coreDataHttp(
         !active ? 'account.archive' : updating ? 'account.update' : 'account.create',
         null,
         id,
-        output,
+        output as
+          | Commands['account.create']
+          | Commands['account.update']
+          | Commands['account.archive'],
         await evidence(),
       );
-      return { data: accountDto(await tx.ownAccount(result.resourceId)) };
+      if (!tx.account) throw new DataError('feature_unavailable');
+      return { data: accountDto(await tx.account(result.resourceId)) };
     }
     throw new DataError('not_found');
   });

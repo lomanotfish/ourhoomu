@@ -1,30 +1,31 @@
-# SW-0005 v4 core HTTP integration attempt
+# SW-0005 v4 core HTTP integration report
 
 ## Source and scope
 
-- Candidate source SHA before this correction: `f1498622e48e09aab78f8f520c151ba560c63bb3` (`codex/v4-core-api`). Corrected source SHA: fill from the committed change; current verification used the working tree with the two backend fixes below.
-- The task scope permits backend API handlers/tests/scripts/README and this report; no `src/db/**`, DB scripts, contract, manifest, lockfile, frontend or schema changes were made.
-- Current checkout contains SW-0059's reviewed data seam and the existing HTTP adapter/tests. I inspected their interfaces and callers read-only. No DB credentials were read and no database request was made.
-- Graft was built and checked in this exact checkout; `graft check .` reported graph in sync (97 indexed files, 573 nodes, 1,354 edges). `graft map` and focused `graft callers`/`graft grep` calls were used before direct source review.
+- Base source SHA: `fd099e7623b587e9e6ed2e20b0c6af5a12d9f87e` (`codex/v4-core-api`); the scoped implementation and checks are on this base. Commit SHA is available from the resulting commit.
+- Scope: backend API adapter, tests, runtime check, API README and this report. No `src/db/**`, DB scripts, schema, contract or lockfile changes were made. `ourhoomu-api/package.json` changes only the runtime-check mode flag.
+- No DB credentials were read and no database request was made; DB ownership remains with the data engineer.
 
-## Findings / blocker
+## Pagination and runtime corrections
 
-The data adapter contract is only structural at present: `HttpTransaction` in `ourhoomu-api/src/modules/core/data.ts` duplicates signatures from `CoreTransaction`, and `runtime.ts` checks only some required methods by name at runtime. It does not presently add a missing `SessionStore` method or complete a DB-backed real-handler run.
+The reproduced pagination defect came from collecting/capping up to 100 records in the HTTP adapter and only applying the signed HTTP cursor afterward. The corrected flow decodes and verifies the actor/path-bound cursor before any data projection call, then requests `min(limit + 1, 100)` after that UUID. The extra row determines whether to sign a continuation cursor. At limit 100, the adapter performs one `limit: 1` probe after the last returned ID because the data adapter's maximum query limit is 100. Houses, members and accounts follow the same flow. Account read/list projections are required, not optional runtime fallbacks.
 
-Strict typecheck exposed exchange-result union narrowing and overloaded fixture implementation errors in backend-owned files. Corrected `src/modules/auth/session.ts` by separating the replay and verified-exchange results, narrowing the returned replay ciphertext, and failing closed on malformed union values. Corrected `tests/fixtures/core-session.ts` by adapting its synthetic executor to the authoritative overloaded `SessionStore['execute']` signature while keeping fixture input handling local. `src/db/types.ts`, the DB interface, DB schemas and public API contract were not changed.
+`HttpTransaction` now uses `Pick<CoreTransaction, ...>` for the HTTP projection signatures, so TypeScript checks structural compatibility against the actual transaction implementation. Runtime projection-name checks were removed. Focused tests exercise regular 20-row pagination, 101 houses across a 100-row page and continuation, query bounds, and malformed/tampered/cross-user/cross-route cursors.
 
-## Verification completed
+The runtime check also now requires an explicit loopback `RUNTIME_BASE_URL`, requires exactly one production/fixture mode, checks exact expected HTTP status/error codes and non-empty request IDs, and the `check:runtime` package command explicitly selects production mode. README commands use dedicated ports. The previously occupied unrelated `8787` listener was not touched.
 
-- `cd ourhoomu-api && bun run typecheck`: exit 0.
-- `cd ourhoomu-api && bun test tests`: exit 0; API 91 tests / 266 assertions.
-- `cd ourhoomu-api && bun run format:check`: exit 0.
-- `cd ourhoomu-api && bun run lint`: exit 0.
-- `cd ourhoomu-api && bun run build:worker`: exit 0; Wrangler dry-run only.
-- `git diff --check`: exit 0.
-- `bun run check:fixture-runtime`: attempted but failed at the fixture runtime check health-envelope assertion (`health.response.status` was 200 while the script rejected the response); this is not a real-handler DB acceptance check and was not treated as passing.
-- `git diff --check`: exit 0.
-- No DB calls, DB fixtures, synthetic server, Playwright API acceptance or native/provider requests were run. The guarded synthetic artifacts appear available locally, but the task explicitly says the exclusive DB window has not been granted; do not infer authorization from file existence. Exact DB readiness is therefore *prepared but not authorized*: require Lead to grant a fresh exclusive synthetic-window interval and confirm ownership handoff before any `CORE_HTTP_BINDINGS_FILE` preparation against credentials or any command that touches the DB.
+## Verification
 
-## Acceptance state / next action
+- `cd ourhoomu-api && bun test tests/auth/core-data.test.ts tests/auth/core-http.test.ts`: 18 tests / 134 assertions passed.
+- `cd ourhoomu-api && bun run lint`: passed.
+- `cd ourhoomu-api && bun run format:check`: passed.
+- `cd ourhoomu-api && bun run typecheck`: passed.
+- `cd ourhoomu-api && bun test tests`: 93 tests / 290 assertions passed.
+- `cd ourhoomu-api && bun run build:worker`: passed Wrangler dry-run; no deployment.
+- `git diff --check`: passed.
+- Real credential-free workerd runtime checks were not rerun in this correction. Prior runtime-check results documented in earlier work are not claimed as this source revision evidence.
+- No DB calls, DB fixtures, Playwright API acceptance, provider/native requests, deployment or production operations were run.
 
-Not accepted as completed SW-0005. Existing code/test evidence covers some in-process synthetic issuer/session and stubbed data-handler paths, but does not meet the requested real handler + restricted DB acceptance. Next: Tech Lead must grant an exclusive synthetic DB acceptance window and confirm handoff from the security reviewer. Then follow `ourhoomu-api/README.md`'s Neon proof setup using private `SYNTHETIC_DB_ENV_FILE` and `NEON_BRANCH_RECEIPT`: run `cd ourhoomu-api && bun run prepare:neon-runtime`, start `bunx wrangler dev --config wrangler.runtime.jsonc --ip 127.0.0.1 --port 8787`, then in a second terminal run `bun run check:fixture-runtime && bun run check:neon-runtime`. That is only the isolated runtime/RLS proof. For the task's real-handler acceptance, follow `ourhoomu-api/README.md`'s HTTP acceptance section: after the Lead grants exclusive synthetic DB access and accepts the SW-0059 data/auth replay seam, point `SYNTHETIC_DB_ENV_FILE` and `NEON_BRANCH_RECEIPT` to existing guarded files, configure an ignored mode-600 `CORE_HTTP_BINDINGS_FILE` with the specified restricted roles and synthetic Google issuer, then run `ALLOW_CORE_HTTP_ACCEPTANCE=true CORE_HTTP_TEST_SHA="$(git rev-parse HEAD)" bun run test:http` from `ourhoomu-api/`. This is the exact core API acceptance command; the separate runtime RLS proof is not a substitute. No DB access was attempted in this task. This correction does not claim SW-0005 acceptance: actual Elysia handlers + restricted synthetic DB, full auth/house/member/invite/account permissions, replay and malformed-input acceptance still need evidence. Native Google/Apple, live issuer/provider, production and release acceptance remain explicitly out of scope and unclaimed.
+## Acceptance state and next action
+
+The offline code correction is ready for review/commit, but SW-0005 acceptance remains pending because real handlers against the restricted synthetic DB were not exercised. DB readiness is prepared but not authorized: the Lead/data owner must grant a fresh exclusive synthetic-window interval and confirm ownership before any credential/environment preparation that may touch DB or any DB command. Once authorized, run the README's isolated runtime/RLS proof and HTTP acceptance separately; runtime proof does not substitute for full handler acceptance. The remaining acceptance needs real handler tests for auth, house/member/invite/account permission, replay and malformed-input paths. Native Google/Apple, live provider, production and release acceptance remain explicitly out of scope.

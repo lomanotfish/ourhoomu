@@ -239,7 +239,13 @@ test('authenticated house list strips internal fields and paginates bounded resu
   }));
   const data = {
     async withPrincipal<T>(_principal: unknown, work: (tx: HttpTransaction) => Promise<T>) {
-      return work(transactionFixture({ houses: async () => houses, ownAccounts: async () => [] }));
+      return work(
+        transactionFixture({
+          houses: async ({ limit = 20, cursor } = {}) =>
+            houses.filter((row) => !cursor || row.id > cursor).slice(0, limit),
+          accounts: async () => [],
+        }),
+      );
     },
   };
   const configured = createApp(
@@ -271,8 +277,18 @@ test('authenticated house list strips internal fields and paginates bounded resu
   );
   expect(await second.json()).toMatchObject({ data: [{ name: 'House 2' }], nextCursor: null });
   const tampered = `${json.nextCursor.slice(0, -1)}${json.nextCursor.endsWith('0') ? '1' : '0'}`;
+  const otherUser = await client.sessions.secrets.mac('list-cursor', [
+    `${crypto.randomUUID()}:/v1/houses`,
+    houses[0].id,
+  ]);
+  const otherRoute = await client.sessions.secrets.mac('list-cursor', [
+    `${signedIn.userId}:/v1/me/recipient-accounts`,
+    houses[0].id,
+  ]);
   for (const path of [
     `/houses?cursor=${tampered}`,
+    `/houses?cursor=${houses[0].id}.${otherUser}`,
+    `/houses?cursor=${houses[0].id}.${otherRoute}`,
     `/me/recipient-accounts?cursor=${json.nextCursor}`,
     '/houses?limit=101',
     '/houses?limit=0',

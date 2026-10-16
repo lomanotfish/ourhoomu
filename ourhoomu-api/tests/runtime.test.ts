@@ -1,13 +1,22 @@
 import { describe, expect, it } from 'bun:test';
 import { createApp } from '../src/app';
 
+type JsonBody = {
+  requestId?: unknown;
+  data?: { status?: string };
+  error?: { code?: string; message?: string };
+};
+
 describe('runtime envelope', () => {
   const app = createApp({ appEnv: 'test', allowedOrigin: 'http://localhost:8081' });
 
   it('returns health with the common success envelope', async () => {
     const response = await app.fetch(new Request('https://api.test/health'));
     expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({ data: { status: 'ok' } });
+    const body = (await response.json()) as JsonBody;
+    expect(body).toMatchObject({ data: { status: 'ok' } });
+    expect(typeof body.requestId).toBe('string');
+    expect(response.headers.get('x-request-id')).toBe(body.requestId as string);
   });
 
   it('does not expose the test validation route from the production app', async () => {
@@ -27,9 +36,20 @@ describe('runtime envelope', () => {
   it('returns a fixed 404 for an unknown route', async () => {
     const response = await app.fetch(new Request('https://api.test/not-a-route'));
     expect(response.status).toBe(404);
-    expect(await response.json()).toMatchObject({
+    const body = (await response.json()) as JsonBody;
+    expect(body).toMatchObject({
       error: { code: 'not_found', message: 'Not found' },
     });
+    expect(typeof body.requestId).toBe('string');
+  });
+
+  it('uses exact runtime error status mappings, not merely any client error', async () => {
+    const wrongStatus = async (path: string, init?: RequestInit) => {
+      const response = await app.fetch(new Request(`https://api.test${path}`, init));
+      const body = (await response.json()) as JsonBody;
+      return { status: response.status, code: body.error?.code };
+    };
+    expect(await wrongStatus('/not-a-route')).toEqual({ status: 404, code: 'not_found' });
   });
 
   it('allows the contract mutation methods and idempotency header in preflight', async () => {

@@ -1,36 +1,16 @@
 import { createApp } from '../../app';
 import type { AppConfig } from '../../config';
-import { CoreDatabase, type CoreTransaction, DataError, SessionStore } from '../../db/connection';
+import { CoreDatabase, SessionStore } from '../../db/connection';
 import { createSessions } from '../auth/session';
 import { createSecrets } from '../auth/secrets';
 import { fetchTrustedJwks, type IssuerAdapterOptions } from '../auth/issuer';
 import { readCoreConfig, type CoreBindings } from './config';
-import type { CoreData, HttpTransaction } from './data';
-
-function requireProjections(tx: CoreTransaction): asserts tx is CoreTransaction & HttpTransaction {
-  for (const name of [
-    'me',
-    'house',
-    'ownMembership',
-    'targetMembership',
-    'ownAccounts',
-    'ownAccount',
-    'accountSecret',
-    'invitation',
-  ]) {
-    if (!(name in tx) || typeof Reflect.get(tx, name) !== 'function')
-      throw new DataError('feature_unavailable');
-  }
-}
+import type { CoreData } from './data';
 
 /** Constructors do not connect; credentials are used only on an authorized request. */
 export function dataAdapter(database: CoreDatabase): CoreData {
   return {
-    withPrincipal: (principal, work) =>
-      database.withPrincipal(principal, (tx) => {
-        requireProjections(tx);
-        return work(tx);
-      }),
+    withPrincipal: (principal, work) => database.withPrincipal(principal, work),
   };
 }
 export async function createRuntimeApp(

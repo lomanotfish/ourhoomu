@@ -12,7 +12,7 @@
     "format:check": "biome format .",
     "lint": "biome lint --error-on-warnings .",
     "typecheck": "tsc --noEmit",
-    "check:runtime": "bun scripts/runtime-check.ts",
+    "check:runtime": "bun scripts/runtime-check.ts --production",
     "check:fixture-runtime": "bun scripts/runtime-check.ts --fixture",
     "prepare:neon-runtime": "bun tests/fixtures/prepare-neon-runtime.ts",
     "check:neon-runtime": "bun tests/fixtures/check-neon-runtime.ts",

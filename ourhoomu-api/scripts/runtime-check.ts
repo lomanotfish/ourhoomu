@@ -1,5 +1,16 @@
-const base = process.env.RUNTIME_BASE_URL ?? 'http://127.0.0.1:8787';
+const base = process.env.RUNTIME_BASE_URL;
+if (!base) {
+  throw new Error('RUNTIME_BASE_URL must point to the dedicated local workerd server');
+}
+const baseUrl = new URL(base);
+if (baseUrl.protocol !== 'http:' || baseUrl.hostname !== '127.0.0.1') {
+  throw new Error('RUNTIME_BASE_URL must use a loopback HTTP URL');
+}
 const fixture = process.argv.includes('--fixture');
+const production = process.argv.includes('--production');
+if (fixture === production) {
+  throw new Error('select exactly one runtime mode: --fixture or --production');
+}
 
 export {};
 
@@ -9,23 +20,36 @@ interface JsonResponse {
   error?: { code?: string };
 }
 
+function assertEnvelope(
+  body: JsonResponse | null,
+  response: Response,
+  expected: 'success' | { status: number; code: string },
+) {
+  if (typeof body?.requestId !== 'string' || !body.requestId) {
+    throw new Error(`response is missing requestId (${response.status})`);
+  }
+  if (expected === 'success') {
+    if (!response.ok || body.data?.status !== 'ok') {
+      throw new Error(`health envelope failed (${response.status})`);
+    }
+    return;
+  }
+  if (response.status !== expected.status || body.error?.code !== expected.code) {
+    throw new Error(`expected ${expected.status} ${expected.code} envelope (${response.status})`);
+  }
+}
+
 async function check(
   path: string,
   init?: RequestInit,
 ): Promise<{ response: Response; body: JsonResponse | null }> {
-  const response = await fetch(new URL(path, base), init);
+  const response = await fetch(new URL(path, baseUrl), init);
   const body = (await response.json().catch(() => null)) as JsonResponse | null;
   return { response, body };
 }
 
 const health = await check('/health');
-if (
-  !health.response.ok ||
-  health.body?.data?.status !== 'ok' ||
-  typeof health.body?.requestId !== 'string'
-) {
-  throw new Error(`health failed (${health.response.status})`);
-}
+assertEnvelope(health.body, health.response, 'success');
 
 if (fixture) {
   const validation = await check('/runtime/validate', {
@@ -33,37 +57,29 @@ if (fixture) {
     headers: { 'content-type': 'application/json', authorization: 'Bearer fixture' },
     body: JSON.stringify({ value: '' }),
   });
-  if (validation.response.status !== 400 || validation.body?.error?.code !== 'validation_error') {
-    throw new Error(`validation envelope failed (${validation.response.status})`);
-  }
+  assertEnvelope(validation.body, validation.response, { status: 400, code: 'validation_error' });
 
   const unauthenticated = await check('/runtime/validate', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ value: 'ok' }),
   });
-  if (
-    unauthenticated.response.status !== 401 ||
-    unauthenticated.body?.error?.code !== 'unauthenticated'
-  ) {
-    throw new Error(`unauthenticated envelope failed (${unauthenticated.response.status})`);
-  }
-} else {
+  assertEnvelope(unauthenticated.body, unauthenticated.response, {
+    status: 401,
+    code: 'unauthenticated',
+  });
+} else if (production) {
   const proofRoute = await check('/runtime/validate', {
     method: 'POST',
     headers: { 'content-type': 'application/json', authorization: 'Bearer arbitrary' },
     body: JSON.stringify({ value: 'ok' }),
   });
-  if (proofRoute.response.status !== 404 || proofRoute.body?.error?.code !== 'not_found') {
-    throw new Error(`production proof route is exposed (${proofRoute.response.status})`);
-  }
+  assertEnvelope(proofRoute.body, proofRoute.response, { status: 404, code: 'not_found' });
   const unknown = await check('/not-a-route');
-  if (unknown.response.status !== 404 || unknown.body?.error?.code !== 'not_found') {
-    throw new Error(`unknown route did not return 404 (${unknown.response.status})`);
-  }
+  assertEnvelope(unknown.body, unknown.response, { status: 404, code: 'not_found' });
 }
 
-const cors = await fetch(new URL('/health', base), {
+const cors = await fetch(new URL('/health', baseUrl), {
   method: 'OPTIONS',
   headers: { origin: 'http://localhost:8081' },
 });

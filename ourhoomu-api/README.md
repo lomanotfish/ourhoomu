@@ -46,11 +46,22 @@ bun run dev
 ```
 
 Run the production request matrix while Wrangler is running in a second
-terminal. It checks that proof routes are hidden with 404:
+terminal. Start Wrangler on a dedicated unused loopback port (do not use the
+default `8787` when another process already owns it), then point the check to
+that exact server URL. The check validates the health success envelope and
+request ID, plus hidden proof routes and 404 error envelopes:
 
 ```sh
-bun run check:runtime
+bunx wrangler dev --config wrangler.jsonc --ip 127.0.0.1 --port 18787
+RUNTIME_BASE_URL=http://127.0.0.1:18787 bun run check:runtime
 ```
+
+The runtime check requires `RUNTIME_BASE_URL` and refuses non-loopback URLs.
+`check:runtime` validates the production entry; use `check:fixture-runtime` only
+against the separate test-only worker below. Error checks require the exact
+contract status/code pairs (400 validation, 401 unauthenticated, 404 not found),
+not just any client-error response. A successful response from the fixture
+worker is not evidence about production routing.
 
 The Neon proof uses a separate Wrangler config and test-only entry. The Lead
 must provision a schema-only synthetic Neon branch and provide two ignored
@@ -66,14 +77,14 @@ In this directory, with both path variables set to those private files:
 
 ```sh
 bun run prepare:neon-runtime
-bunx wrangler dev --config wrangler.runtime.jsonc --ip 127.0.0.1 --port 8787
+bunx wrangler dev --config wrangler.runtime.jsonc --ip 127.0.0.1 --port 18788
 ```
 
 While Wrangler is running, use another terminal in this directory with the
 same path variables:
 
 ```sh
-bun run check:fixture-runtime
+RUNTIME_BASE_URL=http://127.0.0.1:18788 bun run check:fixture-runtime
 bun run check:neon-runtime
 ```
 

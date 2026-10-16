@@ -51,7 +51,11 @@ async function client(tx: HttpTransaction) {
       );
       return {
         response,
-        json: (await response.json()) as { data: Record<string, unknown>; error: { code: string } },
+        json: (await response.json()) as {
+          data: Record<string, unknown>;
+          nextCursor?: string | null;
+          error: { code: string };
+        },
       };
     },
   };
@@ -62,12 +66,17 @@ test('recipient input encrypts identifier and public DTO never includes account 
   let stored: Record<string, unknown> = {};
   const viewer = await client(
     transactionFixture({
-      command: async (op, _house, _id, input) => {
+      command: async (
+        op: string,
+        _house: string | null,
+        _id: string | null,
+        input: Record<string, unknown>,
+      ) => {
         expect(op).toBe('account.create');
         stored = input;
         return { resourceId: id, resourceKind: 'account', replayed: false, replayCiphertext: null };
       },
-      ownAccount: async () => ({
+      account: async () => ({
         id,
         version: 1,
         bankCode: 'SCB',
@@ -103,12 +112,96 @@ test('recipient input encrypts identifier and public DTO never includes account 
   expect(plaintext).toEqual({ accountNumber: '0012345678' });
 });
 
+test('house and member lists use bounded keyset pages and a continuation probe when needed', async () => {
+  const houses = Array.from({ length: 24 }, (_, index) => ({
+    id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+    name: `House ${index + 1}`,
+    timezone: 'Asia/Bangkok',
+    version: 1,
+  }));
+  const members = Array.from({ length: 24 }, (_, index) => ({
+    id: `10000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+    displayName: `Member ${index + 1}`,
+    role: 'member' as const,
+    active: true,
+    version: 1,
+  }));
+  const houseCalls: Array<{ limit?: number; cursor?: string }> = [];
+  const memberCalls: Array<{ limit?: number; cursor?: string }> = [];
+  const viewer = await client(
+    transactionFixture({
+      houses: async (options = {}) => {
+        houseCalls.push(options);
+        return houses
+          .filter((row) => !options.cursor || row.id > options.cursor)
+          .slice(0, options.limit);
+      },
+      members: async (_houseId, options = {}) => {
+        memberCalls.push(options);
+        return members
+          .filter((row) => !options.cursor || row.id > options.cursor)
+          .slice(0, options.limit);
+      },
+    }),
+  );
+
+  const firstPage = await viewer.request('/houses?limit=20');
+  expect(firstPage.response.status).toBe(200);
+  expect(firstPage.json.data).toHaveLength(20);
+  expect(firstPage.json.nextCursor).toBeString();
+  expect(houseCalls).toEqual([{ limit: 21, cursor: undefined }]);
+  houseCalls.length = 0;
+  const continuation = await viewer.request(`/houses?limit=20&cursor=${firstPage.json.nextCursor}`);
+  expect(continuation.json.data).toHaveLength(4);
+  expect(continuation.json.nextCursor).toBeNull();
+  expect(houseCalls).toEqual([{ limit: 21, cursor: houses[19].id }]);
+
+  houses.splice(
+    0,
+    houses.length,
+    ...Array.from({ length: 101 }, (_, index) => ({
+      id: `20000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+      name: `Large House ${index + 1}`,
+      timezone: 'Asia/Bangkok',
+      version: 1,
+    })),
+  );
+  houseCalls.length = 0;
+  const firstHundred = await viewer.request('/houses?limit=100');
+  expect(firstHundred.response.status).toBe(200);
+  expect(firstHundred.json.data).toHaveLength(100);
+  expect(firstHundred.json.nextCursor).toBeString();
+  expect(houseCalls).toEqual([
+    { limit: 100, cursor: undefined },
+    { limit: 1, cursor: houses[99].id },
+  ]);
+  houseCalls.length = 0;
+  const lastHouse = await viewer.request(
+    `/houses?limit=100&cursor=${firstHundred.json.nextCursor}`,
+  );
+  expect(lastHouse.json.data).toHaveLength(1);
+  expect(lastHouse.json.nextCursor).toBeNull();
+  expect(houseCalls).toEqual([{ limit: 100, cursor: houses[99].id }]);
+
+  memberCalls.length = 0;
+  const memberPage = await viewer.request(`/houses/${crypto.randomUUID()}/members?limit=25`);
+  expect(memberPage.response.status).toBe(200);
+  expect(memberPage.json.data).toHaveLength(24);
+  expect(memberPage.json.nextCursor).toBeNull();
+  expect(memberCalls).toEqual([{ limit: 26, cursor: undefined }]);
+});
+
 test('house patch preserves timezone and expected version across the HTTP boundary', async () => {
   const id = crypto.randomUUID();
   const row = { id, name: 'Before', timezone: 'Asia/Bangkok', version: 1 };
   const viewer = await client(
     transactionFixture({
-      command: async (op, houseId, _id, input) => {
+      command: async (
+        op: string,
+        houseId: string | null,
+        _id: string | null,
+        input: Record<string, unknown>,
+      ) => {
         expect(op).toBe('house.update');
         expect(houseId).toBe(id);
         expect(input.expectedVersion).toBe(1);
@@ -149,13 +242,18 @@ test('bank-only account update re-encrypts the existing identifier under its new
         identifierDigest,
         keyVersion: 1,
       }),
-      command: async (op, _house, accountId, input) => {
+      command: async (
+        op: string,
+        _house: string | null,
+        accountId: string | null,
+        input: Record<string, unknown>,
+      ) => {
         expect(op).toBe('account.update');
         expect(accountId).toBe(id);
         stored = input;
         return { resourceId: id, resourceKind: 'account', replayed: false, replayCiphertext: null };
       },
-      ownAccount: async () => ({
+      account: async () => ({
         id,
         version: 2,
         bankCode: 'KBANK',
@@ -211,7 +309,12 @@ test('leave consumes only the command-bound inactive snapshot and exposes no glo
   const viewer = await client(
     transactionFixture({
       ownMembership: async () => ({ id, version: 3 }),
-      command: async (op, _house, targetId, input) => {
+      command: async (
+        op: string,
+        _house: string | null,
+        targetId: string | null,
+        input: Record<string, unknown>,
+      ) => {
         expect(op).toBe('member.leave');
         expect(targetId).toBe(id);
         expect(input.expectedVersion).toBe(3);

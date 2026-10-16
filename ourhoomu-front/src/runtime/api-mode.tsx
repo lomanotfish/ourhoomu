@@ -18,9 +18,19 @@ export type ApiRuntime = {
   houses: ReturnType<typeof createHouseRepository>;
 };
 
-type RuntimeContextValue = { mode: FrontendMode; runtime: ApiRuntime | null };
+type RuntimeContextValue = {
+  mode: FrontendMode;
+  runtime: ApiRuntime | null;
+  authGeneration: number;
+  cacheRevision: number;
+};
 type RuntimeOverrides = Partial<Pick<ApiRuntime, 'client' | 'session' | 'houses'>>;
-const RuntimeContext = createContext<RuntimeContextValue>({ mode: 'demo', runtime: null });
+const RuntimeContext = createContext<RuntimeContextValue>({
+  mode: 'demo',
+  runtime: null,
+  authGeneration: 0,
+  cacheRevision: 0,
+});
 
 export function AppRuntimeProvider({
   children,
@@ -31,6 +41,7 @@ export function AppRuntimeProvider({
 }) {
   const mode: FrontendMode = process.env.EXPO_PUBLIC_APP_MODE === 'api' ? 'api' : 'demo';
   const [cacheRevision, setCacheRevision] = useState(0);
+  const [authGeneration, setAuthGeneration] = useState(0);
   const runtime = useMemo(() => {
     if (mode !== 'api') return null;
     if (testRuntime) {
@@ -57,7 +68,10 @@ export function AppRuntimeProvider({
       createNativeSecureCredentialStore(),
       createSecureCredentialStore(createMemoryStorage()),
     );
-    const clearCache = () => setCacheRevision((current) => current + 1);
+    const clearCache = () => {
+      setCacheRevision((current) => current + 1);
+      setAuthGeneration((current) => current + 1);
+    };
     const authority = createSessionAuthority({
       baseUrl,
       credentials: credentialStore,
@@ -78,9 +92,11 @@ export function AppRuntimeProvider({
     });
     return { client, session: apiSession, houses: createHouseRepository(client) };
   }, [mode, testRuntime]);
-  // cacheRevision intentionally causes consumers of the context to observe cache invalidation.
-  void cacheRevision;
-  return <RuntimeContext.Provider value={{ mode, runtime }}>{children}</RuntimeContext.Provider>;
+  return (
+    <RuntimeContext.Provider value={{ mode, runtime, authGeneration, cacheRevision }}>
+      {children}
+    </RuntimeContext.Provider>
+  );
 }
 
 export function useAppRuntime(): RuntimeContextValue {

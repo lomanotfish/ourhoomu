@@ -12,7 +12,7 @@ const HOUSEHOLD_TIMEZONE = 'Asia/Bangkok';
 const INVITATION_LIFETIME_SECONDS = 7 * 24 * 60 * 60;
 
 export default function ApiModeScreen() {
-  const { runtime } = useAppRuntime();
+  const { runtime, authGeneration } = useAppRuntime();
   const router = useRouter();
   const [profileName, setProfileName] = useState('');
   const [houses, setHouses] = useState<House[]>([]);
@@ -31,17 +31,54 @@ export default function ApiModeScreen() {
   const [bankCode, setBankCode] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [accountDefault, setAccountDefault] = useState(false);
+  const loadGeneration = React.useRef(0);
+  const dataGeneration = React.useRef(0);
+
+  const clearAuthenticatedData = () => {
+    ++loadGeneration.current;
+    ++dataGeneration.current;
+    setProfileName('');
+    setHouses([]);
+    setPersistedHouseId(null);
+    setActiveHouse(null);
+    setMembers([]);
+    setAccounts([]);
+    setActiveInvitation(null);
+    setAccountEditing(null);
+    setAccountLabel('');
+    setBankCode('');
+    setAccountNumber('');
+    setAccountDefault(false);
+  };
+
+  const clearHouseData = (houseId: string) => {
+    if (persistedHouseId === houseId) setPersistedHouseId(null);
+    if (activeHouse?.id === houseId) {
+      setActiveHouse(null);
+      setMembers([]);
+      setActiveInvitation(null);
+    }
+  };
 
   const load = useCallback(async () => {
     if (!runtime) return;
+    const generation = ++loadGeneration.current;
+    const authAtStart = authGeneration;
+    const current = () => generation === loadGeneration.current && authAtStart === authGeneration;
     setStatus('loading');
     setError('');
+    setProfileName('');
+    setHouses([]);
     setActiveHouse(null);
     setMembers([]);
+    setAccounts([]);
+    setActiveInvitation(null);
     try {
       const me = await runtime.session.bootstrap();
+      if (!current()) return;
       setProfileName(me.displayName);
       const all = await loadAllHouses(runtime.houses);
+      if (!current()) return;
       setHouses(all);
       const decision = selectHouse({ houses: all, persistedHouseId });
       if (decision.status === 'enter') {
@@ -52,10 +89,12 @@ export default function ApiModeScreen() {
       }
       setStatus('ready');
     } catch (cause) {
+      if (!current()) return;
+      if (cause instanceof ApiHttpError && cause.status === 401) clearAuthenticatedData();
       setStatus(cause instanceof ApiHttpError && cause.status === 401 ? 'signedOut' : 'error');
       setError(messageFor(cause));
     }
-  }, [runtime, persistedHouseId]);
+  }, [runtime, persistedHouseId, authGeneration]);
 
   useEffect(() => {
     void load();
@@ -64,6 +103,9 @@ export default function ApiModeScreen() {
   const loadHouseDetail = useCallback(
     async (house: House) => {
       if (!runtime) return;
+      const generation = ++dataGeneration.current;
+      const authAtStart = authGeneration;
+      const current = () => generation === dataGeneration.current && authAtStart === authGeneration;
       setError('');
       setBusy(true);
       try {
@@ -71,44 +113,66 @@ export default function ApiModeScreen() {
           runtime.houses.detail(house.id),
           runtime.houses.members(house.id, { limit: 100 }),
         ]);
+        if (!current()) return;
         const allMembers = [...page.data];
         let nextCursor = page.nextCursor;
         while (nextCursor) {
           const next = await runtime.houses.members(house.id, { cursor: nextCursor, limit: 100 });
+          if (!current()) return;
           allMembers.push(...next.data);
           nextCursor = next.nextCursor;
         }
+        if (!current()) return;
         setActiveHouse(detail);
         setMembers(allMembers);
         setPersistedHouseId(detail.id);
       } catch (cause) {
+        if (!current()) return;
+        if (cause instanceof ApiHttpError && cause.status === 401) {
+          clearAuthenticatedData();
+          setStatus('signedOut');
+        } else if (cause instanceof ApiHttpError && [403, 404, 410].includes(cause.status)) {
+          clearHouseData(house.id);
+        }
         setActiveHouse(null);
         setMembers([]);
-        if (cause instanceof ApiHttpError && cause.status === 401) setStatus('signedOut');
         setError(messageFor(cause));
       } finally {
-        setBusy(false);
+        if (current()) setBusy(false);
       }
     },
-    [runtime],
+    [runtime, authGeneration, persistedHouseId, activeHouse],
   );
 
   const loadAccounts = useCallback(async () => {
     if (!runtime) return;
+    const generation = ++dataGeneration.current;
+    const authAtStart = authGeneration;
+    const current = () => generation === dataGeneration.current && authAtStart === authGeneration;
     setBusy(true);
     setError('');
     try {
-      setAccounts(await loadAllAccounts(runtime.houses));
+      const loaded = await loadAllAccounts(runtime.houses);
+      if (current()) setAccounts(loaded);
     } catch (cause) {
-      if (cause instanceof ApiHttpError && cause.status === 401) setStatus('signedOut');
-      setError(messageFor(cause));
+      if (current()) {
+        if (cause instanceof ApiHttpError && cause.status === 401) {
+          clearAuthenticatedData();
+          setStatus('signedOut');
+        }
+        setError(messageFor(cause));
+      }
     } finally {
-      setBusy(false);
+      if (current()) setBusy(false);
     }
-  }, [runtime]);
+  }, [runtime, authGeneration]);
 
   const signOut = async () => {
     if (!runtime) return;
+    ++loadGeneration.current;
+    ++dataGeneration.current;
+    setStatus('signedOut');
+    clearAuthenticatedData();
     setBusy(true);
     setError('');
     try {
@@ -123,10 +187,7 @@ export default function ApiModeScreen() {
       router.replace('/');
     } catch (cause) {
       setStatus('signedOut');
-      setHouses([]);
-      setActiveHouse(null);
-      setMembers([]);
-      setAccounts([]);
+      clearAuthenticatedData();
       setError(`ออกจากระบบในเครื่องแล้ว แต่แจ้งเซิร์ฟเวอร์ไม่สำเร็จ: ${messageFor(cause)}`);
       router.replace('/');
     } finally {
@@ -136,6 +197,9 @@ export default function ApiModeScreen() {
 
   const createHouse = async () => {
     if (!runtime) return;
+    const generation = dataGeneration.current;
+    const authAtStart = authGeneration;
+    const current = () => generation === dataGeneration.current && authAtStart === authGeneration;
     const name = houseName.trim();
     if (!name) return setError('ใส่ชื่อบ้านก่อน');
     setBusy(true);
@@ -145,14 +209,21 @@ export default function ApiModeScreen() {
         { name, timezone: HOUSEHOLD_TIMEZONE },
         { idempotencyKey: crypto.randomUUID() },
       );
+      if (!current()) return;
       setHouseName('');
       setPersistedHouseId(created.id);
       await load();
-      await loadHouseDetail(created);
+      if (current()) await loadHouseDetail(created);
     } catch (cause) {
-      setError(messageFor(cause));
+      if (current()) {
+        if (cause instanceof ApiHttpError && cause.status === 401) {
+          clearAuthenticatedData();
+          setStatus('signedOut');
+        }
+        setError(messageFor(cause));
+      }
     } finally {
-      setBusy(false);
+      if (current()) setBusy(false);
     }
   };
 
@@ -176,16 +247,23 @@ export default function ApiModeScreen() {
 
   const createInvitation = async () => {
     if (!runtime || !activeHouse) return;
+    const targetHouseId = activeHouse.id;
     setBusy(true);
     setError('');
     try {
       const issued = await runtime.houses.issueInvitation(
-        activeHouse.id,
+        targetHouseId,
         { expiresInSeconds: INVITATION_LIFETIME_SECONDS },
         { idempotencyKey: crypto.randomUUID() },
       );
-      setActiveInvitation(issued);
+      if (activeHouse?.id === targetHouseId) setActiveInvitation(issued);
     } catch (cause) {
+      if (cause instanceof ApiHttpError && cause.status === 401) {
+        clearAuthenticatedData();
+        setStatus('signedOut');
+      } else if (cause instanceof ApiHttpError && [403, 404, 410].includes(cause.status)) {
+        clearHouseData(targetHouseId);
+      }
       setError(messageFor(cause));
     } finally {
       setBusy(false);
@@ -194,14 +272,21 @@ export default function ApiModeScreen() {
 
   const revokeInvitation = async () => {
     if (!runtime || !activeHouse || !activeInvitation) return;
+    const targetHouseId = activeHouse.id;
     setBusy(true);
     setError('');
     try {
-      await runtime.houses.revokeInvitation(activeHouse.id, activeInvitation.id, {
+      await runtime.houses.revokeInvitation(targetHouseId, activeInvitation.id, {
         idempotencyKey: crypto.randomUUID(),
       });
-      setActiveInvitation(null);
+      if (activeHouse?.id === targetHouseId) setActiveInvitation(null);
     } catch (cause) {
+      if (cause instanceof ApiHttpError && cause.status === 401) {
+        clearAuthenticatedData();
+        setStatus('signedOut');
+      } else if (cause instanceof ApiHttpError && [403, 404, 410].includes(cause.status)) {
+        clearHouseData(targetHouseId);
+      }
       setError(messageFor(cause));
     } finally {
       setBusy(false);
@@ -210,15 +295,20 @@ export default function ApiModeScreen() {
 
   const leaveHouse = async () => {
     if (!runtime || !activeHouse) return;
+    const leavingHouseId = activeHouse.id;
     setBusy(true);
     setError('');
     try {
-      await runtime.houses.leave(activeHouse.id, { idempotencyKey: crypto.randomUUID() });
-      setPersistedHouseId(null);
-      setActiveHouse(null);
-      setMembers([]);
+      await runtime.houses.leave(leavingHouseId, { idempotencyKey: crypto.randomUUID() });
+      clearHouseData(leavingHouseId);
       await load();
     } catch (cause) {
+      if (cause instanceof ApiHttpError && cause.status === 401) {
+        clearAuthenticatedData();
+        setStatus('signedOut');
+      } else if (cause instanceof ApiHttpError && [403, 404, 410].includes(cause.status)) {
+        clearHouseData(leavingHouseId);
+      }
       setError(messageFor(cause));
     } finally {
       setBusy(false);
@@ -227,19 +317,26 @@ export default function ApiModeScreen() {
 
   const renameHouse = async () => {
     if (!runtime || !activeHouse) return;
+    const targetHouseId = activeHouse.id;
     const name = houseName.trim();
     if (!name) return setError('ใส่ชื่อบ้านก่อน');
     setBusy(true);
     setError('');
     try {
       await runtime.houses.rename(
-        activeHouse.id,
+        targetHouseId,
         { name, timezone: activeHouse.timezone, expectedVersion: activeHouse.version },
         { idempotencyKey: crypto.randomUUID() },
       );
       await load();
       setHouseName('');
     } catch (cause) {
+      if (cause instanceof ApiHttpError && cause.status === 401) {
+        clearAuthenticatedData();
+        setStatus('signedOut');
+      } else if (cause instanceof ApiHttpError && [403, 404, 410].includes(cause.status)) {
+        clearHouseData(targetHouseId);
+      }
       setError(messageFor(cause));
     } finally {
       setBusy(false);
@@ -278,6 +375,10 @@ export default function ApiModeScreen() {
       clearAccountForm();
       setAccounts(await loadAllAccounts(runtime.houses));
     } catch (cause) {
+      if (cause instanceof ApiHttpError && cause.status === 401) {
+        clearAuthenticatedData();
+        setStatus('signedOut');
+      }
       setError(messageFor(cause));
     } finally {
       setBusy(false);
@@ -313,6 +414,10 @@ export default function ApiModeScreen() {
       );
       setAccounts(await loadAllAccounts(runtime.houses));
     } catch (cause) {
+      if (cause instanceof ApiHttpError && cause.status === 401) {
+        clearAuthenticatedData();
+        setStatus('signedOut');
+      }
       setError(messageFor(cause));
     } finally {
       setBusy(false);

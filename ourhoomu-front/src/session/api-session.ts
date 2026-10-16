@@ -71,12 +71,12 @@ export function createApiSession(options: ApiSessionOptions): ApiSession {
   }
 
   async function readMe(signal?: AbortSignal): Promise<Me> {
-    const session = await options.credentials.load();
-    if (session === null) throw new Error('No authenticated session');
+    const accessToken = await options.authority.getAccessToken();
+    if (accessToken === null) throw new Error('No authenticated session');
     return request<Me>('/v1/me', {
       method: 'GET',
       signal,
-      headers: { Authorization: `Bearer ${session.accessToken}`, Accept: 'application/json' },
+      headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' },
     });
   }
 
@@ -86,6 +86,11 @@ export function createApiSession(options: ApiSessionOptions): ApiSession {
     await options.onAuthenticatedCacheClear?.();
   }
 
+  function clearLocalSessionIfCurrent(revision: number): Promise<void> {
+    if (options.authority.getSessionRevision() !== revision) return Promise.resolve();
+    return clearLocalSession();
+  }
+
   return {
     getSessionRevision: () => options.authority.getSessionRevision(),
     getAccessToken: () => options.authority.getAccessToken(),
@@ -93,41 +98,13 @@ export function createApiSession(options: ApiSessionOptions): ApiSession {
       options.authority.refreshAfterUnauthorized(accessToken, signal, sessionRevision),
     async bootstrap(signal) {
       if (signal?.aborted) throw abortError();
-      let bootstrapRevision = options.authority.getSessionRevision();
-      let session = await options.credentials.load();
+      const bootstrapRevision = options.authority.getSessionRevision();
+      const accessToken = await options.authority.getAccessToken();
       if (signal?.aborted) throw abortError();
-      if (!session) throw new Error('No authenticated session');
-      if (Date.parse(session.expiresAt) <= Date.now()) {
-        const key = createKey();
-        const body = JSON.stringify({ refreshToken: session.refreshToken });
-        try {
-          session = await request<Session>('/v1/auth/refresh', {
-            method: 'POST',
-            signal,
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              'Idempotency-Key': key,
-            },
-            body,
-          });
-          if (options.authority.getSessionRevision() !== bootstrapRevision) {
-            throw new Error('Session changed during refresh');
-          }
-          await options.authority.replaceSession(session);
-          // Continue only under the revision established by this refresh rotation.
-          bootstrapRevision = options.authority.getSessionRevision();
-        } catch (error) {
-          if (
-            error instanceof ApiHttpError &&
-            error.status === 401 &&
-            options.authority.getSessionRevision() === bootstrapRevision
-          ) {
-            await clearLocalSession();
-          }
-          throw error;
-        }
+      if (options.authority.getSessionRevision() !== bootstrapRevision) {
+        throw new Error('Session changed during bootstrap');
       }
+      if (accessToken === null) throw new Error('No authenticated session');
       if (options.authority.getSessionRevision() !== bootstrapRevision) {
         throw new Error('Session changed during bootstrap');
       }
@@ -140,7 +117,7 @@ export function createApiSession(options: ApiSessionOptions): ApiSession {
           error.status === 401 &&
           options.authority.getSessionRevision() === bootstrapRevision
         ) {
-          await clearLocalSession();
+          await clearLocalSessionIfCurrent(bootstrapRevision);
         }
         throw error;
       }
@@ -184,23 +161,19 @@ export function createApiSession(options: ApiSessionOptions): ApiSession {
       const before = options.authority.getSessionRevision();
       const session = await options.credentials.load();
       if (options.authority.getSessionRevision() !== before) return;
-      if (session) {
-        try {
-          await request('/v1/auth/logout', {
-            method: 'POST',
-            signal,
-            headers: {
-              Authorization: `Bearer ${session.accessToken}`,
-              Accept: 'application/json',
-              'Idempotency-Key': createKey(),
-            },
-          });
-        } finally {
-          await clearLocalSession();
-        }
-      } else {
-        await clearLocalSession();
-      }
+      await options.authority.logout();
+      cached = null;
+      await options.onAuthenticatedCacheClear?.();
+      if (!session) return;
+      await request('/v1/auth/logout', {
+        method: 'POST',
+        signal,
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          Accept: 'application/json',
+          'Idempotency-Key': createKey(),
+        },
+      });
     },
     clearLocalSession,
   };

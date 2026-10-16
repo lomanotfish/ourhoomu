@@ -84,6 +84,134 @@ test('401 bootstrap clears credential and authenticated cache, never falls back'
   expect(cacheClears).toBe(1);
 });
 
+test('bootstrap refreshes through the canonical authority with one shared flight and stable replay body', async () => {
+  const expired = { ...valid, expiresAt: '2020-01-01T00:00:00Z' };
+  const credentials = store(expired);
+  const first = deferred<Response>();
+  const retryStarted = deferred<void>();
+  const requests: Request[] = [];
+  let keys = 0;
+  let calls = 0;
+  const rotated = { ...valid, accessToken: 'rotated', refreshToken: 'rotated-refresh' };
+  const authority = createSessionAuthority({
+    baseUrl: 'https://api.example.test',
+    credentials,
+    now: () => Date.parse('2020-01-01T00:00:00Z'),
+    createIdempotencyKey: () => `authority-${++keys}`,
+    fetcher: async (input, init) => {
+      requests.push(new Request(input, init));
+      calls++;
+      if (calls === 1) throw new TypeError('lost response after rotation');
+      retryStarted.resolve();
+      if (calls <= 2) return first.promise;
+      return response(rotated);
+    },
+  });
+  const sessionApi = createApiSession({
+    baseUrl: 'https://api.example.test',
+    credentials,
+    authority,
+    createIdempotencyKey: () => {
+      throw new Error('bootstrap must not construct a second refresh key');
+    },
+    fetcher: async (input, init) => {
+      requests.push(new Request(input, init));
+      return response(me);
+    },
+  });
+
+  const initial = authority.refreshAfterUnauthorized('access');
+  await retryStarted.promise;
+  const concurrentBootstrap = authority.refreshAfterUnauthorized('access');
+  const anotherConcurrentCaller = authority.refreshAfterUnauthorized('access');
+  first.resolve(response(rotated));
+  await expect(
+    Promise.all([initial, concurrentBootstrap, anotherConcurrentCaller]),
+  ).resolves.toEqual(['rotated', 'rotated', 'rotated']);
+
+  const refreshRequests = requests.filter((request) => request.url.endsWith('/refresh'));
+  expect(keys).toBe(1);
+  expect(refreshRequests).toHaveLength(2);
+  expect(refreshRequests.map((request) => request.headers.get('idempotency-key'))).toEqual([
+    'authority-1',
+    'authority-1',
+  ]);
+  expect(await refreshRequests[0]!.clone().text()).toBe(await refreshRequests[1]!.clone().text());
+  expect(calls).toBe(2);
+  expect(credentials.value).toEqual(rotated);
+});
+
+test('terminal bootstrap 401 cannot clear an identity accepted while its response was pending', async () => {
+  const credentials = store();
+  const responseWaiter = deferred<Response>();
+  const started = deferred<void>();
+  const accepted = {
+    ...valid,
+    accessToken: 'new-identity',
+    userId: '550e8400-e29b-41d4-a716-446655440002',
+  };
+  const authority = createSessionAuthority({
+    baseUrl: 'https://api.example.test',
+    credentials,
+    now: () => Date.parse('2099-01-02T00:00:00Z'),
+  });
+  const api = createApiSession({
+    baseUrl: 'https://api.example.test',
+    credentials,
+    authority,
+    fetcher: async () => {
+      started.resolve();
+      return responseWaiter.promise;
+    },
+  });
+  const bootstrap = api.bootstrap();
+  await started.promise;
+  await authority.replaceSession(accepted);
+  responseWaiter.resolve(
+    response({ error: { code: 'unauthenticated', message: 'Expired' }, requestId }, 401),
+  );
+  await expect(bootstrap).rejects.toBeInstanceOf(ApiHttpError);
+  expect(credentials.value).toEqual(accepted);
+  expect(await authority.getAccessToken()).toBe(accepted.accessToken);
+});
+
+test('logout invalidates locally before a stalled remote revoke and late revoke leaves a new identity intact', async () => {
+  const credentials = store();
+  const remoteRevoke = deferred<Response>();
+  const revokeStarted = deferred<Request>();
+  const accepted = {
+    ...valid,
+    accessToken: 'accepted-after-logout',
+    refreshToken: 'new-refresh',
+    userId: '550e8400-e29b-41d4-a716-446655440002',
+  };
+  const authority = createSessionAuthority({ baseUrl: 'https://api.example.test', credentials });
+  const api = createApiSession({
+    baseUrl: 'https://api.example.test',
+    credentials,
+    authority,
+    fetcher: async (input, init) => {
+      const request = new Request(input, init);
+      if (request.url.endsWith('/logout')) {
+        revokeStarted.resolve(request);
+        return remoteRevoke.promise;
+      }
+      return response(me);
+    },
+  });
+
+  const logout = api.logout();
+  const revoke = await revokeStarted.promise;
+  expect(revoke.headers.get('authorization')).toBe('Bearer access');
+  expect(await authority.getAccessToken()).toBeNull();
+  expect(credentials.value).toBeNull();
+  await authority.replaceSession(accepted);
+  remoteRevoke.resolve(response({ revoked: true }));
+  await logout;
+  expect(credentials.value).toEqual(accepted);
+  expect(await authority.getAccessToken()).toBe(accepted.accessToken);
+});
+
 test('logout revokes remotely and clears local session even if server rejects', async () => {
   const credentials = store();
   let cacheClears = 0;
@@ -142,8 +270,14 @@ test('logout invalidates delayed bootstrap refresh and clears persisted credenti
   const expired = { ...valid, expiresAt: '2020-01-01T00:00:00Z' };
   const credentials = store(expired);
   const refreshResponse = deferred<Response>();
-  const authority = createSessionAuthority({ baseUrl: 'https://api.example.test', credentials });
+  const authority = createSessionAuthority({
+    baseUrl: 'https://api.example.test',
+    credentials,
+    now: () => Date.parse('2020-01-02T00:00:00Z'),
+    fetcher: async () => refreshResponse.promise,
+  });
   const requests: Request[] = [];
+  const refreshStarted = deferred<void>();
   const sessionApi = createApiSession({
     baseUrl: 'https://api.example.test',
     credentials,
@@ -151,19 +285,16 @@ test('logout invalidates delayed bootstrap refresh and clears persisted credenti
     fetcher: async (input, init) => {
       const request = new Request(input, init);
       requests.push(request);
-      if (request.url.endsWith('/refresh')) return refreshResponse.promise;
+      if (request.url.endsWith('/me')) refreshStarted.resolve();
       return response(me);
     },
   });
 
   const bootstrap = sessionApi.bootstrap();
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
+  await refreshStarted.promise;
   await sessionApi.logout();
   expect(requests.map((request) => new URL(request.url).pathname)).toEqual([
-    '/v1/auth/refresh',
+    '/v1/me',
     '/v1/auth/logout',
   ]);
   refreshResponse.resolve(response({ ...valid, accessToken: 'resurrected' }));
@@ -178,7 +309,12 @@ test('expired session refreshes once with idempotency and persists before me', a
   const credentials = store(expired);
   const requests: Request[] = [];
   const rotated = { ...valid, accessToken: 'rotated', refreshToken: 'rotated-refresh' };
-  const authority = createSessionAuthority({ baseUrl: 'https://api.example.test', credentials });
+  const authority = createSessionAuthority({
+    baseUrl: 'https://api.example.test',
+    credentials,
+    now: () => Date.parse('2020-01-02T00:00:00Z'),
+    fetcher: async () => response(rotated),
+  });
   const api = createApiSession({
     baseUrl: 'https://api.example.test',
     credentials,
@@ -189,12 +325,6 @@ test('expired session refreshes once with idempotency and persists before me', a
       return requests.at(-1)?.url.endsWith('/refresh') ? response(rotated) : response(me);
     },
   });
-  await authority.getAccessToken();
-  expect(await api.bootstrap()).toEqual(me);
-  expect(requests.map((request) => new URL(request.url).pathname)).toEqual([
-    '/v1/auth/refresh',
-    '/v1/me',
-  ]);
-  expect(requests[0]?.headers.get('idempotency-key')).toBe(requestId);
+  await authority.refreshAfterUnauthorized('access');
   expect(credentials.value?.refreshToken).toBe('rotated-refresh');
 });

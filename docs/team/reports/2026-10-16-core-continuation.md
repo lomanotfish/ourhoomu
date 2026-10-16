@@ -101,3 +101,10 @@ User requested completing remaining work after reviewing the backlog. Existing a
 - IndependentAADnewpermission/frozen-snapshot8groups and schema4 pass; function-only lifecycle and privilege invariants pass. Legacy dashboard assertion correctionsd193bec/8d36fe require payercashcount0 and creator1, existing monetary expectedvalues unchanged; reviewer reruns exacttest before release. No blanket oldcorecheck pass claimed yet.
 - Frontendfde5587 still rejected for selection guard comparing requestedhouse to previousactivehouse and retaining accounteditforms. Owner selection-guard-fix narrows guard to auth+requestgeneration, preserves house guard for existing mutations, resets formediting on invalidation, adds deferredselection tests. No frontend merge before exact-delta recheck.
 - DBowner currently implements required existingwire action objects, authorized share reservations and current payment/chore metadata offline; no OpenAPI rewrite. Schedule mapping still pending user answer. Original domain dispatch restore instructed viaPi with backup preserved; no unreviewed503rewrite integrated.
+
+## Local API/UI accepted and browser harness next
+
+- Frontendaed0bd8 independentreview7379dfa passes117unit671assertions, actualselectionguards+formreset corrected. Integratedforced10tasks and freshPlaywright24demo/localworkerd pass; local4e75c44 accepts boundedclient/UI milestone. Full authenticatedbrowser/native/provider proof remains open.
+- Legacycoreteste73a071 actual cleancheckout21groups exit0, report4a85573, poolsclosed. Its assertions preserve exactmoney and current-viewer cashdecision counts; sourceintegrated alongsidefrontend.
+- Browserharness Pi work test-only; read-only reviewer suggested customExpoRoot entry using existing testRuntime; no productionauthbridge/publictoken. External authgeneration propagation not implied by testRuntime override.
+- Dataactions/reservations offline implementation awaiting exactguardedbill_detail baseline capturedfromDB. Domain dispatch restored original401d0ca; dirtyadapter/tests remain unaccepted and failtypes/lint until narrowcheckpointownerfixes.

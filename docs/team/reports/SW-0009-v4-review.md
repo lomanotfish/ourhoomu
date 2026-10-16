@@ -11,3 +11,14 @@ Reviewed uncommitted candidate based on local3e7c598 by native Code Reviewer on 
 Reviewer focused command: bun test ./src/session/api-session.test.ts ./src/session/authority.test.ts ./src/session/secure-credentials.test.ts — 69 pass/0fail/310 assertions. Inline Bun reproductions confirmed issues1/3/4. Existing passing tests missed composition failures. No DB/provider/native/browser acceptance. Required regressions: delayed bootstrap/save vs logout, new accepted identity replacing cached token, concurrent/lost-response refresh, native/web storage, actual logout-button revoke, terminal401 screen purge, stale requests after logout/removal, signed-out rendering.
 
 Lead stopped only the task-owned Pi continuation adapter with SIGTERM (exit143), preserved all files, then launched owner correction task ourhoomu-v4-front-core-securityfix. No reset or external operation. Corrections and independent recheck remain pending.
+
+
+## Independent recheck of fe1b1ed
+
+Verdict changes_requested. Completed-logout generation guards, accepted token replacement, native platform storage and remote logout request are corrected. Fresh focused runtime/session/authority/storage75tests330assertions pass but independent deferred/lost-response reproductions still found:
+
+- P1 api-session.ts183–199: local invalidation waits for remote revoke; stalled request leaves credentials usable, and an old revoke finally can clear a newly accepted identity. Clear canonical state immediately and revoke captured old credentials without late clearing newer generation.
+- P2 api-session.ts100–117: bootstrap still directly refreshes with fresh key, bypassing canonical single-flight/replay; lost-response retry used key1/key2 and concurrent bootstrap produced2 requests.
+- P2 runtime/api-mode.tsx81–83 and app/api.tsx35–83/mutation catches: cache revision unexposed, effects not invalidated and async setters unguarded. Expose auth/cache generation and purge/ignore obsolete results; handle auth401 and house403/404/410 centrally.
+
+Owner correction task ourhoomu-v4-front-final-corrections received these exact findings. No browser/native/DB/provider acceptance inferred. Existing root user changes remain preserved.

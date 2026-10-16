@@ -41,3 +41,11 @@ User requested completing remaining work after reviewing the backlog. Existing a
 - Credential-free fixture runtime probe initially returned health200 but failed expected envelope; backend is investigating exact-config/dedicated-port behavior rather than treating it as a DB blocker.
 - Pi frontend first slice added explicit API-mode session/house shell, preserved demo mode, and passed author101 tests/621 assertions plus typecheck/format/web and iOS JS exports. Not accepted yet: independent session/cache/race review and remaining house/settings/account UI continue.
 - Separate Pi domain component task `ourhoomu-v4-domain-api` owns new domain handler/tests only; no DB or existing core-file writes.
+
+## Corrected data acceptance checkpoint
+
+- Independent correction reportd6f7259 approves source244348c (SQL940d881e). Fresh9 commands all0: real cleanup race3 assertions; auth16, data11, schema4, session races20, lifecycle4, migration2, transaction-local ACL/unknown predecessor probe, exact candidate reapply. No active restricted transaction remains; original roles/probe and revoked writerCREATE preserved.
+- Isolated integration merge (actual SHA in git history) contains corrected source; fresh forced typecheck/test/format/lint10tasks passed, no cached tasks. API67 units; frontend97 units. Native/provider gates separate.
+- Lead granted exclusive synthetic DB window to Pi core HTTP acceptance task ourhoomu-v4-core-http-acceptance, no data writer DB access. Candidate already applied; no reset/new production authorization.
+- Native/frontend independent recheck returned remaining original refresh/UI generation findings plus delayed server revoke local-clearing defect. Owner final-corrections task receives exact reproductions; full feature acceptance remains open.
+- SW0063 schedule expiry mismatch is a material contract/domain ambiguity: current active schedule has no expiry while OpenAPI requires string. User question pending. Other reads continue; no invented expiration or silently changed contract.

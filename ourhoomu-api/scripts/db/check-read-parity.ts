@@ -398,7 +398,13 @@ async function main() {
     assert(dashboard.pendingPayments.every((payment) => payment.method === 'cash'));
     noPrivateFields(dashboard);
     await denied(() => read(c.claims, (tx) => tx.dashboard(houseId)));
-    pass('dashboard: exact large totals, cash count, pending bounds and Bangkok-local date');
+    // This house is empty and belongs only to c; b is a member of houseId, not otherHouseId.
+    // Explicit authorization must fail even if every dashboard child relation is empty.
+    await denied(() => read(b.claims, (tx) => tx.dashboard(otherHouseId)));
+    await denied(() => read(a.claims, (tx) => tx.dashboard(crypto.randomUUID())));
+    pass(
+      'dashboard: exact totals, house-local date and unauthorized empty/nonexistent-house denial',
+    );
 
     // Move one synthetic parent and its child to the access-expiry boundary. The owner
     // connection is used only for these disposable fixture updates, never for reads.

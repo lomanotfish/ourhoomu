@@ -142,3 +142,21 @@ to assign the reserved variable name `status` after Bun finished, so the shell
 exit code was not captured; there was no Bun/SQL error after the final success
 line. Do not treat the wrapper's zsh assignment error as a DB test failure.
 Schedule expiry remains gated on the product decision described above.
+
+## Follow-up projection and authorization correction
+An independent review identified that dashboard authorization depended on the
+`core.reader` CTE, whose evaluation could be skipped when the selected house had
+no dashboard rows. `dashboard()` now calls `ensureMember(houseId)` explicitly.
+The synthetic acceptance script now expects denial for a nonmember reading an
+empty other house and for an unknown house UUID.
+
+The same review found chore list/dashboard JSON included null values for fields
+that the read contract defines as optional, and could retain a historical
+`completedByMembershipId` after reopen. Both chore projections now strip null
+DTO properties and include completion actor only while the occurrence is
+completed. Acceptance assertions cover pending, complete, and reopened states.
+
+Offline checks after this correction: formatting, typecheck, lint, and the 67
+unit tests pass (110 assertions). The guarded restricted-role database suite
+has NOT been rerun after this correction; prior 7-group result applies to the
+previous source SHA only. No database calls were made for this follow-up.

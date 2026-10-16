@@ -355,6 +355,7 @@ export class CoreTransaction {
     );
   }
   async dashboard(houseId: UUID): Promise<DashboardProjection> {
+    await this.ensureMember(houseId);
     return this.readJson<DashboardProjection>(
       `with asof as (select statement_timestamp() at),
       viewer as (select core.reader($1::uuid) membership_id),
@@ -383,14 +384,15 @@ export class CoreTransaction {
               and p.method='cash' and p.status='awaiting_confirmation'))
       ),
       chore_rows as (
-        select o.id,jsonb_build_object(
+        select o.id,jsonb_strip_nulls(jsonb_build_object(
           'id',o.id,'houseId',o.house_id,'scheduleId',o.schedule_id,'title',o.title,
           'localDate',o.local_date,'assigneeMembershipId',o.assignee_membership_id,
           'status',o.status,'version',o.version,'expiresAt',o.expires_at,
           'assignmentState',case when o.assignee_membership_id is null then 'unassigned' else 'assigned' end,
           'completedAt',o.completed_at
         ) || case when o.emoji is null then '{}'::jsonb else jsonb_build_object('emoji',o.emoji) end
-          || case when ce.actor_membership_id is null then '{}'::jsonb else jsonb_build_object('completedByMembershipId',ce.actor_membership_id) end item
+          || case when o.status='completed' and ce.actor_membership_id is not null
+            then jsonb_build_object('completedByMembershipId',ce.actor_membership_id) else '{}'::jsonb end) item
         from core.chore_occurrences o
         left join lateral (
           select actor_membership_id from core.chore_completion_events e
@@ -447,15 +449,15 @@ export class CoreTransaction {
          select local_date,id from core.chore_occurrences where house_id=$1::uuid and id=$3::uuid
        )
        select coalesce(jsonb_agg(item order by local_date,id),'[]'::jsonb) data from (
-        select o.id,o.local_date,jsonb_build_object(
+        select o.id,o.local_date,jsonb_strip_nulls(jsonb_build_object(
           'id',o.id,'houseId',o.house_id,'scheduleId',o.schedule_id,'title',o.title,
           'localDate',o.local_date,'assigneeMembershipId',o.assignee_membership_id,
           'status',o.status,'version',o.version,'expiresAt',o.expires_at,
           'assignmentState',case when o.assignee_membership_id is null then 'unassigned' else 'assigned' end,
           'completedAt',o.completed_at
         ) || case when o.emoji is null then '{}'::jsonb else jsonb_build_object('emoji',o.emoji) end ||
-        case when ce.actor_membership_id is null then '{}'::jsonb
-          else jsonb_build_object('completedByMembershipId',ce.actor_membership_id) end item
+        case when o.status='completed' and ce.actor_membership_id is not null
+          then jsonb_build_object('completedByMembershipId',ce.actor_membership_id) else '{}'::jsonb end) item
         from core.chore_occurrences o
         left join lateral (
           select actor_membership_id from core.chore_completion_events e

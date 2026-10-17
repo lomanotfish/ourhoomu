@@ -62,6 +62,10 @@ type FixtureState = {
   detailDelay?: Record<string, number>;
   /** Delay the POST /v1/auth/logout answer by this many milliseconds. */
   logoutDelay?: number;
+  /** Force POST /v1/houses/:id/invitations to answer with this HTTP status. */
+  issueInvitationStatus?: number;
+  /** Force DELETE /v1/houses/:id/invitations/:id to answer with this HTTP status. */
+  revokeInvitationStatus?: number;
   /** Force /v1/me to answer with this HTTP status (fixture error injection). */
   meStatus?: number;
   /** Force GET /v1/houses to answer with this HTTP status. */
@@ -270,6 +274,15 @@ async function installFixtureApi(page: Page, state: FixtureState): Promise<strin
     }
     const inviteMatch = path.match(/^\/v1\/houses\/([0-9a-f-]{36})\/invitations$/);
     if (inviteMatch && method === 'POST') {
+      if (state.issueInvitationStatus !== undefined) {
+        await route.fulfill(
+          json(
+            state.issueInvitationStatus,
+            errorEnvelope('forbidden', 'Fixture invitation denial'),
+          ),
+        );
+        return;
+      }
       const issued: InvitationFixture = {
         id: '550e8400-e29b-41d4-a716-446655440008',
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -282,6 +295,15 @@ async function installFixtureApi(page: Page, state: FixtureState): Promise<strin
     }
     const revokeMatch = path.match(/^\/v1\/houses\/([0-9a-f-]{36})\/invitations\/([0-9a-f-]{36})$/);
     if (revokeMatch && method === 'DELETE') {
+      if (state.revokeInvitationStatus !== undefined) {
+        await route.fulfill(
+          json(
+            state.revokeInvitationStatus,
+            errorEnvelope('forbidden', 'Fixture invitation denial'),
+          ),
+        );
+        return;
+      }
       const revoked: InvitationFixture = {
         id: revokeMatch[2]!,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -340,6 +362,8 @@ async function openHarness(
     housesDelay?: number;
     detailDelay?: Record<string, number>;
     logoutDelay?: number;
+    issueInvitationStatus?: number;
+    revokeInvitationStatus?: number;
   } = {},
 ): Promise<string[]> {
   await serveHarnessDocument(page);
@@ -354,6 +378,8 @@ async function openHarness(
     housesDelay: options.housesDelay,
     detailDelay: options.detailDelay,
     logoutDelay: options.logoutDelay,
+    issueInvitationStatus: options.issueInvitationStatus,
+    revokeInvitationStatus: options.revokeInvitationStatus,
   });
   const violations = await installFixtureApi(page, state);
   await page.goto('/harness');
@@ -495,6 +521,42 @@ test('API harness invalid states: 401 me signs out, 500 houses shows an error, 4
   await expect(page.getByText('403 · Fixture detail denial')).toBeVisible();
   await expect(page.getByText('สมาชิก · บ้านมิว')).toHaveCount(0);
   await expect(page.getByText('บ้านมิว', { exact: true })).toBeVisible();
+  expect(violations).toEqual([]);
+});
+
+test('API harness invitation privilege denial: 403 issue and revoke clear the house and show the error', async ({
+  page,
+}) => {
+  // A denied invitation ISSUE must clear the active house and show the honest
+  // error instead of leaving the member inside a house they cannot manage.
+  let violations = await openHarness(page, {
+    houses: [HOUSE_A],
+    issueInvitationStatus: 403,
+  });
+  await page.getByRole('button', { name: 'เปิดบ้าน บ้านมิว', exact: true }).click();
+  await expect(page.getByText('สมาชิก · บ้านมิว')).toBeVisible();
+  await page.getByRole('button', { name: 'สร้างคำเชิญ', exact: true }).click();
+  await expect(page.getByText('403 · Fixture invitation denial')).toBeVisible();
+  await expect(page.getByText('สมาชิก · บ้านมิว')).toHaveCount(0);
+  await expect(page.getByText('เลือกอยู่')).toHaveCount(0);
+  await expect(page.getByText('บ้านมิว', { exact: true })).toBeVisible();
+  expect(violations).toEqual([]);
+
+  // A denied invitation REVOKE must behave the same: house cleared, error
+  // shown, and the one-time invitation link removed from the screen.
+  violations = await openHarness(page, {
+    houses: [HOUSE_A],
+    revokeInvitationStatus: 403,
+  });
+  await page.getByRole('button', { name: 'เปิดบ้าน บ้านมิว', exact: true }).click();
+  await expect(page.getByText('สมาชิก · บ้านมิว')).toBeVisible();
+  await page.getByRole('button', { name: 'สร้างคำเชิญ', exact: true }).click();
+  await expect(page.getByText('ลิงก์คำเชิญ (แสดงครั้งเดียว)')).toBeVisible();
+  await page.getByRole('button', { name: 'เพิกถอนคำเชิญ', exact: true }).click();
+  await expect(page.getByText('403 · Fixture invitation denial')).toBeVisible();
+  await expect(page.getByText('ลิงก์คำเชิญ (แสดงครั้งเดียว)')).toHaveCount(0);
+  await expect(page.getByText('สมาชิก · บ้านมิว')).toHaveCount(0);
+  await expect(page.getByText('เลือกอยู่')).toHaveCount(0);
   expect(violations).toEqual([]);
 });
 

@@ -1,5 +1,6 @@
 # Playwright local evidence (contains browser state and failure attachments)
 /playwright-report/
+/playwright-report-local/
 /test-results/
 /blob-report/
 

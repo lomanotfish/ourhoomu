@@ -21,13 +21,23 @@ async function serveHarnessEntry(page: Page): Promise<void> {
   await page.route('**/*', async (route) => {
     const request = route.request();
     if (request.resourceType() !== 'document') return route.fallback();
-    const template = await (await route.fetch()).text();
+    // Single fetch reused for both inspection and fulfillment.
+    const response = await route.fetch();
+    const template = await response.text();
+    // Fail loudly when the Expo bootstrap marker is absent: without it the
+    // rewrite is a silent no-op and the production app tree would be served
+    // instead of the harness routes.
+    if (!template.includes('transform.routerRoot=app')) {
+      throw new Error(
+        'Expo bootstrap marker transform.routerRoot=app is missing from the served document',
+      );
+    }
     const rewritten = template.replace(
       'transform.routerRoot=app',
       'transform.routerRoot=test-harness/routes',
     );
     await route.fulfill({
-      response: await route.fetch(),
+      response,
       body: rewritten,
       contentType: 'text/html; charset=utf-8',
     });

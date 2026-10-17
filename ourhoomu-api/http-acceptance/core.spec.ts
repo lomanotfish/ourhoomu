@@ -63,16 +63,36 @@ async function login(request: APIRequestContext, subject = randomUUID(), email?:
   ]);
   return { session: result.json.data as Session, input, key };
 }
-async function house(request: APIRequestContext, session: Session) {
+async function house(request: APIRequestContext, session: Session, name = 'Synthetic HTTP house') {
   const result = await call(
     request,
     '/v1/houses',
     'POST',
-    { name: 'Synthetic HTTP house', timezone: 'Asia/Bangkok' },
+    { name, timezone: 'Asia/Bangkok' },
     session,
   );
   expect(result.status).toBe(200);
-  return result.json.data;
+  return result.json.data as { id: string; name: string; timezone: string; version: number };
+}
+async function inviteAndJoin(request: APIRequestContext, owner: Session, member: Session) {
+  const home = await house(request, owner);
+  const invitation = await call(
+    request,
+    `/v1/houses/${home.id}/invitations`,
+    'POST',
+    { expiresInSeconds: 1200 },
+    owner,
+  );
+  expect(invitation.status).toBe(200);
+  const joined = await call(
+    request,
+    '/v1/invitations/accept',
+    'POST',
+    { token: invitation.json.data.token },
+    member,
+  );
+  expect(joined.status).toBe(200);
+  return { home, membership: joined.json.data as { id: string; active: boolean } };
 }
 
 test.beforeAll(() => {
@@ -425,6 +445,162 @@ test('owner-only recipient accounts encrypt identifiers, merge bank changes and 
   );
   expect(archived.status).toBe(200);
   expect(archived.json.data.active).toBe(false);
+});
+
+test('exact loopback frontend origin contract serves the dedicated UI port', async ({
+  request,
+}) => {
+  const preflight = await request.fetch('/v1/houses', {
+    method: 'OPTIONS',
+    headers: {
+      origin: 'http://localhost:18067',
+      'access-control-request-method': 'POST',
+      'access-control-request-headers': 'authorization,content-type,idempotency-key',
+    },
+  });
+  expect(preflight.status()).toBe(204);
+  expect(preflight.headers()['access-control-allow-origin']).toBe('http://localhost:18067');
+  expect(preflight.headers()['access-control-allow-headers']).toBe(
+    'authorization,content-type,idempotency-key',
+  );
+  expect(preflight.headers()['access-control-allow-methods']).toContain('POST');
+  const actual = await request.fetch('/health', { headers: { origin: 'http://localhost:18067' } });
+  expect(actual.status()).toBe(200);
+  expect(actual.headers()['access-control-allow-origin']).toBe('http://localhost:18067');
+  expect(actual.headers()['access-control-expose-headers']).toContain('x-request-id');
+  expect(actual.headers()['access-control-max-age']).toBe('600');
+  const syntheticPreflight = await request.fetch('/__synthetic/token', {
+    method: 'OPTIONS',
+    headers: {
+      origin: 'http://localhost:18067',
+      'access-control-request-method': 'POST',
+      'access-control-request-headers': 'content-type',
+    },
+  });
+  expect(syntheticPreflight.status()).toBe(204);
+  expect(syntheticPreflight.headers()['access-control-allow-origin']).toBe(
+    'http://localhost:18067',
+  );
+  expect(
+    (
+      await request.fetch('/__synthetic/token', {
+        method: 'POST',
+        headers: { origin: 'http://localhost:39999', 'content-type': 'application/json' },
+        data: '{}',
+      })
+    ).status(),
+  ).toBe(403);
+});
+
+test('multi-house membership keeps cross-house boundaries and delayed responses after removal preserve correct state', async ({
+  request,
+}) => {
+  const owner = (await login(request)).session,
+    member = (await login(request)).session,
+    outsider = (await login(request)).session;
+  const first = await inviteAndJoin(request, owner, member);
+  const second = await inviteAndJoin(request, owner, member);
+  expect(first.home.id === second.home.id).toBe(false);
+  const memberMe = (await call(request, '/v1/me', 'GET', undefined, member)).json.data;
+  expect(memberMe.houses.map((item: { id: string }) => item.id).sort()).toEqual(
+    [first.home.id, second.home.id].sort(),
+  );
+  expect((await call(request, '/v1/me', 'GET', undefined, owner)).json.data.houses).toHaveLength(2);
+  expect(
+    (await call(request, `/v1/houses/${first.home.id}`, 'GET', undefined, outsider)).status,
+  ).toBe(404);
+  expect(
+    (await call(request, `/v1/houses/${second.home.id}/members`, 'GET', undefined, outsider))
+      .status,
+  ).toBe(404);
+  expect(
+    (
+      await call(
+        request,
+        `/v1/houses/${second.home.id}/invitations`,
+        'POST',
+        { expiresInSeconds: 600 },
+        outsider,
+      )
+    ).status,
+  ).toBe(404);
+  const removed = await call(
+    request,
+    `/v1/houses/${first.home.id}/members/${first.membership.id}`,
+    'DELETE',
+    undefined,
+    owner,
+  );
+  expect(removed.status).toBe(200);
+  expect(
+    (await call(request, `/v1/houses/${first.home.id}`, 'GET', undefined, member)).status,
+  ).toBe(404);
+  expect(
+    (await call(request, `/v1/houses/${first.home.id}/members`, 'GET', undefined, member)).status,
+  ).toBe(404);
+  expect(
+    (await call(request, `/v1/houses/${second.home.id}`, 'GET', undefined, member)).status,
+  ).toBe(200);
+  const remaining = (await call(request, '/v1/me', 'GET', undefined, member)).json.data;
+  expect(remaining.houses.map((item: { id: string }) => item.id)).toEqual([second.home.id]);
+  const members = await call(
+    request,
+    `/v1/houses/${second.home.id}/members`,
+    'GET',
+    undefined,
+    member,
+  );
+  expect(members.status).toBe(200);
+  expect(members.json.data).toHaveLength(2);
+  expect(members.json.data.map((item: { id: string }) => item.id)).toContain(second.membership.id);
+});
+
+test('member logout after house membership keeps boundaries for delayed refresh and leaves other sessions intact', async ({
+  request,
+}) => {
+  const owner = (await login(request)).session,
+    member = (await login(request)).session;
+  const { home } = await inviteAndJoin(request, owner, member);
+  expect((await call(request, `/v1/houses/${home.id}`, 'GET', undefined, member)).status).toBe(200);
+  expect((await call(request, '/v1/auth/logout', 'POST', undefined, member)).status).toBe(200);
+  expect((await call(request, '/v1/me', 'GET', undefined, member)).status).toBe(401);
+  expect(
+    (await call(request, '/v1/auth/refresh', 'POST', { refreshToken: member.refreshToken })).status,
+  ).toBe(401);
+  expect((await call(request, `/v1/houses/${home.id}`, 'GET', undefined, owner)).status).toBe(200);
+  const members = await call(request, `/v1/houses/${home.id}/members`, 'GET', undefined, owner);
+  expect(members.status).toBe(200);
+  expect(members.json.data).toHaveLength(2);
+  expect(members.json.data.every((item: { active: boolean }) => item.active)).toBe(true);
+});
+
+test('expired single-use invitation is refused after its declared lifetime', async ({
+  request,
+}) => {
+  const owner = (await login(request)).session,
+    member = (await login(request)).session;
+  const home = await house(request, owner);
+  const invitation = await call(
+    request,
+    `/v1/houses/${home.id}/invitations`,
+    'POST',
+    { expiresInSeconds: 1 },
+    owner,
+  );
+  expect(invitation.status).toBe(200);
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  const refused = await call(
+    request,
+    '/v1/invitations/accept',
+    'POST',
+    { token: invitation.json.data.token },
+    member,
+  );
+  expect(refused.status).toBe(409);
+  expect(refused.json.error.code).toBe('invite_unavailable');
+  expect(
+    (await call(request, `/v1/houses/${home.id}/members`, 'GET', undefined, member)).status,
+  ).toBe(404);
 });
 
 test('logout wins over both refresh and exchange replay; deletion remains explicit gated behavior', async ({

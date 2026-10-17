@@ -44,7 +44,7 @@ const publicJwk = {
 };
 let issuerTimeOffset = 0;
 const app = await createRuntimeApp(
-  { appEnv: 'test', allowedOrigin: 'http://localhost:8081' },
+  { appEnv: 'test', allowedOrigin: 'http://localhost:18067' },
   bindings,
   {
     getJwks: async (trustedUrl) => {
@@ -54,14 +54,30 @@ const app = await createRuntimeApp(
     now: () => Date.now() + issuerTimeOffset,
   },
 );
-const port = Number(process.env.CORE_HTTP_PORT ?? '18765');
+const port = Number(process.env.CORE_HTTP_PORT ?? '18775');
 if (!Number.isInteger(port) || port < 1024 || port > 65535)
   throw new Error('Invalid local acceptance port');
+// Browser test entries call the synthetic endpoints from the exact frontend
+// origin; responses stay loopback-only and never exist in the Worker entrypoint.
+const frontendOrigin = 'http://localhost:18067';
+const syntheticCors = {
+  'access-control-allow-origin': frontendOrigin,
+  'access-control-allow-methods': 'POST,OPTIONS',
+  'access-control-allow-headers': 'content-type',
+  'access-control-max-age': '600',
+  'cache-control': 'no-store',
+} as const;
 Bun.serve({
   hostname: '127.0.0.1',
   port,
   async fetch(request) {
     const path = new URL(request.url).pathname;
+    if (path.startsWith('/__synthetic/')) {
+      if (request.method === 'OPTIONS')
+        return new Response(null, { status: 204, headers: syntheticCors });
+      if (request.headers.get('origin') && request.headers.get('origin') !== frontendOrigin)
+        return new Response(null, { status: 403, headers: syntheticCors });
+    }
     if (path === '/__synthetic/token' && request.method === 'POST') {
       const input = (await request.json()) as {
         nonce: string;
@@ -89,7 +105,7 @@ Bun.serve({
         .setSubject(input.subject)
         .setExpirationTime(Math.floor(Date.now() / 1000) + ttl)
         .sign(pair.privateKey);
-      return Response.json({ idToken: token }, { headers: { 'cache-control': 'no-store' } });
+      return Response.json({ idToken: token }, { headers: syntheticCors });
     }
     if (path === '/__synthetic/issuer-clock' && request.method === 'POST') {
       const input = (await request.json()) as { advanceSeconds: number };
@@ -100,7 +116,7 @@ Bun.serve({
       )
         return new Response(null, { status: 400 });
       issuerTimeOffset = input.advanceSeconds * 1000;
-      return Response.json({ advanced: true });
+      return Response.json({ advanced: true }, { headers: syntheticCors });
     }
     return app.fetch(request);
   },

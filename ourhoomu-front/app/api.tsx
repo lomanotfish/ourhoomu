@@ -38,6 +38,12 @@ export default function ApiModeScreen() {
   authGenerationRef.current = authGeneration;
   const activeHouseIdRef = useRef<string | null>(activeHouse?.id ?? null);
   activeHouseIdRef.current = activeHouse?.id ?? null;
+  // Read the persisted house through a ref: load() only needs the value at
+  // call time, and depending on the state directly re-triggered a full reload
+  // whenever the persisted house was set or cleared (duplicating the initial
+  // load and wiping error states set right before the reload).
+  const persistedHouseIdRef = useRef<string | null>(persistedHouseId);
+  persistedHouseIdRef.current = persistedHouseId;
 
   const clearAccountForm = () => {
     setAccountEditing(null);
@@ -107,7 +113,7 @@ export default function ApiModeScreen() {
       const all = await loadAllHouses(runtime.houses);
       if (!current()) return;
       setHouses(all);
-      const decision = selectHouse({ houses: all, persistedHouseId });
+      const decision = selectHouse({ houses: all, persistedHouseId: persistedHouseIdRef.current });
       if (decision.status === 'enter') {
         setPersistedHouseId(decision.house.id);
         setActiveHouse(decision.house);
@@ -124,7 +130,7 @@ export default function ApiModeScreen() {
       setStatus(cause instanceof ApiHttpError && cause.status === 401 ? 'signedOut' : 'error');
       setError(messageFor(cause));
     }
-  }, [runtime, persistedHouseId, authGeneration]);
+  }, [runtime, authGeneration]);
 
   useEffect(() => {
     void load();

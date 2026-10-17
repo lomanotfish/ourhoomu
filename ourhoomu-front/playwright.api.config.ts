@@ -10,7 +10,11 @@ export default defineConfig({
   workers: 2,
   timeout: 45_000,
   expect: { timeout: 10_000 },
-  reporter: [['list'], ['html', { open: 'never' }], ['json', { outputFile: 'test-results/api-harness-results.json' }]],
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }],
+    ['json', { outputFile: 'test-results/api-harness-results.json' }],
+  ],
   use: {
     baseURL: frontend,
     browserName: 'chromium',
@@ -19,11 +23,16 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'EXPO_PUBLIC_APP_MODE=api EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:18058 EXPO_PUBLIC_API_LOCAL_ACCEPTANCE=true bun run web --port 18057 --host localhost',
+    command:
+      'EXPO_PUBLIC_APP_MODE=api EXPO_PUBLIC_API_TEST_HARNESS=true EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:18058 EXPO_PUBLIC_API_LOCAL_ACCEPTANCE=true bun run web --port 18057 --host localhost',
     url: frontend,
     reuseExistingServer: false,
     timeout: 120_000,
     env: { CI: '1', EXPO_NO_TELEMETRY: '1' },
     gracefulShutdown: { signal: 'SIGTERM', timeout: 5000 },
   },
+  projects: [
+    { name: 'api-signedout', testMatch: /api-mode\.spec\.ts/ },
+    { name: 'api-harness-authenticated', testMatch: /api-authenticated\.spec\.ts/ },
+  ],
 });

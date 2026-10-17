@@ -12,7 +12,11 @@ test('API-mode signed-out screen uses actual screen/runtime and never falls back
   let meCalls = 0;
   await page.route(`${fixtureBase}/v1/me`, async (route) => {
     meCalls++;
-    await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify(unauthorized) });
+    await route.fulfill({
+      status: 401,
+      contentType: 'application/json',
+      body: JSON.stringify(unauthorized),
+    });
   });
 
   await page.goto('/api');
@@ -23,11 +27,17 @@ test('API-mode signed-out screen uses actual screen/runtime and never falls back
   expect(meCalls).toBe(0);
 });
 
-test('API-mode missing credentials remain signed out without pretending to retry the API', async ({ page }) => {
+test('API-mode missing credentials remain signed out without pretending to retry the API', async ({
+  page,
+}) => {
   let meCalls = 0;
   await page.route(`${fixtureBase}/v1/me`, async (route) => {
     meCalls++;
-    await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify(unauthorized) });
+    await route.fulfill({
+      status: 401,
+      contentType: 'application/json',
+      body: JSON.stringify(unauthorized),
+    });
   });
   await page.goto('/api');
   await expect(page.getByText('เชื่อมต่อไม่ได้', { exact: true })).toBeVisible();

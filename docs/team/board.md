@@ -423,6 +423,6 @@ Bill action/reservation data milestone accepted (00fff178, independentbe47cdb): 
 
 Latest accepted localf605605 preserved. Actual Orca specialist launch refused SECURITY_HOLD exit78 before Task/Dispatch/terminal creation; installed policy prohibits alternate Pi/native bypass. [Checkpoint and remaining work](reports/2026-10-17-security-hold-handoff.md). Pending605389e payment/chore and a081a5f bill projector remain unaccepted; browser authenticated harness remains dirty/preserved. Fresh root offline10tasks pass after regenerating ignored Expo route types. No whole-product completion or production/provider/native acceptance is claimed.
 
-## Approved round 1 active — 2026-10-17
+## Approved round 1 accepted — 2026-10-17
 
-[SW-0065](tickets/SW-0065.md): in_progress — authenticated house/session browser and actual HTTP/isolated DB acceptance under SW-0005/SW-0009/SW-0047. Installed current Orca launcher started bounded frontend/backend Pi roles in separate round1 worktrees, Run run_2c5e8e16d4a7; IDs and ownership in ticket. Historical SECURITY_HOLD checkpoint is preserved above; current launch/activity is verified, no completion inferred.
+[SW-0065](tickets/SW-0065.md): done — house/session actual screens through local API and guarded isolated synthetic DB. Tested source `6be4cc3`, merged into `local` at `cb4820d`; real browser 8/8, fixture browser 12/12, HTTP 11/11, demo regression 24/24, independent QA/security approved. Original SW-0005/SW-0009 native/live identity acceptance and rounds 2–9 remain open; no production, provider or TestFlight claim.

@@ -155,4 +155,4 @@ Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This 
 
 ## Approved round 1 — 2026-10-17
 
-- [ ] [SW-0065](docs/team/tickets/SW-0065.md): authenticated house/session actual screens through local API and isolated synthetic DB; independent review, verification and local integration. Approved by user; bounded frontend/backend tasks launched, acceptance pending.
+- [x] [SW-0065](docs/team/tickets/SW-0065.md): round 1 house/session browser → local API → isolated synthetic DB accepted; 8 real browser, 12 fixture browser, 11 HTTP, 24 demo regression, independent QA/security and integration evidence in ticket. Native/live provider/release gates remain open.

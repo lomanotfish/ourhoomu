@@ -27,8 +27,16 @@ export default defineConfig({
   use: {
     baseURL: frontend,
     browserName: 'chromium',
+    // The local acceptance API is loopback on a different port. Current
+    // Chromium blocks this dev-only request before CORS unless the local
+    // network access check is disabled for this isolated test browser.
+    launchOptions: { args: ['--disable-features=LocalNetworkAccessChecks'] },
     viewport: { width: 1280, height: 900 },
-    trace: 'retain-on-failure',
+    // Traces record network request/response headers, which would retain the
+    // memory-only bearer/refresh tokens of this lane. Secret safety wins:
+    // traces stay off; failures are diagnosed from the error text, the
+    // JSON/list reporters and the DOM-only failure screenshot instead.
+    trace: 'off',
     screenshot: 'only-on-failure',
   },
   webServer: {

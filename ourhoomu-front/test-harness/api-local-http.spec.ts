@@ -44,6 +44,35 @@ async function serveHarnessEntry(page: Page): Promise<void> {
   });
 }
 
+/**
+ * Reads the one-time invitation token rendered under the show-once label.
+ * The token is a sibling of the label element in the RNW DOM; it is displayed
+ * exactly once by the real screen, so the test must capture it while visible.
+ */
+async function readShownInvitationToken(page: Page): Promise<string> {
+  const handle = await page
+    .getByText('ลิงก์คำเชิญ (แสดงครั้งเดียว)', { exact: true })
+    .evaluateHandle((label) => label.nextElementSibling?.textContent ?? '');
+  const token = (await handle.jsonValue()) as string;
+  expect(token.length).toBeGreaterThan(0);
+  return token;
+}
+
+/** Signs a second, fully independent browser context in (memory-only session). */
+async function openSecondSession(browser: {
+  newContext(): Promise<{ newPage(): Promise<Page>; close(): Promise<void> }>;
+}): Promise<Page> {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  try {
+    await signInViaSyntheticIssuer(page);
+  } catch (cause) {
+    await context.close();
+    throw cause;
+  }
+  return page;
+}
+
 async function signInViaSyntheticIssuer(page: Page): Promise<string> {
   await serveHarnessEntry(page);
   const subject = crypto.randomUUID();
@@ -100,16 +129,114 @@ test('actual-local-HTTP: own recipient account can be created and listed', async
   await page.getByRole('button', { name: 'สร้างบ้าน', exact: true }).click();
   await expect(page.getByText(`สมาชิก · ${houseName}`)).toBeVisible();
 
+  const accountsResponse = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'GET' && response.url().includes('/v1/me/recipient-accounts'),
+  );
   await page.getByRole('button', { name: 'โหลดบัญชีของฉัน', exact: true }).click();
-  await expect(page.getByText('ยังไม่มีบัญชีรับเงินในรายการ')).toBeVisible();
+  expect((await accountsResponse).status()).toBe(200);
 
   await page.getByLabel('ชื่อบัญชี', { exact: true }).fill('บัญชี HTTP');
   await page.getByLabel('รหัสธนาคาร', { exact: true }).fill('SCB');
   await page.getByLabel('เลขบัญชี', { exact: true }).fill('1234567890');
+  await page.getByRole('button', { name: 'ตั้งเป็นบัญชีหลัก', exact: true }).click();
   await page.getByRole('button', { name: 'สร้างบัญชี', exact: true }).click();
 
   await expect(page.getByText('บัญชี HTTP · SCB')).toBeVisible();
   await expect(page.getByText('••••7890 · บัญชีหลัก · เปิด')).toBeVisible();
+});
+
+test('actual-local-HTTP: invitation issued by one session is accepted by a separate session', async ({
+  page,
+  browser,
+}) => {
+  await signInViaSyntheticIssuer(page);
+  const houseName = `บ้าน HTTP ${crypto.randomUUID().slice(0, 8)}`;
+  await page.getByLabel('ชื่อบ้านใหม่', { exact: true }).fill(houseName);
+  await page.getByRole('button', { name: 'สร้างบ้าน', exact: true }).click();
+  await expect(page.getByText(`สมาชิก · ${houseName}`)).toBeVisible();
+
+  await page.getByRole('button', { name: 'สร้างคำเชิญ', exact: true }).click();
+  await expect(page.getByText('ลิงก์คำเชิญ (แสดงครั้งเดียว)')).toBeVisible();
+  const token = await readShownInvitationToken(page);
+
+  // A separate browser context is a separate memory-only session identity.
+  const pageB = await openSecondSession(browser);
+  await pageB.getByLabel('รหัสคำเชิญ', { exact: true }).fill(token);
+  await pageB.getByRole('button', { name: 'เข้าร่วมบ้าน', exact: true }).click();
+  await expect(pageB.getByText(houseName, { exact: true })).toBeVisible();
+  await pageB.getByRole('button', { name: `เปิดบ้าน ${houseName}`, exact: true }).click();
+  await expect(pageB.getByText(`สมาชิก · ${houseName}`)).toBeVisible();
+  await expect(pageB.getByText('เจ้าของบ้าน · ใช้งานอยู่ · v1')).toBeVisible();
+  await expect(pageB.getByText('สมาชิก · ใช้งานอยู่ · v1')).toBeVisible();
+
+  // The owner sees the joined member after reloading the house detail.
+  await page.getByRole('button', { name: `เปิดบ้าน ${houseName}`, exact: true }).click();
+  await expect(page.getByText('สมาชิก · ใช้งานอยู่ · v1')).toBeVisible();
+});
+
+test('actual-local-HTTP: member leaves the joined house and creates an own house', async ({
+  page,
+  browser,
+}) => {
+  await signInViaSyntheticIssuer(page);
+  const houseName = `บ้าน HTTP ${crypto.randomUUID().slice(0, 8)}`;
+  await page.getByLabel('ชื่อบ้านใหม่', { exact: true }).fill(houseName);
+  await page.getByRole('button', { name: 'สร้างบ้าน', exact: true }).click();
+  await expect(page.getByText(`สมาชิก · ${houseName}`)).toBeVisible();
+
+  await page.getByRole('button', { name: 'สร้างคำเชิญ', exact: true }).click();
+  await expect(page.getByText('ลิงก์คำเชิญ (แสดงครั้งเดียว)')).toBeVisible();
+  const token = await readShownInvitationToken(page);
+
+  const pageB = await openSecondSession(browser);
+  await pageB.getByLabel('รหัสคำเชิญ', { exact: true }).fill(token);
+  await pageB.getByRole('button', { name: 'เข้าร่วมบ้าน', exact: true }).click();
+  await expect(pageB.getByText(houseName, { exact: true })).toBeVisible();
+  await pageB.getByRole('button', { name: `เปิดบ้าน ${houseName}`, exact: true }).click();
+  await expect(pageB.getByText(`สมาชิก · ${houseName}`)).toBeVisible();
+
+  // Leaving the only house returns the member to the honest zero-house state
+  // where the real create/join forms reappear.
+  await pageB.getByRole('button', { name: 'ออกจากบ้าน', exact: true }).click();
+  await expect(pageB.getByText('ยังไม่มีบ้าน', { exact: true })).toBeVisible();
+
+  const ownName = `บ้าน HTTP ${crypto.randomUUID().slice(0, 8)}`;
+  await pageB.getByLabel('ชื่อบ้านใหม่', { exact: true }).fill(ownName);
+  await pageB.getByRole('button', { name: 'สร้างบ้าน', exact: true }).click();
+  await expect(pageB.getByText(`สมาชิก · ${ownName}`)).toBeVisible();
+  await expect(pageB.getByText('เจ้าของบ้าน · ใช้งานอยู่ · v1')).toBeVisible();
+
+  // The left member disappears from the owner's active member list.
+  await page.getByRole('button', { name: `เปิดบ้าน ${houseName}`, exact: true }).click();
+  await expect(page.getByText('เจ้าของบ้าน · ใช้งานอยู่ · v1')).toBeVisible();
+  await expect(page.getByText('สมาชิก · ใช้งานอยู่ · v1')).toHaveCount(0);
+});
+
+test('actual-local-HTTP: revoked invitation is refused for a separate session', async ({
+  page,
+  browser,
+}) => {
+  await signInViaSyntheticIssuer(page);
+  const houseName = `บ้าน HTTP ${crypto.randomUUID().slice(0, 8)}`;
+  await page.getByLabel('ชื่อบ้านใหม่', { exact: true }).fill(houseName);
+  await page.getByRole('button', { name: 'สร้างบ้าน', exact: true }).click();
+  await expect(page.getByText(`สมาชิก · ${houseName}`)).toBeVisible();
+
+  await page.getByRole('button', { name: 'สร้างคำเชิญ', exact: true }).click();
+  await expect(page.getByText('ลิงก์คำเชิญ (แสดงครั้งเดียว)')).toBeVisible();
+  const token = await readShownInvitationToken(page);
+
+  await page.getByRole('button', { name: 'เพิกถอนคำเชิญ', exact: true }).click();
+  await expect(page.getByText('ลิงก์คำเชิญ (แสดงครั้งเดียว)')).toBeHidden();
+
+  const pageB = await openSecondSession(browser);
+  await pageB.getByLabel('รหัสคำเชิญ', { exact: true }).fill(token);
+  await pageB.getByRole('button', { name: 'เข้าร่วมบ้าน', exact: true }).click();
+  // The real handler refuses revoked tokens with the opaque 409
+  // invite_unavailable envelope; the joining session stays at zero houses.
+  await expect(pageB.getByText('409 · invite unavailable', { exact: true })).toBeVisible();
+  await expect(pageB.getByText('ยังไม่มีบ้าน', { exact: true })).toBeVisible();
 });
 
 test('actual-local-HTTP: logout clears the session and the next bootstrap is honest', async ({

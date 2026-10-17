@@ -1,5 +1,5 @@
 import { defineConfig } from '@playwright/test';
-const port = Number(process.env.CORE_HTTP_PORT ?? '18775');
+const port = Number(process.env.CORE_HTTP_PORT ?? '18765');
 if (!Number.isInteger(port) || port < 1024 || port > 65535)
   throw new Error('Invalid local acceptance port');
 export default defineConfig({

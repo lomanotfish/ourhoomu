@@ -1,6 +1,10 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import { test, expect, type APIRequestContext } from '@playwright/test';
 
+// The fixture server validates this exact loopback origin (default
+// http://localhost:8081; round 1 passes http://localhost:18067 explicitly).
+const frontendOrigin = process.env.CORE_HTTP_ORIGIN ?? 'http://localhost:8081';
+
 type Session = { accessToken: string; refreshToken: string; userId: string; expiresAt: string };
 async function call(
   request: APIRequestContext,
@@ -447,40 +451,38 @@ test('owner-only recipient accounts encrypt identifiers, merge bank changes and 
   expect(archived.json.data.active).toBe(false);
 });
 
-test('exact loopback frontend origin contract serves the dedicated UI port', async ({
+test('exact loopback frontend origin contract serves the selected UI origin', async ({
   request,
 }) => {
   const preflight = await request.fetch('/v1/houses', {
     method: 'OPTIONS',
     headers: {
-      origin: 'http://localhost:18067',
+      origin: frontendOrigin,
       'access-control-request-method': 'POST',
       'access-control-request-headers': 'authorization,content-type,idempotency-key',
     },
   });
   expect(preflight.status()).toBe(204);
-  expect(preflight.headers()['access-control-allow-origin']).toBe('http://localhost:18067');
+  expect(preflight.headers()['access-control-allow-origin']).toBe(frontendOrigin);
   expect(preflight.headers()['access-control-allow-headers']).toBe(
     'authorization,content-type,idempotency-key',
   );
   expect(preflight.headers()['access-control-allow-methods']).toContain('POST');
-  const actual = await request.fetch('/health', { headers: { origin: 'http://localhost:18067' } });
+  const actual = await request.fetch('/health', { headers: { origin: frontendOrigin } });
   expect(actual.status()).toBe(200);
-  expect(actual.headers()['access-control-allow-origin']).toBe('http://localhost:18067');
+  expect(actual.headers()['access-control-allow-origin']).toBe(frontendOrigin);
   expect(actual.headers()['access-control-expose-headers']).toContain('x-request-id');
   expect(actual.headers()['access-control-max-age']).toBe('600');
   const syntheticPreflight = await request.fetch('/__synthetic/token', {
     method: 'OPTIONS',
     headers: {
-      origin: 'http://localhost:18067',
+      origin: frontendOrigin,
       'access-control-request-method': 'POST',
       'access-control-request-headers': 'content-type',
     },
   });
   expect(syntheticPreflight.status()).toBe(204);
-  expect(syntheticPreflight.headers()['access-control-allow-origin']).toBe(
-    'http://localhost:18067',
-  );
+  expect(syntheticPreflight.headers()['access-control-allow-origin']).toBe(frontendOrigin);
   expect(
     (
       await request.fetch('/__synthetic/token', {

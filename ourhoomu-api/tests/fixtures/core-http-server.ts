@@ -43,23 +43,24 @@ const publicJwk = {
   use: 'sig',
 };
 let issuerTimeOffset = 0;
-const app = await createRuntimeApp(
-  { appEnv: 'test', allowedOrigin: 'http://localhost:18067' },
-  bindings,
-  {
-    getJwks: async (trustedUrl) => {
-      if (trustedUrl !== provider.jwksUrl) throw new Error('Untrusted fixture JWKS');
-      return { keys: [publicJwk] };
-    },
-    now: () => Date.now() + issuerTimeOffset,
-  },
-);
-const port = Number(process.env.CORE_HTTP_PORT ?? '18775');
+const port = Number(process.env.CORE_HTTP_PORT ?? '18765');
 if (!Number.isInteger(port) || port < 1024 || port > 65535)
   throw new Error('Invalid local acceptance port');
+// Accepted default origin stays http://localhost:8081; round 1 passes an explicit
+// validated exact-loopback origin (e.g. http://localhost:18067) via CORE_HTTP_ORIGIN.
+const originEnv = process.env.CORE_HTTP_ORIGIN;
+if (originEnv !== undefined && !/^http:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?$/.test(originEnv))
+  throw new Error('CORE_HTTP_ORIGIN must be an exact loopback http origin');
+const frontendOrigin = originEnv ?? 'http://localhost:8081';
+const app = await createRuntimeApp({ appEnv: 'test', allowedOrigin: frontendOrigin }, bindings, {
+  getJwks: async (trustedUrl) => {
+    if (trustedUrl !== provider.jwksUrl) throw new Error('Untrusted fixture JWKS');
+    return { keys: [publicJwk] };
+  },
+  now: () => Date.now() + issuerTimeOffset,
+});
 // Browser test entries call the synthetic endpoints from the exact frontend
 // origin; responses stay loopback-only and never exist in the Worker entrypoint.
-const frontendOrigin = 'http://localhost:18067';
 const syntheticCors = {
   'access-control-allow-origin': frontendOrigin,
   'access-control-allow-methods': 'POST,OPTIONS',

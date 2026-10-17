@@ -1,5 +1,63 @@
 # SW-0065-api report — Round 1 authenticated house/session backend acceptance
 
+## Correction round (re-dispatch ctx_9c9f815e2a47, 2026-10-17)
+
+- Worker: backend (Pi, interactive `pi --provider clicknext --model auto`), terminal
+  `term_249d4790-9747-4570-938d-87cfccd54d54`, task `task_abee9d04b47a`, dispatch
+  `ctx_9c9f815e2a47` (recovery after the prior exact agent positively exited with a
+  failed dispatch; source de37f13/report and its dirty correction were preserved).
+- Graft preflight: `graft ask "where is the core HTTP acceptance server fixture and
+  synthetic issuer, and how are target guards and loadTarget used for DB HTTP
+  acceptance" --source` in the exact workspace → graph refreshed (2 files changed),
+  **Graft: ACTIVE** (graft 0.21.1; ~15,345 tokens saved on the preflight call).
+- Inherited dirty state: the prior backend owner's uncommitted correction (per Lead
+  msg_2ca1b1cea798 / msg_7a40b088ae27) changed the baseline defaults to port `18765`
+  and origin `http://localhost:8081` selected via a validated `CORE_HTTP_ORIGIN`, but
+  referenced `frontendOrigin` before its declaration (TDZ ReferenceError — the fixture
+  server could not start). This dispatch finished that correction only; no new
+  scaffold, no handler changes, no frontend/contract/schema edits.
+- Fix committed `5050b3a` (tested tree `e766ce78f52276bed2d5e27e7a245e6844710535`):
+  validated loopback origin + port parsed **before** `createRuntimeApp`; accepted
+  baseline defaults retained (port `18765`, origin `http://localhost:8081`); round 1
+  passes explicit `CORE_HTTP_PORT=18775` + `CORE_HTTP_ORIGIN=http://localhost:18067`
+  (strict loopback regex, otherwise fail closed). The origin-contract test now asserts
+  the selected origin (`process.env.CORE_HTTP_ORIGIN ?? 'http://localhost:8081'`)
+  instead of hardcoding 18067; foreign-origin 403 assertion unchanged.
+- Fresh frozen install: `bun install --frozen-lockfile` (Bun 1.4.3 pinned, 708
+  installs checked, no changes). Offline checks at tree `e766ce78…`: `bun run
+  typecheck` pass, `bun run format:check` pass (57 files; one biome format fix
+  applied to the two edited files first), `bun run lint` pass no warnings, `bun test
+  tests` **93 pass / 0 fail, 290 assertions, 11 files**.
+- Guarded DB window (granted again to this dispatch only): same files as below,
+  re-verified mode 600 and receipt freshness (`br-weathered-thunder-b38dgxbm`,
+  endpoint allowlist unchanged, expires 2026-10-20T12:00:00Z > run time); no reset,
+  migration, grant or privilege change; no provider calls; no secret content printed.
+- Listener preflight `lsof -nP -iTCP:18765 -iTCP:18775 -iTCP:18067 -sTCP:LISTEN` →
+  no listeners before either run; identical check after both runs → no owned listener
+  remains (Playwright webServer teardown confirmed).
+- Actual HTTP acceptance against the real Elysia runtime app + restricted synthetic
+  Neon roles + signed synthetic issuer, both configurations, 11 tests each:
+
+| Run | Env | Result |
+| --- | --- | --- |
+| Default compatibility | no `CORE_HTTP_PORT`/`CORE_HTTP_ORIGIN` → port 18765, origin http://localhost:8081 | **11 passed (24.2s)** |
+| Round 1 explicit | `CORE_HTTP_PORT=18775 CORE_HTTP_ORIGIN=http://localhost:18067` | **11 passed (24.0s)** |
+
+  Both runs: `ALLOW_CORE_HTTP_ACCEPTANCE=true CORE_HTTP_BINDINGS_FILE=…
+  SYNTHETIC_DB_ENV_FILE=… NEON_BRANCH_RECEIPT=… CORE_HTTP_TEST_SHA=e766ce78…(40-hex)
+  bunx playwright test --config playwright.config.ts`. Role/target guards (mode-600
+  files, binding-vs-target equality, synthetic issuer config, 40-hex SHA) passed at
+  startup in both runs; new synthetic rows only, in the existing isolated test target.
+- **DB window released to the Lead** as of this correction round; no further
+  synthetic DB access from this worker. Own servers/pools closed (process exited via
+  Playwright teardown; lsof clean).
+- Commits this round: `5050b3a` (code) + report commit (this file). Baseline remains
+  `ff99035`; prior round-1 commit `de37f13` unchanged.
+
+---
+
+## Round 1 (prior dispatch ctx_ab157f3abada, historical)
+
 - Worker: backend (Pi, interactive `pi --provider clicknext --model auto`), terminal
   `term_7ecb4858-038b-4bd3-8c53-0ac86873c822`, task `task_abee9d04b47a`, dispatch
   `ctx_ab157f3abada`.

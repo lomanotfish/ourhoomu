@@ -152,3 +152,7 @@ Evidence: [SW-0056 integration](docs/team/reports/SW-0056-integration.md). This 
 - [x] SW0009 API client/UI bounded milestone aed0bd8, independent review; bootstrap/logout/house generation fixes,117units and integrated10tasks+24demo/workerd E2E pass. [Review](docs/team/reports/SW-0009-review-aed0bd8.md). Authenticated browser/native/live identity remains open.
 
 - [x] BillActions/share reservation server projection: source00fff178, independentbe47cdb restricted8groups/lifecycle/catalog and integrated10tasks pass. [Review](docs/team/reports/SW-0063-bill-actions-security-review.md). HTTP bill endpoint acceptance remains open.
+
+## Approved round 1 — 2026-10-17
+
+- [ ] [SW-0065](docs/team/tickets/SW-0065.md): authenticated house/session actual screens through local API and isolated synthetic DB; independent review, verification and local integration. Approved by user; bounded frontend/backend tasks launched, acceptance pending.

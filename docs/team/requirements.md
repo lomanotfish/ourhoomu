@@ -86,3 +86,7 @@ User prioritizes Turborepo migration with Bun workspaces and packages/ for genui
 
 ## Branch consolidation — confirmed 2026-10-15
 User requests all existing work consolidated into local. Preserve dirty drafts/user edits and newer Turborepo; finish required core security acceptance before integrating data. This is integration of existing work, not authorization for new product features or deployment. See [SW-0058](tickets/SW-0058.md).
+
+## Round 1 approval — 2026-10-17
+
+User explicitly approved “อนุมัติรอบ 1” of [ordered plan](../../tasks/plan.md). Scope: session/house actual screens, local HTTP handlers and isolated synthetic DB with independent browser/API acceptance. Track [SW-0065](tickets/SW-0065.md). Later rounds, native/live identity, provider operations, production and publishing remain separately gated.

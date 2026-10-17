@@ -147,38 +147,43 @@ Use `bun run test:e2e:report` or `bunx playwright show-trace <path-to-trace.zip>
 Copy evidence you need before another run replaces these directories. Commit
 only config/tests/docs/locks, never generated reports or browser state.
 
-## API-mode browser harness (synthetic HTTP fixtures)
+## API-mode browser acceptance (SW-0065)
 
-The separate `playwright.api.config.ts` suite runs only the existing Expo API
-shell and actual `AppRuntimeProvider`/`ApiModeScreen`. Start it with
-`bunx playwright test --config=playwright.api.config.ts` from this directory;
-its dedicated Expo port is `18057` and synthetic HTTP fixture origin is
-`127.0.0.1:18058`. It rejects an existing frontend listener and shuts down its
-owned Expo server after the run. It does not start or call the API/Workers,
-Neon, identity provider, or production. Playwright route fixtures are registered but intentionally never reached when
-there are no credentials; the checks assert zero fixture calls. The suite covers
-API-mode signed-out state, retry remaining unauthenticated, and no demo
-fallback—not authenticated house scenarios.
+The API-mode Playwright suites render the real `app/api.tsx` screen through a
+test-only Expo Router entry in `test-harness/`. Production routes and native
+sign-in are unaffected. Install the pinned workspace dependencies and Chromium
+as described above, then run from `ourhoomu-front/`:
 
-Inspection confirmed the production app exports `AppRuntimeProvider` with an
-optional injected runtime, but injection is gated by both `__DEV__` and
-`EXPO_PUBLIC_API_TEST_HARNESS=true`. Expo web export in this harness is a
-production bundle (`__DEV__` is false), and the repository has no separate test
-entrypoint/provider capable of wrapping `Stack` with `testRuntime`. Therefore
-this browser suite deliberately does not enable credentials or inject a runtime.
-The actual `ApiModeScreen` resets signed-in component state on auth-generation
-changes and logout, but zero/one/many-house selection, stale selection, logout
-cache reset, and authenticated account/error flows remain unproven in browser.
-The exact missing seam for those scenarios is a **test-only Expo Router root
-entrypoint** that supplies `AppRuntimeProvider.testRuntime` around the real
-router tree during a dedicated development browser build, with fixture session
-and house repository implementations. It must remain absent from the production
-entrypoint and must not add a login bypass, token URL/global bridge, or public
-credential path. Alternatively, route through real handlers and a separately
-authorized synthetic DB after those handlers exist. Existing focused unit tests
-(`src/runtime/api-mode.test.ts`, `src/repositories/house-selection.test.ts` and
-`src/runtime/operation-guard.test.ts`) exercise composition and reset/race
-invariants, but are not browser coverage or authenticated API acceptance.
+```sh
+./node_modules/.bin/playwright test -c playwright.api.config.ts
+```
+
+This fixture suite uses dedicated ports `18057` and `18058`, starts and stops
+its own Expo server, and makes no database or provider calls. Its 12 browser
+cases cover signed-out and authenticated house/session states, delayed
+responses, and invitation permission errors. Fixture responses are synthetic;
+passing this suite alone does not prove the API handlers or database.
+
+For the actual local HTTP suite, first start the guarded API acceptance server
+using [the API setup](../ourhoomu-api/README.md) and an exclusive, approved
+synthetic database window. Set `CORE_HTTP_PORT=18775` and
+`CORE_HTTP_ORIGIN=http://localhost:18067` for that server. Then run:
+
+```sh
+./node_modules/.bin/playwright test -c playwright.api-local.config.ts
+```
+
+The browser suite starts and stops its Expo server on `localhost:18067` and
+requires the API on `127.0.0.1:18775`; it refuses an existing frontend
+listener. It signs in through the test-only synthetic issuer and uses actual
+HTTP handlers and the isolated database for house, invitation, account and
+logout flows. The API server and database window must be closed separately.
+The Chromium local-network-access check is disabled only in this test browser
+so it can call the loopback API; production browser settings are unchanged.
+Failure screenshots and reports stay in ignored `test-results/` and
+`playwright-report-local/`; network traces are off to avoid retaining synthetic
+session credentials. These checks do not prove native Google/Apple sign-in,
+live providers, production deployment or TestFlight.
 
 ## Native session credential component (SW-0055)
 

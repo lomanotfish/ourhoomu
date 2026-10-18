@@ -19,7 +19,6 @@
 | สิ่งที่ยืนยันแล้ว / ข้อเสนอ / เรื่องรอเลือก | [Decision log](project/decisions.md) |
 | Stack ปัจจุบัน / ข้อเสนอเก่า | [ADR-0003](adr/0003-selected-stack.md), [ADR-0001 ที่ superseded](adr/0001-stack.md) |
 | Neon ที่เลือกและผลตั้งค่าจริง | [ADR-0002](adr/0002-neon.md), [Neon setup](project/neon-setup.md) |
-| Agent ต้องเริ่มและส่งมอบอย่างไร | [Agent guide](team/agent-guide.md) |
 | งานที่จะทำและ dependencies | [Ticket board](team/board.md) |
 | ความคืบหน้าสำหรับผู้ใช้ | [Checklist](../checklist.md) |
 | ผลตรวจแบบและการแก้ findings | [Lead resolution](team/reports/SW-0002-resolution.md), [Independent review](team/reports/SW-0002-design-review.md) |

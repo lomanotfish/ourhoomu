@@ -1,0 +1,23 @@
+{
+  "name": "@ourhoomu/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/dto.ts"
+    }
+  },
+  "scripts": {
+    "build": "bun run check:generated",
+    "generate": "node scripts/generate.mjs",
+    "check:generated": "node scripts/generate.mjs --check",
+    "typecheck": "tsc --noEmit",
+    "format:check": "prettier --check src scripts package.json tsconfig.json"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3"
+  }
+}

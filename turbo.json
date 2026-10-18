@@ -1,0 +1,148 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "globalEnv": [
+    "CI"
+  ],
+  "tasks": {
+    "typecheck": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
+    "typecheck:e2e": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
+    "format:check": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
+    "lint": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
+    "build": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "../../docs/project/openapi.yaml"
+      ],
+      "outputs": []
+    },
+    "check:generated": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "../../docs/project/openapi.yaml"
+      ],
+      "outputs": []
+    },
+    "export:web": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/web/**"
+      ],
+      "env": [
+        "NODE_ENV",
+        "EXPO_PUBLIC_*"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.*"
+      ]
+    },
+    "export:ios": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/ios/**"
+      ],
+      "env": [
+        "NODE_ENV",
+        "EXPO_PUBLIC_*"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        ".env.*"
+      ]
+    },
+    "build:worker": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/worker/**"
+      ],
+      "env": [
+        "NODE_ENV"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "ios": {
+      "cache": false,
+      "persistent": true
+    },
+    "web": {
+      "cache": false,
+      "persistent": true
+    },
+    "format": {
+      "cache": false
+    },
+    "generate": {
+      "cache": false
+    },
+    "check:runtime": {
+      "cache": false,
+      "passThroughEnv": [
+        "RUNTIME_BASE_URL"
+      ]
+    },
+    "check:fixture-runtime": {
+      "cache": false
+    },
+    "prepare:neon-runtime": {
+      "cache": false
+    },
+    "check:neon-runtime": {
+      "cache": false
+    },
+    "test:e2e": {
+      "cache": false
+    },
+    "test:e2e:install": {
+      "cache": false
+    },
+    "test:e2e:report": {
+      "cache": false
+    }
+  },
+  "globalDependencies": [
+    "bunfig.toml",
+    ".bun-version",
+    ".node-version"
+  ]
+}

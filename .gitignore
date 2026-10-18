@@ -1,0 +1,13 @@
+node_modules/
+.neon
+.env
+.env.*
+!.env.example
+.agents/
+graft/
+ourhoomu-front/.expo/
+ourhoomu-front/dist/
+ourhoomu-front/expo-env.d.ts
+
+# Local task cache and independent platform exports
+.turbo/

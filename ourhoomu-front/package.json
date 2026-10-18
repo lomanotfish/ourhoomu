@@ -1,0 +1,49 @@
+{
+  "name": "ourhoomu-front",
+  "version": "0.1.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "format:check": "prettier --check 'app/**/*.{ts,tsx}' 'src/**/*.{ts,tsx}' '*.js' '*.json' 'e2e/**/*.ts' 'playwright.config.ts'",
+    "format": "prettier --write 'app/**/*.{ts,tsx}' 'src/**/*.{ts,tsx}' '*.js' '*.json' 'e2e/**/*.ts' 'playwright.config.ts'",
+    "export:web": "EXPO_NO_TELEMETRY=1 expo export --clear --platform web --output-dir dist/web",
+    "export:ios": "EXPO_NO_TELEMETRY=1 expo export --clear --platform ios --output-dir dist/ios",
+    "test": "bun test ./src",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install chromium",
+    "typecheck:e2e": "tsc -p tsconfig.e2e.json",
+    "test:e2e:report": "playwright show-report",
+    "dev": "expo start"
+  },
+  "dependencies": {
+    "expo": "57.0.28",
+    "expo-constants": "57.0.21",
+    "expo-font": "~57.0.4",
+    "expo-linking": "~57.0.12",
+    "expo-router": "~57.0.26",
+    "expo-secure-store": "57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "lucide-react-native": "^1.55.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-svg": "15.15.4",
+    "react-native-web": "^0.21.2",
+    "@ourhoomu/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/bun": "^1.4.3",
+    "@types/react": "~19.2.4",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "@types/node": "26.6.5",
+    "babel-preset-expo": "57.0.15"
+  }
+}

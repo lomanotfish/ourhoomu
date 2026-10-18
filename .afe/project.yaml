@@ -1,0 +1,22 @@
+# Afe Team project configuration (tracked in Git; no secrets here).
+project_id: ourhoomu-7adf23
+name: ourhoomu
+default_branch: main
+# Runtime state (SQLite, worktrees, protected tests) lives OUTSIDE this repo, in ~/.afe/projects/ourhoomu-7adf23.
+
+concurrency: 3
+
+verification:
+  # Run for every ticket and again after every merge (regression). One shell command per entry.
+  commands: ["bun run typecheck","bun run lint","bun test"]
+  timeout_seconds: 600
+
+# Optional overrides (see docs/usage.md in afe-team-agent-coding):
+# docs:
+#   rules:
+#     - { name: "api docs", when: ["src/api/**"], require: ["docs/api/**"] }
+# model_routing:
+#   roles:
+#     backend-developer: { primary: gpt-6-luna }
+# retry:
+#   worker_corrections: 1
